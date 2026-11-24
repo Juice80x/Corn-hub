@@ -265,7 +265,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <div class="demo"><div id="demoGood"></div><div id="demoBad"></div></div>
       <p class="ol2">Rare cobs are worth big points. Rarer tiers unlock as you play</p>
       <div class="demo rare" id="demoRare"></div>
-      <p class="ol2">Fill the FRENZY bar for a x2 all-good-corn rush. Every point becomes a kernel to spend on skins or a second chance.</p>
+      <p class="ol2">Streaks multiply points: x2 at 10 in a row, x3 at 25. Fill the FRENZY bar for a x2 all-good-corn rush. Every point becomes a kernel to spend on skins or a second chance.</p>
       <button class="go ol2" data-close="help">GOT IT</button>
     </div>
   </div>
@@ -345,45 +345,46 @@ const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 
 /* ---------- catalogue ---------- */
 const BG=[
  {id:'field',name:'Green Field',cost:0,c:['#e4f3c4','#b8dc8a','#86bf5c','#5f9c43'],ray:'255,255,255,.13',hud:['#2c6a2e','#1f4d22'],ol:'#173a19',mote:'#fff8c8'},
- {id:'sunset',name:'Sunset Farm',cost:150,c:['#fff0b8','#ffc978','#f58a5a','#b8456a'],ray:'255,255,255,.15',hud:['#b04a44','#6e2740'],ol:'#3d1226',mote:'#fff2c0'},
- {id:'night',name:'Midnight Barn',cost:400,c:['#6a88d8','#34509c','#1e2f6a','#101a40'],ray:'180,210,255,.09',hud:['#24356e','#131d45'],ol:'#080d24',mote:'#fff48a'},
- {id:'candy',name:'Candy Land',cost:800,c:['#fff5fb','#ffd0e8','#ff9fcf','#c96bb8'],ray:'255,255,255,.22',hud:['#d85aa6','#9a3a86'],ol:'#4a1440',mote:'#ffffff'},
+ {id:'sunset',name:'Sunset Farm',cost:500,c:['#fff0b8','#ffc978','#f58a5a','#b8456a'],ray:'255,255,255,.15',hud:['#b04a44','#6e2740'],ol:'#3d1226',mote:'#fff2c0'},
+ {id:'night',name:'Midnight Barn',cost:9000,c:['#6a88d8','#34509c','#1e2f6a','#101a40'],ray:'180,210,255,.09',hud:['#24356e','#131d45'],ol:'#080d24',mote:'#fff48a'},
+ {id:'candy',name:'Candy Land',cost:4000,c:['#fff5fb','#ffd0e8','#ff9fcf','#c96bb8'],ray:'255,255,255,.22',hud:['#d85aa6','#9a3a86'],ol:'#4a1440',mote:'#ffffff'},
  {id:'outback',name:'Red Outback',cost:1500,c:['#ffe6b0','#f2b56a','#d9703a','#9a3d22'],ray:'255,240,200,.15',hud:['#a8502a','#6e2f18'],ol:'#3a1608',mote:'#ffe9b0'},
- {id:'space',name:'Deep Space',cost:3000,c:['#8a5fe0','#42258c','#1c0f4a','#07041c'],ray:'200,160,255,.1',hud:['#3a2080','#1a0d45'],ol:'#05021a',mote:'#ffffff'}
+ {id:'space',name:'Deep Space',cost:20000,c:['#8a5fe0','#42258c','#1c0f4a','#07041c'],ray:'200,160,255,.1',hud:['#3a2080','#1a0d45'],ol:'#05021a',mote:'#ffffff'}
 ];
 const SK=[
  {id:'classic',name:'Classic Gold',g:['#fff2a8','#ffcf2e','#f0960c'],base:'#e89410',ks:'#b86a00',tip:'#fff0b0'},
- {id:'bicolor',name:'Butter & Sugar',g:['#fff2a8','#ffcf2e','#f0960c'],g2:['#ffffff','#fff6d8','#e8cf8a'],base:'#e8a820',ks:'#b87a10',tip:'#fffbe8',req:{k:'cobs',n:200,txt:'Sort 200 cobs'}},
- {id:'ruby',name:'Ruby Red',g:['#ffc9b8','#e8382e','#a3141a'],base:'#8a1010',ks:'#6a0a10',tip:'#ffb09a',req:{k:'best',n:150,txt:'Score 150 in a game'}},
- {id:'gum',name:'Bubblegum',g:['#fff0f8','#ff8ccb','#e0489e'],base:'#c93a8a',ks:'#9a2468',tip:'#ffe0f0',req:{k:'rare',n:15,txt:'Catch 15 rare cobs'}},
- {id:'jade',name:'Jade',g:['#e8fff0','#4fd69a','#149a6a'],base:'#0f7a55',ks:'#0a5a40',tip:'#d0ffe4',req:{k:'frenzy',n:10,txt:'Trigger 10 Frenzies'}}
+ {id:'bicolor',name:'Butter & Sugar',g:['#fff2a8','#ffcf2e','#f0960c'],g2:['#ffffff','#fff6d8','#e8cf8a'],base:'#e8a820',ks:'#b87a10',tip:'#fffbe8',req:{k:'cobs',n:1500,txt:'Sort 1,500 cobs'}},
+ {id:'ruby',name:'Ruby Red',g:['#ffc9b8','#e8382e','#a3141a'],base:'#8a1010',ks:'#6a0a10',tip:'#ffb09a',req:{k:'best',n:500,txt:'Score 500 in a game'}},
+ {id:'gum',name:'Bubblegum',g:['#fff0f8','#ff8ccb','#e0489e'],base:'#c93a8a',ks:'#9a2468',tip:'#ffe0f0',req:{k:'rare',n:100,txt:'Catch 100 rare cobs'}},
+ {id:'jade',name:'Jade',g:['#e8fff0','#4fd69a','#149a6a'],base:'#0f7a55',ks:'#0a5a40',tip:'#d0ffe4',req:{k:'frenzy',n:40,txt:'Trigger 40 Frenzies'}}
 ];
 const T={
   good:{pts:1,ol:'#3b2208',shade:'#5a2a00',silk:'#f1d27a'},
   bad:{pts:1,ol:'#1c140c',base:'#2e1e12',ks:'#140c06',shade:'#000000',silk:'#4a3a24',hus:['#8a7448','#5b4a2a'],bit:['#4a3326','#7d8099','#b4d455']},
+  sneak:{pts:2,ol:'#3b2208',shade:'#5a2a00',silk:'#b8a060',bit:['#4a3326','#ffcf2e','#b4d455']},
   gold:{name:'GOLDEN',rare:1,pts:5,ol:'#5a3200',base:'#b87400',ks:'#8a5200',shade:'#6a3a00',silk:'#fff3b0',hus:['#f6e68a','#cfa722'],bit:['#ffd83a','#fff7c0','#f2a60c'],aura:'#ffd62e',g:['#fffbe0','#ffd83a','#c98500']},
   rainbow:{name:'RAINBOW',rare:1,pts:10,ol:'#3a1a5c',base:'#5a2a80',ks:'rgba(40,10,60,.6)',shade:'#2a0a50',silk:'#ff9ad5',hus:['#86e6a6','#2fa870'],bit:['#ff5a5a','#ffb02e','#ffe14d','#5fd35f','#4ac3ff','#b06aff'],aura:'#ff7ac8'},
   galaxy:{name:'GALAXY',rare:1,pts:15,ol:'#1c0f45',base:'#150a40',ks:'#140a3a',shade:'#05021c',silk:'#d9b8ff',hus:['#b99aff','#6a41d6'],bit:['#7b2fd6','#e04fd0','#3a6df0','#ffffff'],aura:'#a27bff'},
   diamond:{name:'DIAMOND',rare:1,pts:25,ol:'#1d4a7a',base:'#2f7fc0',ks:'#2a6ea8',shade:'#0a3a70',silk:'#ffffff',hus:['#dcf8ff','#8ad0ec'],bit:['#ffffff','#aeeaff','#63c2f5'],aura:'#7fdcff',g:['#ffffff','#bfeeff','#58b8f0']},
-  lava:{name:'LAVA',rare:1,pts:40,unlock:1000,minN:12,p:.015,ol:'#2a0c06',base:'#5a0a00',ks:'#4a0800',shade:'#3a0500',silk:'#ff9a3a',hus:['#6a5852','#342826'],bit:['#ff8a1a','#ffe14d','#c81e0a'],aura:'#ff5a1a',g:['#fff3a0','#ff8a1a','#c81e0a']},
-  ghost:{name:'GHOST',rare:1,pts:60,unlock:3000,minN:20,p:.010,ol:'#2a5a55',base:'#7fcab8',ks:'#5aa898',shade:'#1a5a50',silk:'#ffffff',hus:['#ecfff9','#a8dccc'],bit:['#ffffff','#d8fff0','#8fe0c8'],aura:'#b8ffe8',g:['#ffffff','#dcfff2','#8fe0c8']},
-  royal:{name:'ROYAL',rare:1,pts:100,unlock:6000,minN:30,p:.006,ol:'#2a0a4a',base:'#3a0f6a',ks:'#2a0a52',shade:'#1a0440',silk:'#ffe9a0',hus:['#ffe07a','#d8a21e'],bit:['#a04ae0','#ffd83a','#f0d8ff'],aura:'#c88aff',g:['#f0d8ff','#a04ae0','#5a1a9a']},
-  unicorn:{name:'UNI-CORN',rare:1,pts:200,unlock:10000,minN:40,p:.003,ol:'#6a2a7a',base:'#f0c8f0',ks:'rgba(120,60,140,.55)',shade:'#7a3a8a',silk:'#ffffff',hus:['#ffd6f2','#e89ad8'],bit:['#ffc8e8','#c8e8ff','#fff3b0','#d8ffd0'],aura:'#ffd0ff'},
+  lava:{name:'LAVA',rare:1,pts:40,unlock:2500,minN:15,p:.015,ol:'#2a0c06',base:'#5a0a00',ks:'#4a0800',shade:'#3a0500',silk:'#ff9a3a',hus:['#6a5852','#342826'],bit:['#ff8a1a','#ffe14d','#c81e0a'],aura:'#ff5a1a',g:['#fff3a0','#ff8a1a','#c81e0a']},
+  ghost:{name:'GHOST',rare:1,pts:60,unlock:8000,minN:25,p:.010,ol:'#2a5a55',base:'#7fcab8',ks:'#5aa898',shade:'#1a5a50',silk:'#ffffff',hus:['#ecfff9','#a8dccc'],bit:['#ffffff','#d8fff0','#8fe0c8'],aura:'#b8ffe8',g:['#ffffff','#dcfff2','#8fe0c8']},
+  royal:{name:'ROYAL',rare:1,pts:100,unlock:20000,minN:35,p:.006,ol:'#2a0a4a',base:'#3a0f6a',ks:'#2a0a52',shade:'#1a0440',silk:'#ffe9a0',hus:['#ffe07a','#d8a21e'],bit:['#a04ae0','#ffd83a','#f0d8ff'],aura:'#c88aff',g:['#f0d8ff','#a04ae0','#5a1a9a']},
+  unicorn:{name:'UNI-CORN',rare:1,pts:200,unlock:50000,minN:45,p:.003,ol:'#6a2a7a',base:'#f0c8f0',ks:'rgba(120,60,140,.55)',shade:'#7a3a8a',silk:'#ffffff',hus:['#ffd6f2','#e89ad8'],bit:['#ffc8e8','#c8e8ff','#fff3b0','#d8ffd0'],aura:'#ffd0ff'},
   life:{name:'LIFE',badge:'+1 LIFE',pts:1,ol:'#5a1030',base:'#e8b8c8',ks:'#c0708a',shade:'#7a2040',silk:'#ffd0dc',hus:['#9ade5c','#5aa834'],bit:['#ff3b5c','#ffd0dc','#ffffff'],aura:'#ff5a7a',g:['#ffffff','#ffe6ee','#f4a8bc']}
 };
 const RARE=['gold','rainbow','galaxy','diamond'];
 T.gold.p=.08;T.rainbow.p=.05;T.galaxy.p=.035;T.diamond.p=.025;
 const TIERS=['unicorn','royal','ghost','lava','diamond','galaxy','rainbow','gold'],ALLRARE=TIERS.slice().reverse();
-const DEX=[['good','Good corn','The everyday hero. Keep it.'],['bad','Rotten corn','Mouldy, wormy, loved by flies. Toss it.'],['gold','Golden corn','Solid gold kernels. Dentists hate it.'],['rainbow','Rainbow corn','Tastes like every colour at once.'],['galaxy','Galaxy corn','Grown under a meteor shower.'],['diamond','Diamond corn','Too hard to eat. Worth it anyway.'],['life','Life corn','Grown with love. Gives a life back.'],['lava','Lava corn','Pops itself. Handle with tongs.'],['ghost','Ghost corn','It was harvested... years ago.'],['royal','Royal corn','Corn of the crop. Bow before it.'],['unicorn','Uni-corn','The rarest of all. Yes, really.']];
+const DEX=[['good','Good corn','The everyday hero. Keep it.'],['bad','Rotten corn','Mouldy, wormy, loved by flies. Toss it.'],['sneak','Sneaky rot','Looks fine at a glance. Look closer, then toss it.'],['gold','Golden corn','Solid gold kernels. Dentists hate it.'],['rainbow','Rainbow corn','Tastes like every colour at once.'],['galaxy','Galaxy corn','Grown under a meteor shower.'],['diamond','Diamond corn','Too hard to eat. Worth it anyway.'],['life','Life corn','Grown with love. Gives a life back.'],['lava','Lava corn','Pops itself. Handle with tongs.'],['ghost','Ghost corn','It was harvested... years ago.'],['royal','Royal corn','Corn of the crop. Bow before it.'],['unicorn','Uni-corn','The rarest of all. Yes, really.']];
 const fmt=x=>String(x).replace(/\B(?=(\d{3})+$)/g,',');
 const MIS=[
- {id:'sort',txt:'Sort 80 cobs',n:80,rw:60,ev:'cob'},
- {id:'rare',txt:'Catch 4 rare cobs',n:4,rw:80,ev:'rare'},
- {id:'streak',txt:'Hit a 15 streak',n:15,rw:70,ev:'streak'},
- {id:'score',txt:'Score 120 in one game',n:120,rw:90,ev:'score'},
- {id:'frenzy',txt:'Trigger 2 Frenzies',n:2,rw:70,ev:'frenzy'},
- {id:'toss',txt:'Toss 30 yuck cobs',n:30,rw:50,ev:'toss'},
- {id:'games',txt:'Play 5 games',n:5,rw:40,ev:'game'}
+ {id:'sort',txt:'Sort 150 cobs',n:150,rw:150,ev:'cob'},
+ {id:'rare',txt:'Catch 6 rare cobs',n:6,rw:200,ev:'rare'},
+ {id:'streak',txt:'Hit a 40 streak',n:40,rw:200,ev:'streak'},
+ {id:'score',txt:'Score 300 in one game',n:300,rw:250,ev:'score'},
+ {id:'frenzy',txt:'Trigger 2 Frenzies',n:2,rw:150,ev:'frenzy'},
+ {id:'toss',txt:'Toss 60 yuck cobs',n:60,rw:120,ev:'toss'},
+ {id:'games',txt:'Play 5 games',n:5,rw:100,ev:'game'}
 ];
 
 /* ---------- save ---------- */
@@ -391,6 +392,7 @@ let S={best:0,k:0,t:{cobs:0,rare:0,games:0,frenzy:0},own:{bg:['field'],cob:['cla
 try{const o=JSON.parse(localStorage.getItem('cornhub')||'null');
   if(o){S=Object.assign(S,o);S.t=Object.assign({cobs:0,rare:0,games:0,frenzy:0},o.t||{})}
   else S.best=+localStorage.getItem('shuckBest')||0}catch(e){}
+if(S.v!==2){if(S.best||S.k||S.t.pts||(S.top||[]).length)S.legacy={best:S.best,k:S.k,pts:S.t.pts,top:S.top,hist:S.hist,dex:S.dex};S.best=0;S.k=0;S.t.pts=0;S.top=[];S.hist=[];S.v=2}
 if(!BG.some(b=>b.id===S.bg))S.bg='field';if(!SK.some(s=>s.id===S.cob))S.cob='classic';
 if(!Array.isArray(S.top))S.top=[];
 if(!S.dex||typeof S.dex!=='object')S.dex={};
@@ -418,7 +420,8 @@ function leaf(b,c,t,w,c1,c2,ol){
 const Wd=y=>{const t=Math.max(0,Math.min(1,(y-30)/222));return 56*Math.pow(Math.sin(Math.PI*Math.min(1,.1+.75*t)),.45)};
 function cob(type,seed,still,skinId,layers){
   const sk=SK.find(s=>s.id===(skinId||S.cob))||SK[0];
-  const t=type==='good'?Object.assign({},T.good,{base:sk.base,ks:sk.ks,g:sk.g}):T[type];
+  const sneak=type==='sneak',plain=type==='good'||sneak;
+  const t=plain?Object.assign({},T[type],{base:sk.base,ks:sk.ks,g:sk.g}):T[type];
   const id='c'+(uid++),ol=t.ol,bad=type==='bad';
   const r=v=>{seed=(seed*9301+49297)%233280;return seed/233280*v};
   const hus=t.hus||(r(1)<.5?['#8ad653','#4f9e2e']:['#9ade5c','#5aa834']);
@@ -436,7 +439,7 @@ function cob(type,seed,still,skinId,layers){
       const x=110+w*Math.sin(th),rx=w*.262*c+1.4,ry=9.1,tip=yy<44;
       let fill=`url(#${id}k)`,hi=.75,dot='';
       if(bad){const q=r(1);fill=q<.4?'#4a3326':q<.7?'#3a2619':q<.85?'#6a4d33':'#1a110a';hi=r(1)<.3?.2:0}
-      else if(type==='good'){if(tip)fill=sk.tip;else if(sk.g2&&r(1)<.42)fill=`url(#${id}j)`}
+      else if(plain){if(tip)fill=sk.tip;else if(sk.g2&&r(1)<.42)fill=`url(#${id}j)`;if(sneak&&!tip&&r(1)<.1){fill=r(1)<.6?'#4a3326':'#6a7a2a';hi=0}}
       else if(type==='lava'){if(r(1)<.18){fill='#3a1410';hi=.12}}
       else if(type==='royal'){if(r(1)<.25)fill=`url(#${id}j)`}
       else if(type==='galaxy'){hi=.3;if(r(1)<.45)dot=`<circle cx="${f(x+r(8)-4)}" cy="${f(yy+r(8)-4)}" r="${f(1+r(1.4))}" fill="#fff"/>`}
@@ -455,7 +458,7 @@ function cob(type,seed,still,skinId,layers){
   if(type==='rainbow')grad=`<linearGradient id="${id}k" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="110" y2="110" spreadMethod="repeat">${[0,1,2,3,4,5,6,7].map(i=>`<stop offset="${f(i/7)}" stop-color="hsl(${i*360/7|0},95%,60%)"/>`).join('')}${anim(`<animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="110 110" dur="2.2s" repeatCount="indefinite"/>`)}</linearGradient>`;
   else if(type==='galaxy')grad=`<linearGradient id="${id}k" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="60" y2="170" spreadMethod="repeat"><stop offset="0" stop-color="#2b1a8a"/><stop offset=".25" stop-color="#7b2fd6"/><stop offset=".5" stop-color="#e04fd0"/><stop offset=".75" stop-color="#3a6df0"/><stop offset="1" stop-color="#2b1a8a"/>${anim(`<animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="60 170" dur="5s" repeatCount="indefinite"/>`)}</linearGradient>`;
   else if(type==='unicorn')grad=`<linearGradient id="${id}k" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="90" y2="120" spreadMethod="repeat">${[0,1,2,3,4,5,6].map(i=>`<stop offset="${f(i/6)}" stop-color="hsl(${i*60%360},95%,84%)"/>`).join('')}</linearGradient>`;
-  else if(t.g)grad=rg('k',t.g)+(type==='good'&&sk.g2?rg('j',sk.g2):'')+(type==='royal'?rg('j',['#fffbe0','#ffd83a','#c98500']):'');
+  else if(t.g)grad=rg('k',t.g)+(plain&&sk.g2?rg('j',sk.g2):'')+(type==='royal'?rg('j',['#fffbe0','#ffd83a','#c98500']):'');
   let extra='',around='';
   if(bad){
     for(let i=0;i<4;i++){const cx=80+r(60),cy=60+r(110),rr=9+r(7);
@@ -470,6 +473,7 @@ function cob(type,seed,still,skinId,layers){
     around=star(30,52,1.1,0)+star(192,44,.9,.4)+star(204,196,1.2,.8)+star(16,204,.8,.2)+star(140,4,.8,.6)+star(146,116,.7,1)+star(80,170,.6,.5);
     extra=`<g transform="skewX(-18)"><rect x="${still?128:20}" y="0" width="${type==='diamond'?30:22}" height="320" fill="#fff" opacity=".5">${anim(`<animate attributeName="x" values="20;290;290" keyTimes="0;.45;1" dur="${type==='diamond'?1.8:2.4}s" repeatCount="indefinite"/>`)}</rect></g>`;
   }
+  if(sneak){const cx=84+r(52),cy=90+r(90);extra=`<g stroke="#3d5a14" stroke-width="2" fill="#b4d455">${[0,1,2].map(j=>`<circle cx="${f(cx+Math.cos(j*2.1)*6)}" cy="${f(cy+Math.sin(j*2.1)*5)}" r="${f(4.5+r(2))}"/>`).join('')}</g>`}
   const heart=type==='life'?`<g transform="translate(110 122)"><g>${anim(`<animateTransform attributeName="transform" type="scale" values="1;1.18;1" dur=".7s" repeatCount="indefinite"/>`)}<path d="M0 26c-30-20-38-38-25-51 9-9 20-5 25 4 5-9 16-13 25-4 13 13 5 31-25 51z" fill="#ff3b5c" stroke="${ol}" stroke-width="4.5" stroke-linejoin="round"/><path d="M-17-16c-4 4-4 10 0 16" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/></g></g>`:'';
   const topper=type==='royal'?`<path d="M78 30l-8-38 20 18 20-28 20 28 20-18-8 38z" fill="#ffd23a" stroke="${ol}" stroke-width="5" stroke-linejoin="round"/><path d="M82 22h56" stroke="#fff3b0" stroke-width="4" stroke-linecap="round" opacity=".7"/><circle cx="110" cy="12" r="5" fill="#ff3b5c" stroke="${ol}" stroke-width="2.5"/><circle cx="88" cy="16" r="3.500" fill="#4ac3ff" stroke="${ol}" stroke-width="2"/><circle cx="132" cy="16" r="3.500" fill="#4ac3ff" stroke="${ol}" stroke-width="2"/>`
     :type==='unicorn'?`<path d="M96 28L114 -36L126 26z" fill="#fff3b0" stroke="${ol}" stroke-width="5" stroke-linejoin="round"/><path d="M101 12l20-8M105 -4l13-6M109 -19l7-4" stroke="#e8b84a" stroke-width="3.500" stroke-linecap="round"/>`
@@ -643,7 +647,7 @@ function daily(){
   if(S.day.date!==td){
     const y=new Date();y.setDate(y.getDate()-1);
     S.day.streak=S.day.date===dstr(y)?S.day.streak+1:1;S.day.date=td;
-    const bonus=Math.min(S.day.streak,7)*20;S.k+=bonus;
+    const bonus=Math.min(S.day.streak,7)*25;S.k+=bonus;
     setTimeout(()=>{toast(`Day ${S.day.streak} streak! +${bonus} ${KI}`);jingle([523,659,784,1047])},600);
   }
   if(S.mis.date!==td){
@@ -663,7 +667,7 @@ function track(ev,val,isMax){
   }
 }
 function drawMissions(){
-  const nb=Math.min(S.day.streak+1,7)*20;
+  const nb=Math.min(S.day.streak+1,7)*25;
   $('dayNote').innerHTML=`Day ${S.day.streak} streak. Come back tomorrow for +${nb} ${KI}`;
   $('misList').innerHTML=S.mis.list.map(m=>{const d=MIS.find(x=>x.id===m.id);
     return `<div class="mi ${m.done?'done':''}"><div class="row ol2"><span>${d.txt}</span><span>${m.done?'DONE':'+'+d.rw+' '+KI}</span></div><div class="prog"><i style="transform:scaleX(${m.p/d.n})"></i></div><div class="ol2" style="font-size:14px">${m.p} / ${d.n}</div></div>`}).join('');
@@ -679,7 +683,7 @@ function drawDex(){
     const t=T[k],got=S.dex[k]||0,locked=(t.unlock||0)>S.t.pts;
     return `<div class="item ${got?'eq':''}"><div class="sw" style="background:${got?'rgba(255,255,255,.18)':'rgba(0,0,0,.35)'}">${got?cob(k,41+i,true):'<div class="qm ol">?</div>'}</div>
     <b class="ol2">${got?nm:'???'}</b>
-    ${got?`<span class="pts ol2">${k==='life'?'+1 life':k==='bad'?'Toss it':'+'+t.pts+(t.pts>1?' points':' point')}</span><small class="ol2">${txt}</small><small class="ol2">Caught ×${fmt(got)}</small>`
+    ${got?`<span class="pts ol2">${k==='life'?'+1 life':k==='bad'||k==='sneak'?'Toss it':'+'+t.pts+(t.pts>1?' points':' point')}</span><small class="ol2">${txt}</small><small class="ol2">Caught ×${fmt(got)}</small>`
       :locked?`<small class="ol2">Unlocks at ${fmt(t.unlock)} lifetime points</small><div class="prog"><i style="transform:scaleX(${Math.min(1,S.t.pts/t.unlock)})"></i></div>`
       :`<small class="ol2">${t.minN?'Shows up deep into a long run':'Not found yet'}</small>`}</div>`}).join('');
 }
@@ -730,8 +734,8 @@ $('tabBg').onclick=()=>{tab='bg';drawShop()};$('tabCob').onclick=()=>{tab='cob';
 
 /* ---------- game ---------- */
 let score=0,shown=0,lives=3,streak=0,topStreak=0,n=0,caught={},playing=false,cur=null,next=null,timeLeft=0,timeMax=0,last=0,raf=0,fever=0,frenzyT=0;
-const FRENZY=7,REV=40;
-let revived=false,bestBeat=false,avg=25,mercy=false,revT=0;
+const FRENZY=6,REV=150,MILE=2500;
+let revived=false,bestBeat=false,avg=25,mercy=false,revT=0,frenzies=0;
 // Adaptive pacing: a little easier below the player's usual run length, steeper past it. Always beatable.
 const eff=()=>n+Math.max(0,n-avg)*.6;
 const ease=()=>(n<avg*.8?.25:0)+(mercy&&n<20?.4:0);
@@ -746,11 +750,11 @@ function pick(){
   if(n<1)return 'good';
   if(milestone){milestone=false;return bestTier()}
   if(frenzyT<=0){
-    if(Math.random()<.26+Math.min(eff(),60)*.003-(ease()?.04:0))return 'bad';
-    if(lives<3&&Math.random()<.05)return 'life';
+    if(Math.random()<.26+Math.min(eff(),70)*.003-(ease()?.04:0))return n>=30&&Math.random()<Math.min(.4,(n-30)*.008)?'sneak':'bad';
+    if(lives<3&&Math.random()<.08)return 'life';
   }
   // Rare odds improve the deeper the run goes; top tiers also need lifetime points and some run depth
-  let q=Math.random()/((1+Math.min(n,100)/200)*(frenzyT>0?2.2:1));
+  let q=Math.random()/((1+Math.min(n,100)/200)*(frenzyT>0?1.3:1));
   for(const k of TIERS){const t=T[k];if((t.unlock||0)>life()||n<(t.minN||0))continue;if(q<t.p)return k;q-=t.p}
   return 'good';
 }
@@ -762,6 +766,7 @@ function makeCard(){
   let ov='';
   if(type==='bad')ov=[[46,34,.9],[178,42,.7],[192,150,1.1]].map(([x,y,d])=>`<svg class="fx fly" viewBox="-14 -13 28 22" style="${P(x,y)};animation-duration:${d}s">${FLY}</svg>`).join('')
     +[[34,104,0],[190,90,.7]].map(([x,y,d])=>`<svg class="fx stink" viewBox="-9 -50 18 56" style="${P(x,y)};animation-delay:${d}s">${STINK}</svg>`).join('');
+  else if(type==='sneak')ov=`<svg class="fx fly" viewBox="-14 -13 28 22" style="${P(184,60)};animation-duration:1s">${FLY}</svg>`;
   else if(t.name)ov=[[30,52,1.1,0],[192,44,.9,.4],[204,196,1.2,.8],[16,204,.8,.2],[140,4,.8,.6],[146,116,.7,1],[80,170,.6,.5]].map(([x,y,sc,d])=>`<i class="fx sp" style="${P(x,y)};--s:${sc};animation-delay:${d}s"></i>`).join('');
   el.innerHTML=(t.aura?`<div class="aura" style="--a:${t.aura}"></div>`:'')+`<div class="float">${ov}</div>`
     +(t.name?`<div class="badge ol2" style="--a:${t.aura}">${t.badge||t.name+' +'+t.pts}</div>`:'')
@@ -781,7 +786,7 @@ function deal(){
   if(!cur.el.isConnected)deck.appendChild(cur.el);
   clearTimeout(nt);nt=setTimeout(()=>{if(playing&&!next){next=makeCard();deck.prepend(next.el)}},110);
   cur.el.classList.remove('back');cur.el.classList.add('in');
-  timeMax=frenzyT>0?1.6:Math.max(1,3-eff()*.035)+ease();timeLeft=timeMax;
+  timeMax=frenzyT>0?1.6:Math.max(.7,3-eff()*.014)+ease();timeLeft=timeMax;
   if(T[cur.type].name){tone(880,0,.12,'triangle',.08);tone(1320,.08,.18,'triangle',.08)}
   bindDrag(cur);
 }
@@ -801,7 +806,7 @@ function bindDrag(c){
     else{el.classList.add('snap');el.style.transform='';keep.style.opacity=toss.style.opacity=0}};
   el.onpointerup=up;el.onpointercancel=up;
 }
-const mult=()=>streak>=10?3:streak>=5?2:1;
+const mult=()=>streak>=25?3:streak>=10?2:1;
 function setSub(){
   const s=$('sub'),m=mult();
   if(frenzyT>0){s.textContent='CORN FRENZY! x2 points';s.className='sub ol2 hot'}
@@ -810,15 +815,15 @@ function setSub(){
   else{s.textContent=streak?streak+' in a row':'Sort the harvest!';s.className='sub ol2'}
 }
 function startFrenzy(){
-  frenzyT=FRENZY;fever=1;app.classList.add('frenzy');S.t.frenzy++;track('frenzy',1);
-  if(next&&(next.type==='bad'||next.type==='life')){next.el.remove();next=makeCard();deck.prepend(next.el)}
+  frenzyT=FRENZY;fever=1;frenzies++;app.classList.add('frenzy');S.t.frenzy++;track('frenzy',1);
+  if(next&&(next.type==='bad'||next.type==='sneak'||next.type==='life')){next.el.remove();next=makeCard();deck.prepend(next.el)}
   popText('CORN FRENZY!','#ffe14d',true);flash('#ff7ac8');bits('s',14,['#fff','#ffe14d','#ff7ac8'],220);
   jingle([523,659,784,1047,784,1047,1319],.12);buzz([30,30,30,30,60]);
 }
 function decide(keepIt,timedOut){
   if(!playing||!cur)return;
-  const c=cur,t=T[c.type],good=c.type!=='bad',el=c.el;cur=null;
-  const right=!timedOut&&keepIt===good,fast=right&&n>2&&timeLeft/timeMax>.72;
+  const c=cur,t=T[c.type],good=c.type!=='bad'&&c.type!=='sneak',el=c.el;cur=null;
+  const right=!timedOut&&keepIt===good;
   const dir=timedOut?0:(keepIt?1:-1);
   if(!timedOut)el.querySelector(keepIt?'.keep':'.toss').style.opacity=1;
   el.classList.remove('drag','snap','in');el.classList.add(timedOut?'x-drop':'x-fly');
@@ -828,11 +833,11 @@ function decide(keepIt,timedOut){
   n++;if(n===3)$('hint').style.opacity=0;
   if(right){
     streak++;topStreak=Math.max(topStreak,streak);track('streak',streak,true);
-    const fz=frenzyT>0,pts=t.pts*mult()*(fz?2:1)+(fast?1:0);score+=pts;retrigger($('scoreWrap'),'bump');
+    const fz=frenzyT>0,pts=t.pts*mult()*(fz&&!t.rare?2:1);score+=pts;retrigger($('scoreWrap'),'bump');
     S.t.cobs++;track('cob',1);if(!good)track('toss',1);
     const first=!S.dex[c.type];S.dex[c.type]=(S.dex[c.type]||0)+1;
-    if(first&&t.name){S.k+=50;toast(`New Cornpedia entry! +50 ${KI}`)}
-    if(Math.floor(life()/1000)>Math.floor((life()-pts)/1000)){milestone=true;if(next){next.el.remove();next=null}toast(fmt(Math.floor(life()/1000)*1000)+' points! Special cob incoming');jingle([784,988,1175,1568])}
+    if(first&&t.name){S.k+=100;toast(`New Cornpedia entry! +100 ${KI}`)}
+    if(Math.floor(life()/MILE)>Math.floor((life()-pts)/MILE)){milestone=true;if(next){next.el.remove();next=null}toast(fmt(Math.floor(life()/MILE)*MILE)+' points! Special cob incoming');jingle([784,988,1175,1568])}
     const tt=c.type==='good'?SK.find(x=>x.id===S.cob):t;
     bits('k',t.name?12:7,tt.bit||[tt.g[1],tt.g[0],tt.g[2]],130);
     if(good)bits('l',4,t.hus||['#8ad653','#4f9e2e'],150);
@@ -843,17 +848,17 @@ function decide(keepIt,timedOut){
       if(c.type==='gold'){SFX.coin();SFX.pop(3)}else (SFX[c.type]||SFX.glass)();
       if(c.type==='diamond')SFX.glass();
     }else{
-      popText('+'+pts+(fast?' FAST!':''),fast?'#ffe14d':'#fff');
+      popText('+'+pts+(c.type==='sneak'?' SPOTTED!':''),c.type==='sneak'?'#ffe14d':'#fff');
       if(good)SFX.pop(fz?7:5);else{SFX.whoosh();SFX.splat(.17)}
       buzz(15);
     }
-    if(streak===5||streak===10)jingle([784,1047]);
-    if(!fz){fever=Math.min(1,fever+(t.rare?3:1)/14);if(fever>=1)startFrenzy()}
+    if(streak===10||streak===25){jingle([784,1047,1319]);toast('x'+mult()+' multiplier!')}
+    if(!fz){fever=Math.min(1,fever+(t.rare?2:1)/(40+15*frenzies));if(fever>=1)startFrenzy()}
   }else if(frenzyT>0){
     popText('Oops!','#ffd0c8');tone(200,0,.15,'square',.07,.6);
   }else{
-    streak=0;lives--;drawLives();fever=Math.max(0,fever-.25);
-    popText(timedOut?'Too slow!':(good?'Wasted!':'Yuck!'),'#ff9a8a');flash('#e24a3b');buzz([60,40,60]);
+    streak=0;lives--;drawLives();fever=Math.max(0,fever-.4);
+    popText(timedOut?'Too slow!':(good?'Wasted!':c.type==='sneak'?'Sneaky rot!':'Yuck!'),'#ff9a8a');flash('#e24a3b');buzz([60,40,60]);
     retrigger(deck,'shake');
     if(timedOut)SFX.thud();else if(good){SFX.whoosh();SFX.sad()}else{SFX.buzz();SFX.splat(0)}
   }
@@ -904,7 +909,7 @@ $('revYes').onclick=()=>{
 $('revNo').onclick=()=>{clearTimeout(revT);$('revive').hidden=true;endGame()};
 function startGame(){
   score=shown=0;lives=3;streak=topStreak=n=0;fever=frenzyT=0;caught={};gameDone=[];milestone=false;revived=bestBeat=false;clearTimeout(revT);
-  const hs=S.hist||[];avg=hs.length?Math.max(15,hs.reduce((a,b)=>a+b,0)/hs.length):25;mercy=hs.length>=2&&hs.slice(-2).every(x=>x<12);
+  const hs=S.hist||[];avg=hs.length?Math.min(60,Math.max(15,hs.reduce((a,b)=>a+b,0)/hs.length)):25;frenzies=0;mercy=hs.length>=2&&hs.slice(-2).every(x=>x<12);
   $('score').textContent=0;$('best').textContent=S.best;drawLives();setSub();
   deck.innerHTML='';next=null;cur=null;$('hint').style.opacity=1;app.classList.remove('frenzy');
   for(const id of ['end','shop','missions','help','revive','board','dex'])$(id).hidden=true;
