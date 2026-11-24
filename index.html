@@ -371,6 +371,18 @@ const dstr=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 /* ---------- comic corn ---------- */
 let uid=0;
 const f=v=>v.toFixed(1);
+function leaf(b,c,t,w,c1,c2,ol){
+  const dx=t[0]-b[0],dy=t[1]-b[1],L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L;
+  const K=m=>[c[0]+nx*w*m,c[1]+ny*w*m],P=p=>f(p[0])+' '+f(p[1]);
+  const B=P(b),E=P(t),a=K(1),d=K(-.85),k=K(.68),u=.2,v=.78;
+  const sub=(s0,s1)=>[0,1].map(i=>(1-s0)*(1-s1)*b[i]+(s0*(1-s1)+s1*(1-s0))*k[i]+s0*s1*t[i]);
+  const pt=s=>[0,1].map(i=>(1-s)*(1-s)*b[i]+2*s*(1-s)*k[i]+s*s*t[i]);
+  const shape=`M${B}Q${P(a)} ${E}Q${P(d)} ${B}z`;
+  return `<path d="${shape}" fill="${c1}"/><path d="M${B}Q${P(K(0))} ${E}Q${P(d)} ${B}z" fill="${c2}"/>
+  <path d="${[0,.5,-.42,.82].map(m=>`M${B}Q${P(K(m))} ${E}`).join('')}" fill="none" stroke="${ol}" stroke-width="1.4" opacity=".4"/>
+  <path d="M${P(pt(u))}Q${P(sub(u,v))} ${P(pt(v))}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".42"/>
+  <path d="${shape}" fill="none" stroke="${ol}" stroke-width="4" stroke-linejoin="round"/>`;
+}
 const Wd=y=>{const t=Math.max(0,Math.min(1,(y-30)/222));return 56*Math.pow(Math.sin(Math.PI*Math.min(1,.1+.75*t)),.45)};
 function cob(type,seed,still,skinId,layers){
   const sk=SK.find(s=>s.id===(skinId||S.cob))||SK[0];
@@ -378,9 +390,11 @@ function cob(type,seed,still,skinId,layers){
   const id='c'+(uid++),ol=t.ol,bad=type==='bad';
   const r=v=>{seed=(seed*9301+49297)%233280;return seed/233280*v};
   const hus=t.hus||(r(1)<.5?['#8ad653','#4f9e2e']:['#9ade5c','#5aa834']);
-  let L='',R='';
-  for(let y=30;y<=252;y+=6){const w=Wd(y);L+=`L${f(110-w)} ${y}`;R=`L${f(110+w)} ${y}`+R}
-  const body=`M110 16Q${f(110-Wd(30)*.9)} 17 ${L.slice(1)}Q110 268 ${R.slice(1)}Q${f(110+Wd(30)*.9)} 17 110 16z`;
+  // Bumpy silhouette: one outward bump per outer kernel instead of a smooth edge
+  const vy=[];for(let y=41.3;y<=258;y+=19.5)vy.push(y);
+  const side=sg=>vy.map((y,i)=>{const p=`${f(110+sg*(Wd(y)-1.5))} ${f(y)}`;if(!i)return p;const m=y-9.75;return `Q${f(110+sg*(Wd(m)+7))} ${f(m)} ${p}`});
+  const lf=side(-1),rt=side(1),up=rt.map((q,i)=>{if(i===rt.length-1)return '';const y=vy[i],m=y+9.75;return `Q${f(110+Wd(m)+7)} ${f(m)} ${f(110+Wd(y)-1.5)} ${f(y)}`}).reverse().join('');
+  const body=`M${lf.join('')}Q110 276 ${f(110+Wd(vy[vy.length-1])-1.5)} ${f(vy[vy.length-1])}${up}Q150 11 127 18Q110 5 93 18Q70 11 ${lf[0]}z`;
   let k='';
   for(let row=0;row<13;row++){
     for(let i=0;i<5;i++){
@@ -430,29 +444,24 @@ function cob(type,seed,still,skinId,layers){
     const d=`M${f(107+i*6/ns)} 22Q${f((110+ex)/2+cv)} ${f((22+ey)/2-6)} ${f(ex)} ${f(ey)}`;
     silk+=`<path d="${d}" fill="none" stroke="${ol}" stroke-width="7.500" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${t.silk}" stroke-width="3.6" stroke-linecap="round"/>`;
   }
-  const j=()=>r(8)-4,dr=bad?16:0;
-  // husk(shape, crease, shine): one broad wrapped leaf with a darker inner side and a soft highlight
-  const husk=(d,crease,shine)=>`<path d="${d}" fill="${hus[0]}"/><path d="${crease}" fill="${hus[1]}"/><path d="${shine}" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".38"/><path d="${d}" fill="none" stroke="${ol}" stroke-width="6" stroke-linejoin="round"/>`;
-  const a1=j(),a2=j(),a3=j(),a4=j();
-  const backL=husk(`M102 280C58 268 30 228 36 ${176+dr}C38 ${156+dr} 30 ${140+dr} ${8+a1} ${136+a2+dr*1.6}C34 ${118+dr} 62 ${130+dr} 68 ${162+dr}C72 204 84 244 102 280z`,
-    `M102 280C70 262 48 226 46 ${182+dr}C60 ${200+dr} 76 244 102 280z`,`M44 ${176+dr}C42 ${158+dr} 36 ${146+dr} ${24+a1} ${140+a2+dr*1.4}`);
-  const backR=husk(`M118 280C162 268 190 228 184 ${170+dr}C182 ${150+dr} 192 ${132+dr} ${214+a3} ${126+a4+dr*1.6}C188 ${110+dr} 158 ${124+dr} 152 ${158+dr}C148 202 136 244 118 280z`,
-    `M118 280C150 262 172 226 174 ${178+dr}C160 ${198+dr} 144 244 118 280z`,`M176 ${170+dr}C178 ${152+dr} 186 ${140+dr} ${198+a3} ${134+a4+dr*1.4}`);
-  const frontL=husk(`M114 290C72 288 38 252 44 204C47 180 56 ${160+a2} ${72+a1} ${146+a2}C70 190 88 238 126 264Q122 282 114 290z`,
-    `M114 290C84 280 58 250 56 208C66 236 90 262 126 264Q122 282 114 290z`,`M54 214C56 196 60 180 68 168`);
-  const frontR=husk(`M106 290C150 288 186 250 178 198C174 174 164 ${154+a4} ${144+a3} ${138+a4}C150 186 132 238 92 266Q98 282 106 290z`,
-    `M106 290C138 280 164 248 166 204C156 234 130 262 92 266Q98 282 106 290z`,`M168 208C166 190 162 174 154 162`);
+  const j=()=>r(10)-5,dr=bad?14:0,wx=x=>110+(x-110)*1.2;
+  const pair=(b,c,tp,w)=>{const a=j(),e=j();return leaf(b,[wx(c[0]),c[1]],[wx(tp[0])+a,tp[1]+e+dr],w,hus[0],hus[1],ol)+leaf([220-b[0],b[1]],[220-wx(c[0]),c[1]],[220-wx(tp[0])-a,tp[1]+e+dr],-w,hus[0],hus[1],ol)};
+  const drop=(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="4.2" ry="5.6" fill="#e2f7ff" stroke="${ol}" stroke-width="1.6" opacity=".92"/><ellipse cx="${x-1.3}" cy="${y-1.6}" rx="1.2" ry="1.8" fill="#fff"/>`;
   const defs=`<defs>${grad}
   <linearGradient id="${id}s" x1="0" x2="1"><stop offset="0" stop-color="${t.shade}" stop-opacity=".62"/><stop offset=".3" stop-color="${t.shade}" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset=".7" stop-color="#fff" stop-opacity=".2"/><stop offset=".84" stop-color="${t.shade}" stop-opacity="0"/><stop offset="1" stop-color="${t.shade}" stop-opacity=".68"/></linearGradient>
   <clipPath id="${id}c"><path d="${body}"/></clipPath></defs>`;
   const rot=f(r(8)-4);
-  const U=`<ellipse cx="110" cy="306" rx="78" ry="11" fill="rgba(0,0,0,.22)"/>${backL}${backR}`;
+  const U=`<ellipse cx="110" cy="304" rx="80" ry="11" fill="rgba(0,0,0,.22)"/>${pair([106,266],[12,214],[20,112],-22)}${pair([106,266],[38,190],[52,62],-26)}`;
   const B=`<path d="${body}" fill="${t.base}"/>
-  <g clip-path="url(#${id}c)">${k}${bad?extra:''}<rect x="50" y="10" width="120" height="264" fill="url(#${id}s)"/>${bad?'':extra}</g>
-  <path d="${body}" fill="none" stroke="${ol}" stroke-width="6" stroke-linejoin="round"/>`;
+  <g clip-path="url(#${id}c)">${k}${bad?extra:''}<rect x="44" y="0" width="132" height="280" fill="url(#${id}s)"/>${bad?'':extra}</g>
+  <path d="${body}" fill="none" stroke="${ol}" stroke-width="5.500" stroke-linejoin="round"/>`;
   const O=`${silk}${heart}${worm}
-  <path d="M98 282h24l-2 16c-1 7-19 7-20 0z" fill="${hus[1]}" stroke="${ol}" stroke-width="6" stroke-linejoin="round"/>
-  ${frontL}${frontR}`;
+  ${pair([108,270],[52,240],[64,138],-15)}${pair([106,272],[14,176],[6,238],20)}${pair([108,274],[78,236],[76,176],-13)}
+  ${leaf([110,276],[102,248],[114+j(),212+j()],10,hus[0],hus[1],ol)}
+  <path d="M97 262h26l-3 34c-1 7-19 7-20 0z" fill="${hus[1]}" stroke="${ol}" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M98 274q12 5 24 0" fill="none" stroke="${ol}" stroke-width="2" opacity=".5"/><path d="M102 268v22" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".3"/>
+  <ellipse cx="110" cy="297" rx="9" ry="3" fill="${hus[0]}" stroke="${ol}" stroke-width="2"/>
+  ${bad?'':drop(48,200)+drop(178,152)}`;
   if(layers){
     const wrap=x=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -40 280 380" width="700" height="950">${defs}<g transform="rotate(${rot} 110 160)">${x}</g></svg>`;
     return layers===3?[wrap(U),wrap(B),wrap(O)]:[wrap(U+B+O)];
