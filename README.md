@@ -17,9 +17,12 @@ It then opens full screen like an app and works offline.
 - A wrong swipe or a timeout costs a life. Three strikes and the harvest is over.
 - Streaks multiply your points: x2 at 5 in a row, x3 at 10.
 - Rare cobs: Golden +5, Rainbow +10, Galaxy +15, Diamond +25. A Life cob gives a life back.
+- Rarer tiers unlock with lifetime points: Lava +40 (1,000), Ghost +60 (3,000), Royal +100 (6,000), Uni-corn +200 (10,000).
+- Every 1,000 lifetime points, the next cob is a guaranteed rare. The Cornpedia tracks every type you've caught.
 - Fill the Frenzy bar for 7 seconds of all-good corn at double points.
 - Every point is a kernel. Spend kernels on backgrounds; hit milestones to unlock cob skins.
 - Three new missions every day, plus a daily streak bonus.
+- On your last life you can revive once for 40 kernels. Your top 10 runs are kept on a leaderboard.
 
 Progress is saved on your own device.
 
