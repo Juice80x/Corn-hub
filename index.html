@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Corn Hub">
 <meta name="theme-color" content="#1f4d22">
+<meta name="robots" content="noindex,nofollow">
 <meta name="description" content="Corn Hub: swipe to keep the good corn, toss the yuck, and chase rare cobs.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -332,6 +333,22 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     </div>
   </div>
 
+  <div class="over" id="gate" hidden style="z-index:20;background:var(--hud)">
+    <div class="panel">
+      <h2 class="ol">Invite only</h2>
+      <p class="ol2">Corn Hub is in private testing. Ask for an invite link to play.</p>
+    </div>
+  </div>
+
+  <div class="over" id="who" hidden>
+    <div class="panel">
+      <h2 class="ol">Who's shucking?</h2>
+      <p class="ol2">Pick a name for the leaderboard. You can change it later.</p>
+      <label class="nm ol2"><input id="whoIn" maxlength="12" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Your name" style="width:11em;text-align:center"></label>
+      <button class="go ol2" id="whoGo">LET'S GO</button>
+    </div>
+  </div>
+
   <div class="toasts" id="toasts"></div>
   <div class="flash" id="flash"></div>
 </div>
@@ -639,7 +656,8 @@ function drawHome(){
 }
 function show(id){for(const s of document.querySelectorAll('.screen'))s.classList.toggle('on',s.id===id)}
 const open=id=>{$(id).hidden=false;tone(660,0,.08,'triangle',.08)};
-const close=id=>{$(id).hidden=true;if(id==='help'&&!S.seen){S.seen=true;save()}};
+const close=id=>{$(id).hidden=true;if(id==='help'&&!S.seen){S.seen=true;save()}if(id==='help'&&!S.name)$('who').hidden=false};
+$('whoGo').onclick=()=>{S.name=($('whoIn').value||'').trim().slice(0,12)||'Player';save();$('who').hidden=true;tone(784,0,.12,'triangle')};
 
 /* ---------- daily ---------- */
 function daily(){
@@ -972,8 +990,18 @@ try{document.body.style.backgroundImage=`url("data:image/svg+xml,${encodeURIComp
 for(let i=0;i<10;i++){const m=document.createElement('i');m.className='mote';const s=4+Math.random()*7;
   m.style.cssText=`left:${Math.random()*100}%;width:${s}px;height:${s}px;animation-duration:${7+Math.random()*8}s;animation-delay:${-Math.random()*12}s;--dx:${(Math.random()*80-40)|0}px`;
   app.insertBefore(m,app.children[2])}
-if(!S.seen)$('help').hidden=false;
+if(!S.seen)$('help').hidden=false;else if(!S.name)$('who').hidden=false;
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){const d=S.day.date;daily();if(d!==S.day.date&&!playing)drawHome()}});
+if(/\.github\.io$/.test(location.hostname)){
+  const HASH='335a844ef3b943e20eb35227375894c064901e0e2010b8b71a3641f24e69517c',ok=()=>{try{localStorage.setItem('cornhubInvite','1')}catch(e){}};
+  let pass=false;try{pass=localStorage.getItem('cornhubInvite')==='1'}catch(e){}
+  if(!pass){
+    $('gate').hidden=false;
+    const code=new URLSearchParams(location.search).get('invite')||'';
+    if(code&&self.crypto&&crypto.subtle)crypto.subtle.digest('SHA-256',new TextEncoder().encode(code)).then(buf=>{
+      if([...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('')===HASH){ok();$('gate').hidden=true}}).catch(()=>{});
+  }
+}
 try{if('serviceWorker' in navigator&&location.protocol==='https:'&&self===top)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 }
 </script>

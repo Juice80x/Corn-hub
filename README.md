@@ -2,12 +2,12 @@
 
 A swipe-to-sort corn game for your phone. Keep the good corn, toss the yuck, chase the rare cobs.
 
-**Play:** https://juice80x.github.io/Corn-hub/
+**Play:** invite only for now. Ask for an invite link.
 
 ## Add it to your Home Screen
 
-- **iPhone:** open the link in Safari, tap Share, then **Add to Home Screen**.
-- **Android:** open the link in Chrome, tap the menu, then **Add to Home screen** (or **Install app**).
+- **iPhone:** open your invite link in Safari, tap Share, then **Add to Home Screen**.
+- **Android:** open your invite link in Chrome, tap the menu, then **Add to Home screen** (or **Install app**).
 
 It then opens full screen like an app and works offline.
 
