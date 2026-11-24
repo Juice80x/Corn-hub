@@ -27,3 +27,7 @@ Progress is saved on your own device.
 
 - `index.html`: the whole game (HTML, CSS and JavaScript, no build step)
 - `manifest.webmanifest`, `sw.js`, `icon-*.png`: install and offline support
+
+## Credits
+
+The game font is Titan One by Rodrigo Fuenzalida, used under the SIL Open Font License (see `FONT-LICENSE.txt`).
