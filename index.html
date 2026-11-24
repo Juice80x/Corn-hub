@@ -134,6 +134,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 @keyframes shake{25%{transform:translateX(-10px)}50%{transform:translateX(10px)}75%{transform:translateX(-5px)}}
 .toasts{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 168px);z-index:10;display:grid;justify-items:center;gap:6px;pointer-events:none}
 .toast{background:linear-gradient(#ffd84a,#f29a0c);border:4px solid var(--ol);border-radius:16px;padding:4px 16px 6px;font-size:19px;box-shadow:0 5px 0 var(--ol);animation:toast 2.6s ease-in-out forwards;max-width:92%}
+#revBar{animation:none}#revBar.run{animation:drain 5s linear forwards}
+@keyframes drain{to{transform:scaleX(0)}}
 @keyframes toast{0%{transform:translateY(-40px) scale(.6);opacity:0}8%{transform:translateY(0) scale(1.08);opacity:1}14%{transform:scale(1)}86%{opacity:1}100%{transform:translateY(-20px);opacity:0}}
 
 /* ---------- panels ---------- */
@@ -231,7 +233,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <div class="demo"><div id="demoGood"></div><div id="demoBad"></div></div>
       <p class="ol2">Rare cobs are worth big points</p>
       <div class="demo rare" id="demoRare"></div>
-      <p class="ol2">Fill the FRENZY bar for a x2 all-good-corn rush. Every point becomes a kernel to spend on skins.</p>
+      <p class="ol2">Fill the FRENZY bar for a x2 all-good-corn rush. Every point becomes a kernel to spend on skins or a second chance.</p>
       <button class="go ol2" data-close="help">GOT IT</button>
     </div>
   </div>
@@ -266,6 +268,16 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <p class="ol2" id="endGoal" style="color:#ffe14d"></p>
       <button class="go ol2" id="againBtn">PLAY AGAIN</button>
       <div class="btnrow"><button class="mbtn ol2" id="endShop">SKINS</button><button class="mbtn ol2" id="endHome">HOME</button></div>
+    </div>
+  </div>
+
+  <div class="over" id="revive" hidden>
+    <div class="panel">
+      <h2 class="ol">Second chance?</h2>
+      <p class="ol2" id="revNote"></p>
+      <div class="tbar" style="margin:10px 4px 14px"><i id="revBar"></i></div>
+      <button class="go ol2" id="revYes"></button>
+      <div class="btnrow" style="grid-template-columns:1fr"><button class="mbtn ol2" id="revNo">NO THANKS</button></div>
     </div>
   </div>
 
@@ -316,7 +328,7 @@ const MIS=[
 ];
 
 /* ---------- save ---------- */
-let S={best:0,k:0,t:{cobs:0,rare:0,games:0,frenzy:0},own:{bg:['field'],cob:['classic']},bg:'field',cob:'classic',day:{date:'',streak:0},mis:{date:'',list:[]},mute:false,seen:false};
+let S={best:0,k:0,t:{cobs:0,rare:0,games:0,frenzy:0},own:{bg:['field'],cob:['classic']},bg:'field',cob:'classic',day:{date:'',streak:0},mis:{date:'',list:[]},mute:false,seen:false,hist:[]};
 try{const o=JSON.parse(localStorage.getItem('cornhub')||'null');
   if(o){S=Object.assign(S,o);S.t=Object.assign({cobs:0,rare:0,games:0,frenzy:0},o.t||{})}
   else S.best=+localStorage.getItem('shuckBest')||0}catch(e){}
@@ -544,7 +556,11 @@ $('tabBg').onclick=()=>{tab='bg';drawShop()};$('tabCob').onclick=()=>{tab='cob';
 
 /* ---------- game ---------- */
 let score=0,shown=0,lives=3,streak=0,topStreak=0,n=0,caught={},playing=false,cur=null,next=null,timeLeft=0,timeMax=0,last=0,raf=0,fever=0,frenzyT=0;
-const FRENZY=7;
+const FRENZY=7,REV=40;
+let revived=false,bestBeat=false,avg=25,mercy=false,revT=0;
+// Adaptive pacing: a little easier below the player's usual run length, steeper past it. Always beatable.
+const eff=()=>n+Math.max(0,n-avg)*.6;
+const ease=()=>(n<avg*.8?.25:0)+(mercy&&n<20?.4:0);
 function drawLives(){
   $('lives').innerHTML=[0,1,2].map(i=>`<svg viewBox="0 0 20 24" class="${i<lives?'':'gone'}"><path d="M10 2c-5 0-7 5-7 10s2 9 7 10c5-1 7-5 7-10S15 2 10 2z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2"/><path d="M10 22C5 20 2 15 2 9c3 4 5 8 6 11M10 22c5-2 8-7 8-13-3 4-5 8-6 11" fill="#6cc63e" stroke="var(--ol)" stroke-width="1.5"/></svg>`).join('');
 }
@@ -552,7 +568,7 @@ function pick(){
   if(self.__corn)return self.__corn;
   if(n<1)return 'good';
   if(frenzyT<=0){
-    if(Math.random()<.26+Math.min(n,60)*.003)return 'bad';
+    if(Math.random()<.26+Math.min(eff(),60)*.003-(ease()?.04:0))return 'bad';
     if(lives<3&&Math.random()<.05)return 'life';
   }
   const q=Math.random()*(frenzyT>0?.45:1);
@@ -572,7 +588,7 @@ function deal(){
   deck.prepend(next.el);
   if(!cur.el.isConnected)deck.appendChild(cur.el);
   cur.el.classList.remove('back');cur.el.classList.add('in');
-  timeMax=frenzyT>0?1.6:Math.max(1.05,3-n*.035);timeLeft=timeMax;
+  timeMax=frenzyT>0?1.6:Math.max(1,3-eff()*.035)+ease();timeLeft=timeMax;
   if(T[cur.type].name){tone(880,0,.12,'triangle',.08);tone(1320,.08,.18,'triangle',.08)}
   bindDrag(cur);
 }
@@ -593,6 +609,7 @@ const mult=()=>streak>=10?3:streak>=5?2:1;
 function setSub(){
   const s=$('sub'),m=mult();
   if(frenzyT>0){s.textContent='CORN FRENZY! x2 points';s.className='sub ol2 hot'}
+  else if(!bestBeat&&S.best>=20&&score>=S.best*.75&&score<=S.best){s.textContent=(S.best-score+1)+' to beat your best!';s.className='sub ol2 hot'}
   else if(m>1){s.textContent='x'+m+' STREAK! ('+streak+')';s.className='sub ol2 hot'}
   else{s.textContent=streak?streak+' in a row':'Sort the harvest!';s.className='sub ol2'}
 }
@@ -643,8 +660,9 @@ function decide(keepIt,timedOut){
     retrigger(deck,'shake');
   }
   track('score',score,true);
+  if(!bestBeat&&S.best>=10&&score>S.best){bestBeat=true;toast('NEW BEST!');flash('#ffe14d');bits('s',14,['#fff','#ffe14d'],220);jingle([523,659,784,1047,1319],.12)}
   setSub();
-  if(lives<=0){endGame();return}
+  if(lives<=0){if(!revived&&S.k>=REV)offerRevive();else endGame();return}
   deal();
 }
 function loop(now){
@@ -672,11 +690,26 @@ function fit(){
 }
 try{new ResizeObserver(fit).observe(stage)}catch(e){}
 addEventListener('resize',fit);
+function offerRevive(){
+  playing=false;$('tbar').classList.remove('low');
+  $('revNote').innerHTML=`Keep your ${score} points and carry on with 1 life. You have ${S.k} ${KI}`;
+  $('revYes').innerHTML=`REVIVE ${KI} ${REV}`;
+  $('revive').hidden=false;retrigger($('revBar'),'run');
+  clearTimeout(revT);revT=setTimeout(()=>{$('revive').hidden=true;endGame()},5000);
+}
+$('revYes').onclick=()=>{
+  clearTimeout(revT);$('revive').hidden=true;
+  S.k-=REV;save();revived=true;lives=1;drawLives();
+  flash('#8fe060');popText('REVIVED!','#8fe060',true);jingle([392,523,659,784]);
+  playing=true;last=performance.now();deal();
+};
+$('revNo').onclick=()=>{clearTimeout(revT);$('revive').hidden=true;endGame()};
 function startGame(){
-  score=shown=0;lives=3;streak=topStreak=n=0;fever=frenzyT=0;caught={};gameDone=[];
+  score=shown=0;lives=3;streak=topStreak=n=0;fever=frenzyT=0;caught={};gameDone=[];revived=bestBeat=false;clearTimeout(revT);
+  const hs=S.hist||[];avg=hs.length?Math.max(15,hs.reduce((a,b)=>a+b,0)/hs.length):25;mercy=hs.length>=2&&hs.slice(-2).every(x=>x<12);
   $('score').textContent=0;$('best').textContent=S.best;drawLives();setSub();
   deck.innerHTML='';next=null;cur=null;$('hint').style.opacity=1;app.classList.remove('frenzy');
-  for(const id of ['end','shop','missions','help'])$(id).hidden=true;
+  for(const id of ['end','shop','missions','help','revive'])$(id).hidden=true;
   show('game');fit();
   playing=true;deal();jingle([523,659,784],.1);
   cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(loop);
@@ -684,6 +717,7 @@ function startGame(){
 function endGame(){
   playing=false;frenzyT=0;app.classList.remove('frenzy');$('tbar').classList.remove('low');
   const old=S.best,isBest=score>old;
+  S.hist=(S.hist||[]).concat(n).slice(-8);
   S.t.games++;track('game',1);S.k+=score;if(isBest)S.best=score;
   const fresh=checkSkins();save();
   $('endNote').textContent=isBest?'New best! Golden effort.':old-score<=Math.max(5,old*.15)?`So close! Only ${old-score+1} more to beat your best.`:'Best: '+old;
