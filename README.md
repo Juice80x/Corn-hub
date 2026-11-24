@@ -2,7 +2,7 @@
 
 A swipe-to-sort corn game for your phone. Keep the good corn, toss the yuck, chase the rare cobs.
 
-**Play:** https://juice80x.github.io/corn-hub/
+**Play:** https://juice80x.github.io/Corn-hub/
 
 ## Add it to your Home Screen
 
