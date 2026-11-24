@@ -84,7 +84,7 @@ background:repeating-linear-gradient(92deg,#b9793a 0 22px,#a96a2e 22px 25px,#c28
 #game{grid-template-rows:auto 1fr auto}
 .hud{position:relative;z-index:2;background:linear-gradient(var(--hud2),var(--hud));border-bottom:4px solid var(--ol);padding:calc(env(safe-area-inset-top) + 8px) 14px 8px;box-shadow:0 6px 0 rgba(0,0,0,.15);text-align:center}
 .lives{gap:3px;padding:3px 8px}.lives svg{transition:transform .3s,opacity .3s,filter .3s}.lives .gone{opacity:.25;filter:grayscale(1);transform:scale(.75) rotate(20deg)}
-.score{font-size:42px;line-height:1.05;display:inline-block;margin-top:-30px}
+.score{font-size:40px;line-height:1.05;display:inline-block;margin-top:-30px}
 .score small{font-size:22px}
 .score.bump{animation:bump .25s}
 @keyframes bump{40%{transform:scale(1.25) rotate(-3deg)}}
@@ -266,7 +266,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <div class="demo"><div id="demoGood"></div><div id="demoBad"></div></div>
       <p class="ol2">Rare cobs are worth big points. Rarer tiers unlock as you play</p>
       <div class="demo rare" id="demoRare"></div>
-      <p class="ol2">Streaks multiply points: x2 at 10 in a row, x3 at 25. Fill the FRENZY bar for a x2 all-good-corn rush. Every point becomes a kernel to spend on skins or a second chance.</p>
+      <p class="ol2">Streaks multiply points: x2 at 10 in a row, x3 at 25. Fill the FRENZY bar for a x2 all-good-corn rush. Every 10 points earns a kernel to spend on skins or a second chance.</p>
       <button class="go ol2" data-close="help">GOT IT</button>
     </div>
   </div>
@@ -371,23 +371,23 @@ const BG=[
 const SK=[
  {id:'classic',name:'Classic Gold',g:['#fff2a8','#ffcf2e','#f0960c'],base:'#e89410',ks:'#b86a00',tip:'#fff0b0'},
  {id:'bicolor',name:'Butter & Sugar',g:['#fff2a8','#ffcf2e','#f0960c'],g2:['#ffffff','#fff6d8','#e8cf8a'],base:'#e8a820',ks:'#b87a10',tip:'#fffbe8',req:{k:'cobs',n:1500,txt:'Sort 1,500 cobs'}},
- {id:'ruby',name:'Ruby Red',g:['#ffc9b8','#e8382e','#a3141a'],base:'#8a1010',ks:'#6a0a10',tip:'#ffb09a',req:{k:'best',n:500,txt:'Score 500 in a game'}},
+ {id:'ruby',name:'Ruby Red',g:['#ffc9b8','#e8382e','#a3141a'],base:'#8a1010',ks:'#6a0a10',tip:'#ffb09a',req:{k:'best',n:5000,txt:'Score 5,000 in a game'}},
  {id:'gum',name:'Bubblegum',g:['#fff0f8','#ff8ccb','#e0489e'],base:'#c93a8a',ks:'#9a2468',tip:'#ffe0f0',req:{k:'rare',n:100,txt:'Catch 100 rare cobs'}},
  {id:'jade',name:'Jade',g:['#e8fff0','#4fd69a','#149a6a'],base:'#0f7a55',ks:'#0a5a40',tip:'#d0ffe4',req:{k:'frenzy',n:40,txt:'Trigger 40 Frenzies'}}
 ];
 const T={
-  good:{pts:1,ol:'#3b2208',shade:'#5a2a00',silk:'#f1d27a'},
-  bad:{pts:1,ol:'#1c140c',base:'#2e1e12',ks:'#140c06',shade:'#000000',silk:'#4a3a24',hus:['#8a7448','#5b4a2a'],bit:['#4a3326','#7d8099','#b4d455']},
-  sneak:{pts:2,ol:'#3b2208',shade:'#5a2a00',silk:'#b8a060',bit:['#4a3326','#ffcf2e','#b4d455']},
-  gold:{name:'GOLDEN',rare:1,pts:5,ol:'#5a3200',base:'#b87400',ks:'#8a5200',shade:'#6a3a00',silk:'#fff3b0',hus:['#f6e68a','#cfa722'],bit:['#ffd83a','#fff7c0','#f2a60c'],aura:'#ffd62e',g:['#fffbe0','#ffd83a','#c98500']},
-  rainbow:{name:'RAINBOW',rare:1,pts:10,ol:'#3a1a5c',base:'#5a2a80',ks:'rgba(40,10,60,.6)',shade:'#2a0a50',silk:'#ff9ad5',hus:['#86e6a6','#2fa870'],bit:['#ff5a5a','#ffb02e','#ffe14d','#5fd35f','#4ac3ff','#b06aff'],aura:'#ff7ac8'},
-  galaxy:{name:'GALAXY',rare:1,pts:15,ol:'#1c0f45',base:'#150a40',ks:'#140a3a',shade:'#05021c',silk:'#d9b8ff',hus:['#b99aff','#6a41d6'],bit:['#7b2fd6','#e04fd0','#3a6df0','#ffffff'],aura:'#a27bff'},
-  diamond:{name:'DIAMOND',rare:1,pts:25,ol:'#1d4a7a',base:'#2f7fc0',ks:'#2a6ea8',shade:'#0a3a70',silk:'#ffffff',hus:['#dcf8ff','#8ad0ec'],bit:['#ffffff','#aeeaff','#63c2f5'],aura:'#7fdcff',g:['#ffffff','#bfeeff','#58b8f0']},
-  lava:{name:'LAVA',rare:1,pts:40,unlock:2500,minN:15,p:.015,ol:'#2a0c06',base:'#5a0a00',ks:'#4a0800',shade:'#3a0500',silk:'#ff9a3a',hus:['#6a5852','#342826'],bit:['#ff8a1a','#ffe14d','#c81e0a'],aura:'#ff5a1a',g:['#fff3a0','#ff8a1a','#c81e0a']},
-  ghost:{name:'GHOST',rare:1,pts:60,unlock:8000,minN:25,p:.010,ol:'#2a5a55',base:'#7fcab8',ks:'#5aa898',shade:'#1a5a50',silk:'#ffffff',hus:['#ecfff9','#a8dccc'],bit:['#ffffff','#d8fff0','#8fe0c8'],aura:'#b8ffe8',g:['#ffffff','#dcfff2','#8fe0c8']},
-  royal:{name:'ROYAL',rare:1,pts:100,unlock:20000,minN:35,p:.006,ol:'#2a0a4a',base:'#3a0f6a',ks:'#2a0a52',shade:'#1a0440',silk:'#ffe9a0',hus:['#ffe07a','#d8a21e'],bit:['#a04ae0','#ffd83a','#f0d8ff'],aura:'#c88aff',g:['#f0d8ff','#a04ae0','#5a1a9a']},
-  unicorn:{name:'UNI-CORN',rare:1,pts:200,unlock:50000,minN:45,p:.003,ol:'#6a2a7a',base:'#f0c8f0',ks:'rgba(120,60,140,.55)',shade:'#7a3a8a',silk:'#ffffff',hus:['#ffd6f2','#e89ad8'],bit:['#ffc8e8','#c8e8ff','#fff3b0','#d8ffd0'],aura:'#ffd0ff'},
-  life:{name:'LIFE',badge:'+1 LIFE',pts:1,ol:'#5a1030',base:'#e8b8c8',ks:'#c0708a',shade:'#7a2040',silk:'#ffd0dc',hus:['#9ade5c','#5aa834'],bit:['#ff3b5c','#ffd0dc','#ffffff'],aura:'#ff5a7a',g:['#ffffff','#ffe6ee','#f4a8bc']}
+  good:{pts:10,ol:'#3b2208',shade:'#5a2a00',silk:'#f1d27a'},
+  bad:{pts:10,ol:'#1c140c',base:'#2e1e12',ks:'#140c06',shade:'#000000',silk:'#4a3a24',hus:['#8a7448','#5b4a2a'],bit:['#4a3326','#7d8099','#b4d455']},
+  sneak:{pts:20,ol:'#3b2208',shade:'#5a2a00',silk:'#b8a060',bit:['#4a3326','#ffcf2e','#b4d455']},
+  gold:{name:'GOLDEN',rare:1,pts:50,ol:'#5a3200',base:'#b87400',ks:'#8a5200',shade:'#6a3a00',silk:'#fff3b0',hus:['#f6e68a','#cfa722'],bit:['#ffd83a','#fff7c0','#f2a60c'],aura:'#ffd62e',g:['#fffbe0','#ffd83a','#c98500']},
+  rainbow:{name:'RAINBOW',rare:1,pts:100,ol:'#3a1a5c',base:'#5a2a80',ks:'rgba(40,10,60,.6)',shade:'#2a0a50',silk:'#ff9ad5',hus:['#86e6a6','#2fa870'],bit:['#ff5a5a','#ffb02e','#ffe14d','#5fd35f','#4ac3ff','#b06aff'],aura:'#ff7ac8'},
+  galaxy:{name:'GALAXY',rare:1,pts:150,ol:'#1c0f45',base:'#150a40',ks:'#140a3a',shade:'#05021c',silk:'#d9b8ff',hus:['#b99aff','#6a41d6'],bit:['#7b2fd6','#e04fd0','#3a6df0','#ffffff'],aura:'#a27bff'},
+  diamond:{name:'DIAMOND',rare:1,pts:250,ol:'#1d4a7a',base:'#2f7fc0',ks:'#2a6ea8',shade:'#0a3a70',silk:'#ffffff',hus:['#dcf8ff','#8ad0ec'],bit:['#ffffff','#aeeaff','#63c2f5'],aura:'#7fdcff',g:['#ffffff','#bfeeff','#58b8f0']},
+  lava:{name:'LAVA',rare:1,pts:400,unlock:25000,minN:15,p:.015,ol:'#2a0c06',base:'#5a0a00',ks:'#4a0800',shade:'#3a0500',silk:'#ff9a3a',hus:['#6a5852','#342826'],bit:['#ff8a1a','#ffe14d','#c81e0a'],aura:'#ff5a1a',g:['#fff3a0','#ff8a1a','#c81e0a']},
+  ghost:{name:'GHOST',rare:1,pts:600,unlock:80000,minN:25,p:.010,ol:'#2a5a55',base:'#7fcab8',ks:'#5aa898',shade:'#1a5a50',silk:'#ffffff',hus:['#ecfff9','#a8dccc'],bit:['#ffffff','#d8fff0','#8fe0c8'],aura:'#b8ffe8',g:['#ffffff','#dcfff2','#8fe0c8']},
+  royal:{name:'ROYAL',rare:1,pts:1000,unlock:200000,minN:35,p:.006,ol:'#2a0a4a',base:'#3a0f6a',ks:'#2a0a52',shade:'#1a0440',silk:'#ffe9a0',hus:['#ffe07a','#d8a21e'],bit:['#a04ae0','#ffd83a','#f0d8ff'],aura:'#c88aff',g:['#f0d8ff','#a04ae0','#5a1a9a']},
+  unicorn:{name:'UNI-CORN',rare:1,pts:2000,unlock:500000,minN:45,p:.003,ol:'#6a2a7a',base:'#f0c8f0',ks:'rgba(120,60,140,.55)',shade:'#7a3a8a',silk:'#ffffff',hus:['#ffd6f2','#e89ad8'],bit:['#ffc8e8','#c8e8ff','#fff3b0','#d8ffd0'],aura:'#ffd0ff'},
+  life:{name:'LIFE',badge:'+1 LIFE',pts:10,ol:'#5a1030',base:'#e8b8c8',ks:'#c0708a',shade:'#7a2040',silk:'#ffd0dc',hus:['#9ade5c','#5aa834'],bit:['#ff3b5c','#ffd0dc','#ffffff'],aura:'#ff5a7a',g:['#ffffff','#ffe6ee','#f4a8bc']}
 };
 const RARE=['gold','rainbow','galaxy','diamond'];
 T.gold.p=.08;T.rainbow.p=.05;T.galaxy.p=.035;T.diamond.p=.025;
@@ -398,7 +398,7 @@ const MIS=[
  {id:'sort',txt:'Sort 150 cobs',n:150,rw:150,ev:'cob'},
  {id:'rare',txt:'Catch 6 rare cobs',n:6,rw:200,ev:'rare'},
  {id:'streak',txt:'Hit a 40 streak',n:40,rw:200,ev:'streak'},
- {id:'score',txt:'Score 300 in one game',n:300,rw:250,ev:'score'},
+ {id:'score',txt:'Score 3,000 in one game',n:3000,rw:250,ev:'score'},
  {id:'frenzy',txt:'Trigger 2 Frenzies',n:2,rw:150,ev:'frenzy'},
  {id:'toss',txt:'Toss 60 yuck cobs',n:60,rw:120,ev:'toss'},
  {id:'games',txt:'Play 5 games',n:5,rw:100,ev:'game'}
@@ -409,7 +409,8 @@ let S={best:0,k:0,t:{cobs:0,rare:0,games:0,frenzy:0},own:{bg:['field'],cob:['cla
 try{const o=JSON.parse(localStorage.getItem('cornhub')||'null');
   if(o){S=Object.assign(S,o);S.t=Object.assign({cobs:0,rare:0,games:0,frenzy:0},o.t||{})}
   else S.best=+localStorage.getItem('shuckBest')||0}catch(e){}
-if(S.v!==2){if(S.best||S.k||S.t.pts||(S.top||[]).length)S.legacy={best:S.best,k:S.k,pts:S.t.pts,top:S.top,hist:S.hist,dex:S.dex};S.best=0;S.k=0;S.t.pts=0;S.top=[];S.hist=[];S.v=2}
+if(!S.v){if(S.best||S.k||S.t.pts||(S.top||[]).length)S.legacy={best:S.best,k:S.k,pts:S.t.pts,top:S.top,hist:S.hist,dex:S.dex};S.best=0;S.k=0;S.t.pts=0;S.top=[];S.hist=[];S.v=3}
+if(S.v===2){S.best*=10;S.t.pts*=10;for(const e of S.top)e.s=(+e.s||0)*10;for(const m of (S.mis.list||[]))if(m.id==='score'){m.p=0;m.done=false}S.v=3}
 if(!BG.some(b=>b.id===S.bg))S.bg='field';if(!SK.some(s=>s.id===S.cob))S.cob='classic';
 if(!Array.isArray(S.top))S.top=[];
 if(!S.dex||typeof S.dex!=='object')S.dex={};
@@ -644,12 +645,12 @@ function drawMute(){
   $('muteBtn').innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 9h4l6-5v16l-6-5H3z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>${S.mute?'<path d="M16 9l6 6M22 9l-6 6" stroke="#ff8a7a" stroke-width="3" stroke-linecap="round"/>':'<path d="M16.5 8.5c2 2 2 5 0 7M19 6c3.500 3.500 3.500 8.500 0 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'}</svg>`;
 }
 function drawHome(){
-  $('walletHome').innerHTML=KI+'<span>'+S.k+'</span>';
+  $('walletHome').innerHTML=KI+'<span>'+fmt(S.k)+'</span>';
   $('dayPill').textContent='Day '+S.day.streak;
   drawMute();
   if(heroKey!==S.cob){heroKey=S.cob;paint($('heroCv'),cob('good',7,true,null,1)[0])}
   fitHero();
-  $('bestHome').textContent=S.best?'Best: '+S.best:'Swipe right to keep · left to toss';
+  $('bestHome').textContent=S.best?'Best: '+fmt(S.best):'Swipe right to keep · left to toss';
   const left=S.mis.list.filter(m=>!m.done).length;
   $('misDot').textContent=left;$('misDot').hidden=!left;
   $('dexDot').textContent=DEX.filter(d=>S.dex[d[0]]).length+'/'+DEX.length;
@@ -688,7 +689,7 @@ function drawMissions(){
   const nb=Math.min(S.day.streak+1,7)*25;
   $('dayNote').innerHTML=`Day ${S.day.streak} streak. Come back tomorrow for +${nb} ${KI}`;
   $('misList').innerHTML=S.mis.list.map(m=>{const d=MIS.find(x=>x.id===m.id);
-    return `<div class="mi ${m.done?'done':''}"><div class="row ol2"><span>${d.txt}</span><span>${m.done?'DONE':'+'+d.rw+' '+KI}</span></div><div class="prog"><i style="transform:scaleX(${m.p/d.n})"></i></div><div class="ol2" style="font-size:14px">${m.p} / ${d.n}</div></div>`}).join('');
+    return `<div class="mi ${m.done?'done':''}"><div class="row ol2"><span>${d.txt}</span><span>${m.done?'DONE':'+'+d.rw+' '+KI}</span></div><div class="prog"><i style="transform:scaleX(${m.p/d.n})"></i></div><div class="ol2" style="font-size:14px">${fmt(m.p)} / ${fmt(d.n)}</div></div>`}).join('');
 }
 
 /* ---------- cornpedia ---------- */
@@ -701,7 +702,7 @@ function drawDex(){
     const t=T[k],got=S.dex[k]||0,locked=(t.unlock||0)>S.t.pts;
     return `<div class="item ${got?'eq':''}"><div class="sw" style="background:${got?'rgba(255,255,255,.18)':'rgba(0,0,0,.35)'}">${got?cob(k,41+i,true):'<div class="qm ol">?</div>'}</div>
     <b class="ol2">${got?nm:'???'}</b>
-    ${got?`<span class="pts ol2">${k==='life'?'+1 life':k==='bad'||k==='sneak'?'Toss it':'+'+t.pts+(t.pts>1?' points':' point')}</span><small class="ol2">${txt}</small><small class="ol2">Caught ×${fmt(got)}</small>`
+    ${got?`<span class="pts ol2">${k==='life'?'+1 life':k==='bad'||k==='sneak'?'Toss it':'+'+fmt(t.pts)+' points'}</span><small class="ol2">${txt}</small><small class="ol2">Caught ×${fmt(got)}</small>`
       :locked?`<small class="ol2">Unlocks at ${fmt(t.unlock)} lifetime points</small><div class="prog"><i style="transform:scaleX(${Math.min(1,S.t.pts/t.unlock)})"></i></div>`
       :`<small class="ol2">${t.minN?'Shows up deep into a long run':'Not found yet'}</small>`}</div>`}).join('');
 }
@@ -711,7 +712,7 @@ let lastEntry=null;
 function drawBoard(){
   $('nameIn').value=S.name||'';
   $('lbStats').textContent=`${S.t.games} game${S.t.games===1?'':'s'} · ${S.t.cobs} cobs sorted · ${S.t.rare} rare cobs`;
-  $('lbList').innerHTML=S.top.length?S.top.map((e,i)=>`<div class="lr ${e===lastEntry?'me':''}"><div class="rk ol2">${i+1}</div><div class="who ol2">${esc(e.nm||'Player')}<small>${e.n?e.n+' cobs · streak '+e.st+(e.d?' · '+esc(e.d):''):'earlier best'}</small></div><div class="sc ol">${+e.s||0}</div></div>`).join('')
+  $('lbList').innerHTML=S.top.length?S.top.map((e,i)=>`<div class="lr ${e===lastEntry?'me':''}"><div class="rk ol2">${i+1}</div><div class="who ol2">${esc(e.nm||'Player')}<small>${e.n?e.n+' cobs · streak '+e.st+(e.d?' · '+esc(e.d):''):'earlier best'}</small></div><div class="sc ol">${fmt(+e.s||0)}</div></div>`).join('')
     :'<p class="ol2">No scores yet. Play a game to get on the board!</p>';
 }
 $('nameIn').oninput=e=>{S.name=e.target.value.slice(0,12);save()};
@@ -725,17 +726,17 @@ function checkSkins(){
   return fresh;
 }
 function drawShop(){
-  $('walletShop').innerHTML=KI+' '+S.k;
+  $('walletShop').innerHTML=KI+' '+fmt(S.k);
   $('tabBg').classList.toggle('on',tab==='bg');$('tabCob').classList.toggle('on',tab==='cob');
   if(tab==='bg')$('shopGrid').innerHTML=BG.map(b=>{
     const own=S.own.bg.includes(b.id),eq=S.bg===b.id;
     return `<div class="item ${eq?'eq':''}"><div class="sw" style="--ray:${b.ray};background:radial-gradient(circle,${b.c[0]},${b.c[1]} 30%,${b.c[2]} 65%,${b.c[3]})"><i></i></div><b class="ol2">${b.name}</b>
-    <button class="ibtn ol2 ${eq?'cur':own?'':S.k>=b.cost?'buy':'no'}" data-bg="${b.id}">${eq?'EQUIPPED':own?'USE':KI+' '+b.cost}</button></div>`}).join('');
+    <button class="ibtn ol2 ${eq?'cur':own?'':S.k>=b.cost?'buy':'no'}" data-bg="${b.id}">${eq?'EQUIPPED':own?'USE':KI+' '+fmt(b.cost)}</button></div>`}).join('');
   else $('shopGrid').innerHTML=SK.map((s,i)=>{
     const own=S.own.cob.includes(s.id),eq=S.cob===s.id,p=s.req?Math.min(stat(s.req.k),s.req.n):0;
     return `<div class="item ${eq?'eq':''}"><div class="sw ${own?'':'lock'}" style="background:rgba(255,255,255,.18)">${cob('good',31+i,true,s.id)}</div><b class="ol2">${s.name}</b>
     ${own?`<button class="ibtn ol2 ${eq?'cur':''}" data-cob="${s.id}">${eq?'EQUIPPED':'USE'}</button>`
-         :`<div class="ol2" style="font-size:14px">${s.req.txt}</div><div class="prog"><i style="transform:scaleX(${p/s.req.n})"></i></div><div class="ol2" style="font-size:13px">${p} / ${s.req.n}</div>`}</div>`}).join('');
+         :`<div class="ol2" style="font-size:14px">${s.req.txt}</div><div class="prog"><i style="transform:scaleX(${p/s.req.n})"></i></div><div class="ol2" style="font-size:13px">${fmt(p)} / ${fmt(s.req.n)}</div>`}</div>`}).join('');
 }
 $('shopGrid').onclick=e=>{
   const b=e.target.closest('button');if(!b)return;
@@ -744,7 +745,7 @@ $('shopGrid').onclick=e=>{
     const g=BG.find(x=>x.id===b.dataset.bg);
     if(S.own.bg.includes(g.id)){S.bg=g.id;tone(784,0,.1,'triangle')}
     else if(S.k>=g.cost){S.k-=g.cost;S.own.bg.push(g.id);S.bg=g.id;applyTheme();flash('#fff');bits('s',16,['#fff','#ffe14d',g.c[2]],240,app);jingle([523,659,784,1047,1319]);toast('Unlocked '+g.name+'!')}
-    else{retrigger(b,'shake');tone(160,0,.2,'sawtooth',.1,.6);toast(`Need ${g.cost-S.k} more ${KI}. Keep shucking!`);return}
+    else{retrigger(b,'shake');tone(160,0,.2,'sawtooth',.1,.6);toast(`Need ${fmt(g.cost-S.k)} more ${KI}. Keep shucking!`);return}
   }
   applyTheme();save();drawShop();drawHome();
 };
@@ -752,7 +753,7 @@ $('tabBg').onclick=()=>{tab='bg';drawShop()};$('tabCob').onclick=()=>{tab='cob';
 
 /* ---------- game ---------- */
 let score=0,shown=0,lives=3,streak=0,topStreak=0,n=0,caught={},playing=false,cur=null,next=null,timeLeft=0,timeMax=0,last=0,raf=0,fever=0,frenzyT=0;
-const FRENZY=6,REV=150,MILE=2500;
+const FRENZY=6,REV=150,MILE=25000;
 let revived=false,bestBeat=false,avg=25,mercy=false,revT=0,frenzies=0;
 // Adaptive pacing: a little easier below the player's usual run length, steeper past it. Always beatable.
 const eff=()=>n+Math.max(0,n-avg)*.6;
@@ -787,7 +788,7 @@ function makeCard(){
   else if(type==='sneak')ov=`<svg class="fx fly" viewBox="-14 -13 28 22" style="${P(184,60)};animation-duration:1s">${FLY}</svg>`;
   else if(t.name)ov=[[30,52,1.1,0],[192,44,.9,.4],[204,196,1.2,.8],[16,204,.8,.2],[140,4,.8,.6],[146,116,.7,1],[80,170,.6,.5]].map(([x,y,sc,d])=>`<i class="fx sp" style="${P(x,y)};--s:${sc};animation-delay:${d}s"></i>`).join('');
   el.innerHTML=(t.aura?`<div class="aura" style="--a:${t.aura}"></div>`:'')+`<div class="float">${ov}</div>`
-    +(t.name?`<div class="badge ol2" style="--a:${t.aura}">${t.badge||t.name+' +'+t.pts}</div>`:'')
+    +(t.name?`<div class="badge ol2" style="--a:${t.aura}">${t.badge||t.name+' +'+fmt(t.pts)}</div>`:'')
     +'<div class="stamp keep ol2">KEEP</div><div class="stamp toss ol2">TOSS</div>';
   const fl=el.querySelector('.float');
   cob(type,Math.floor(Math.random()*99999),true,null,type==='rainbow'?3:1).forEach((svg,i,all)=>{
@@ -828,7 +829,7 @@ const mult=()=>streak>=25?3:streak>=10?2:1;
 function setSub(){
   const s=$('sub'),m=mult();
   if(frenzyT>0){s.textContent='CORN FRENZY! x2 points';s.className='sub ol2 hot'}
-  else if(!bestBeat&&S.best>=20&&score>=S.best*.75&&score<=S.best){s.textContent=(S.best-score+1)+' to beat your best!';s.className='sub ol2 hot'}
+  else if(!bestBeat&&S.best>=200&&score>=S.best*.75&&score<=S.best){s.textContent=fmt(S.best-score+1)+' to beat your best!';s.className='sub ol2 hot'}
   else if(m>1){s.textContent='x'+m+' STREAK! ('+streak+')';s.className='sub ol2 hot'}
   else{s.textContent=streak?streak+' in a row':'Sort the harvest!';s.className='sub ol2'}
 }
@@ -862,7 +863,7 @@ function decide(keepIt,timedOut){
     if(c.type==='life'){lives=Math.min(3,lives+1);drawLives();popText('+1 LIFE!','#ff9ab0',true);flash(t.aura);SFX.heart();buzz(40)}
     else if(t.rare){
       caught[c.type]=(caught[c.type]||0)+1;S.t.rare++;track('rare',1);
-      popText('+'+pts+' '+t.name+'!','#ffe14d',true);bits('s',9,['#fff',t.aura,'#ffe14d'],200);flash(t.aura);buzz([20,30,20,30,40]);
+      popText('+'+fmt(pts)+' '+t.name+'!','#ffe14d',true);bits('s',9,['#fff',t.aura,'#ffe14d'],200);flash(t.aura);buzz([20,30,20,30,40]);
       if(c.type==='gold'){SFX.coin();SFX.pop(3)}else (SFX[c.type]||SFX.glass)();
       if(c.type==='diamond')SFX.glass();
     }else{
@@ -881,7 +882,7 @@ function decide(keepIt,timedOut){
     if(timedOut)SFX.thud();else if(good){SFX.whoosh();SFX.sad()}else{SFX.buzz();SFX.splat(0)}
   }
   track('score',score,true);
-  if(!bestBeat&&S.best>=10&&score>S.best){bestBeat=true;toast('NEW BEST!');flash('#ffe14d');bits('s',14,['#fff','#ffe14d'],220);jingle([523,659,784,1047,1319],.12)}
+  if(!bestBeat&&S.best>=100&&score>S.best){bestBeat=true;toast('NEW BEST!');flash('#ffe14d');bits('s',14,['#fff','#ffe14d'],220);jingle([523,659,784,1047,1319],.12)}
   setSub();
   if(lives<=0){if(!revived&&S.k>=REV)offerRevive();else endGame();return}
   deal();
@@ -889,7 +890,7 @@ function decide(keepIt,timedOut){
 let wasLow=false;
 function loop(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
-  if(shown!==score){shown+=Math.ceil((score-shown)*.25);$('score').textContent=shown}
+  if(shown!==score){shown+=Math.ceil((score-shown)*.25);$('score').textContent=fmt(shown)}
   if(playing){
     if(frenzyT>0){frenzyT-=dt;if(frenzyT<=0){frenzyT=0;fever=0;app.classList.remove('frenzy');setSub()}}
     $('ffill').style.transform=`scaleX(${frenzyT>0?frenzyT/FRENZY:fever})`;
@@ -913,7 +914,7 @@ try{new ResizeObserver(fit).observe(stage)}catch(e){}
 addEventListener('resize',fit);
 function offerRevive(){
   playing=false;$('tbar').classList.remove('low');
-  $('revNote').innerHTML=`Keep your ${score} points and carry on with 1 life. You have ${S.k} ${KI}`;
+  $('revNote').innerHTML=`Keep your ${fmt(score)} points and carry on with 1 life. You have ${fmt(S.k)} ${KI}`;
   $('revYes').innerHTML=`REVIVE ${KI} ${REV}`;
   $('revive').hidden=false;retrigger($('revBar'),'run');
   clearTimeout(revT);revT=setTimeout(()=>{$('revive').hidden=true;endGame()},5000);
@@ -928,7 +929,7 @@ $('revNo').onclick=()=>{clearTimeout(revT);$('revive').hidden=true;endGame()};
 function startGame(){
   score=shown=0;lives=3;streak=topStreak=n=0;fever=frenzyT=0;caught={};gameDone=[];milestone=false;revived=bestBeat=false;clearTimeout(revT);
   const hs=S.hist||[];avg=hs.length?Math.min(60,Math.max(15,hs.reduce((a,b)=>a+b,0)/hs.length)):25;frenzies=0;mercy=hs.length>=2&&hs.slice(-2).every(x=>x<12);
-  $('score').textContent=0;$('best').textContent=S.best;drawLives();setSub();
+  $('score').textContent=0;$('best').textContent=fmt(S.best);drawLives();setSub();
   deck.innerHTML='';next=null;cur=null;$('hint').style.opacity=1;app.classList.remove('frenzy');
   for(const id of ['end','shop','missions','help','revive','board','dex'])$(id).hidden=true;
   show('game');fit();
@@ -939,16 +940,16 @@ function endGame(){
   playing=false;clearTimeout(nt);frenzyT=0;app.classList.remove('frenzy');$('tbar').classList.remove('low');
   const old=S.best,isBest=score>old;
   S.hist=(S.hist||[]).concat(n).slice(-8);
-  S.t.games++;track('game',1);S.k+=score;if(isBest)S.best=score;
+  const earned=Math.round(score/10);S.t.games++;track('game',1);S.k+=earned;if(isBest)S.best=score;
   const before=S.t.pts;S.t.pts+=score;
   const newTiers=TIERS.filter(k=>T[k].unlock>before&&T[k].unlock<=S.t.pts);
   let rank=0;lastEntry=null;
   if(score>0){const d=new Date();lastEntry={nm:S.name||'Player',s:score,n,st:topStreak,d:d.getDate()+'/'+(d.getMonth()+1)};
     S.top.push(lastEntry);S.top.sort((a,b)=>b.s-a.s);S.top=S.top.slice(0,10);rank=S.top.indexOf(lastEntry)+1}
   const fresh=checkSkins();save();
-  $('endNote').textContent=isBest?'New best! Golden effort.':old-score<=Math.max(5,old*.15)?`So close! Only ${old-score+1} more to beat your best.`:'Best: '+old;
-  $('final').textContent=score;
-  $('endEarn').innerHTML=`+${score} ${KI} <span style="color:#fff;font-size:18px">(${S.k} total)</span>`;
+  $('endNote').textContent=isBest?'New best! Golden effort.':old-score<=Math.max(5,old*.15)?`So close! Only ${fmt(old-score+1)} more to beat your best.`:'Best: '+fmt(old);
+  $('final').textContent=fmt(score);
+  $('endEarn').innerHTML=`+${fmt(earned)} ${KI} <span style="color:#fff;font-size:18px">(${fmt(S.k)} total)</span>`;
   $('haul').innerHTML=ALLRARE.filter(k=>caught[k]).map(k=>`<span class="chip ol2" style="--a:${T[k].aura}">${T[k].name} ×${caught[k]}</span>`).join('')
     +(rank?`<span class="chip ol2" style="--a:#f29a0c">#${rank} on your leaderboard</span>`:'')
     +gameDone.map(d=>`<span class="chip ol2" style="--a:#4fb53a">Mission +${d.rw}</span>`).join('')
@@ -956,7 +957,7 @@ function endGame(){
     +fresh.map(nm=>`<span class="chip ol2" style="--a:#e040b0">New cob: ${nm}!</span>`).join('');
   $('endStats').textContent=n+' cobs sorted · best streak '+topStreak;
   const lock=BG.filter(b=>!S.own.bg.includes(b.id)).sort((a,b)=>a.cost-b.cost)[0];
-  $('endGoal').innerHTML=!lock?'':S.k>=lock.cost?`You can unlock ${lock.name} now!`:`${lock.cost-S.k} ${KI} to go for ${lock.name}`;
+  $('endGoal').innerHTML=!lock?'':S.k>=lock.cost?`You can unlock ${lock.name} now!`:`${fmt(lock.cost-S.k)} ${KI} to go for ${lock.name}`;
   [392,330,262].forEach((fq,i)=>tone(fq,.2+i*.14,.25,'triangle',.1));
   setTimeout(()=>{$('end').hidden=false;if(isBest||fresh.length){bits('s',16,['#fff','#ffe14d','#ff7ac8'],240,app);jingle([523,659,784,1047,1319])}},500);
 }
