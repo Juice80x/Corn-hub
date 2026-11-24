@@ -95,8 +95,8 @@ background:repeating-linear-gradient(92deg,#b9793a 0 22px,#a96a2e 22px 25px,#c28
 .frow .tbar{flex:1;height:13px;margin:0}
 .frow .tbar i{background:linear-gradient(#ff9ae0,#e040b0);transform:scaleX(0);transition:transform .2s}
 .app.frenzy .frow .tbar i{background:linear-gradient(#fff,#ffe14d);transition:none}
-.stage{position:relative;display:grid;place-items:center;z-index:1}
-.deck{position:relative;width:min(80vw,340px,45vh);aspect-ratio:220/320}
+.stage{position:relative;display:grid;place-items:center;z-index:1;min-height:0}
+.deck{position:relative;width:min(80vw,340px,45vh);aspect-ratio:220/320;margin-bottom:14px}
 .card{position:absolute;inset:0;touch-action:none;will-change:transform;cursor:grab}
 svg.cob{overflow:visible}
 .card svg.cob{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 10px 0 rgba(0,0,0,.2));animation:bob 2.2s ease-in-out infinite}
@@ -169,6 +169,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .mi.done{background:rgba(143,224,96,.3)}
 .mi .row{font-size:18px}
 .btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+@media (max-height:640px){.sub{display:none}.score{font-size:34px}.tbtn{height:56px;font-size:24px}.dock{padding-top:8px}.hint{display:none}.deck{margin-bottom:0}}
 @media (prefers-reduced-motion:reduce){.rays,.mote,svg.cob,.card.in,.aura,.badge,.logo,.logo .l1 svg,.go,.sub.hot,.tbar.low,.app.frenzy .fz{animation:none!important}.card.fly,.card.snap{transition:none}.pop,.bit{animation-duration:.01s}.shake{animation:none}}
 </style>
 </head>
@@ -660,12 +661,17 @@ function loop(now){
   }
   raf=requestAnimationFrame(loop);
 }
+function fit(){
+  const h=stage.clientHeight-(innerHeight<=640?52:76),w=Math.max(90,Math.min(stage.clientWidth*.8,340,h*220/320));
+  if(h>0)deck.style.width=w+'px';
+}
+addEventListener('resize',fit);
 function startGame(){
   score=shown=0;lives=3;streak=topStreak=n=0;fever=frenzyT=0;caught={};gameDone=[];
   $('score').textContent=0;$('best').textContent=S.best;drawLives();setSub();
   deck.innerHTML='';next=null;cur=null;$('hint').style.opacity=1;app.classList.remove('frenzy');
   for(const id of ['end','shop','missions','help'])$(id).hidden=true;
-  show('game');
+  show('game');fit();
   playing=true;deal();jingle([523,659,784],.1);
   cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(loop);
 }
