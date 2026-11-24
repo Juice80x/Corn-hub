@@ -456,10 +456,13 @@ function applyTheme(){
   st.setProperty('--ray',b.ray);st.setProperty('--hud2',b.hud[0]);st.setProperty('--hud',b.hud[1]);st.setProperty('--ol',b.ol);st.setProperty('--mote',b.mote);
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=b.hud[1];
 }
+function drawMute(){
+  $('muteBtn').innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 9h4l6-5v16l-6-5H3z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>${S.mute?'<path d="M16 9l6 6M22 9l-6 6" stroke="#ff8a7a" stroke-width="3" stroke-linecap="round"/>':'<path d="M16.5 8.5c2 2 2 5 0 7M19 6c3.500 3.500 3.500 8.500 0 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'}</svg>`;
+}
 function drawHome(){
   $('walletHome').innerHTML=KI+'<span>'+S.k+'</span>';
   $('dayPill').textContent='Day '+S.day.streak;
-  $('muteBtn').innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 9h4l6-5v16l-6-5H3z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>${S.mute?'<path d="M16 9l6 6M22 9l-6 6" stroke="#ff8a7a" stroke-width="3" stroke-linecap="round"/>':'<path d="M16.5 8.5c2 2 2 5 0 7M19 6c3.500 3.500 3.500 8.500 0 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'}</svg>`;
+  drawMute();
   $('heroCob').innerHTML=cob('good',7);
   $('bestHome').textContent=S.best?'Best: '+S.best:'Swipe right to keep · left to toss';
   const left=S.mis.list.filter(m=>!m.done).length;
@@ -692,7 +695,7 @@ $('endShop').onclick=()=>{goHome();tab='bg';drawShop();open('shop')};
 $('shopBtn').onclick=()=>{drawShop();open('shop')};
 $('misBtn').onclick=()=>{drawMissions();open('missions')};
 $('helpBtn').onclick=()=>open('help');
-$('muteBtn').onclick=()=>{S.mute=!S.mute;save();drawHome();tone(660,0,.1,'triangle')};
+$('muteBtn').onclick=()=>{S.mute=!S.mute;save();drawMute();tone(660,0,.1,'triangle')};
 for(const b of document.querySelectorAll('[data-close]'))b.onclick=()=>close(b.dataset.close);
 $('keepBtn').onclick=()=>decide(true);$('tossBtn').onclick=()=>decide(false);
 document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')decide(true);if(e.key==='ArrowLeft')decide(false)});
