@@ -32,14 +32,15 @@ button{font:inherit;color:#fff;cursor:pointer}
 .app{--b1:#e4f3c4;--b2:#b8dc8a;--b3:#86bf5c;--b4:#5f9c43;--ray:255,255,255,.13;--hud2:#2c6a2e;--hud:#1f4d22;--ol:#173a19;--mote:#fff8c8;
 position:fixed;inset:0;margin:0 auto;max-width:520px;overflow:hidden;
 background:radial-gradient(circle at 50% 46%,var(--b1) 0%,var(--b2) 28%,var(--b3) 62%,var(--b4) 100%);box-shadow:0 0 0 6px #fff,0 0 40px rgba(0,0,0,.3)}
-.rays{position:absolute;left:50%;top:46%;width:220vmax;height:220vmax;margin:-110vmax 0 0 -110vmax;pointer-events:none;
-background:repeating-conic-gradient(from 0deg,rgba(var(--ray)) 0 9deg,transparent 9deg 18deg);animation:spin 60s linear infinite;
+.rays{position:absolute;left:50%;top:46%;width:60vmax;height:60vmax;margin:-30vmax 0 0 -30vmax;pointer-events:none;transform:scale(2.4);will-change:transform;
+background:repeating-conic-gradient(from 0deg,rgba(var(--ray)) 0 9deg,transparent 9deg 18deg);animation:rays 60s linear infinite;
 -webkit-mask:radial-gradient(circle,#000 0,#000 18%,transparent 45%);mask:radial-gradient(circle,#000 0,#000 18%,transparent 45%)}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rays{from{transform:scale(2.4) rotate(0deg)}to{transform:scale(2.4) rotate(360deg)}}
 .fz{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(circle at 50% 46%,#ffe14d,#ff5ac8)}
-.app.frenzy .fz{opacity:.4;animation:fz 1.6s linear infinite}
+.app.frenzy .fz{opacity:.4;animation:fz .8s ease-in-out infinite}
 .app.frenzy .rays{animation-duration:5s}
-@keyframes fz{to{filter:hue-rotate(360deg)}}
+@keyframes fz{50%{opacity:.2}}
 .mote{position:absolute;bottom:-20px;border-radius:50%;background:var(--mote);opacity:0;pointer-events:none;animation:rise linear infinite}
 @keyframes rise{0%{transform:translate(0,0);opacity:0}15%{opacity:.55}85%{opacity:.35}100%{transform:translate(var(--dx),-95vh);opacity:0}}
 .flash{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:8}
@@ -102,7 +103,17 @@ background:repeating-linear-gradient(92deg,#b9793a 0 22px,#a96a2e 22px 25px,#c28
 .card{position:absolute;inset:0;touch-action:none;will-change:transform;cursor:grab}
 svg.cob{display:block}
 .float{position:absolute;left:-13.64%;top:-12.5%;width:127.27%;height:118.75%;animation:bob 2.2s ease-in-out infinite;will-change:transform}
-.float svg{width:100%;height:100%}
+.float svg.cob{width:100%;height:100%}
+.float canvas{position:absolute;inset:0;width:100%;height:100%}
+.float canvas.hue{animation:hue 2.4s linear infinite}
+@keyframes hue{to{filter:hue-rotate(360deg)}}
+.fx{position:absolute;pointer-events:none}
+.sp{width:9%;aspect-ratio:1;margin:-4.5% 0 0 -4.5%;background:#fff;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);transform:scale(0);animation:twk 1.3s ease-in-out infinite}
+@keyframes twk{50%{transform:scale(var(--s))}}
+.fly{width:11%;margin:-4% 0 0 -5.5%;animation:buzz .8s linear infinite}
+@keyframes buzz{20%{transform:translate(45%,-35%)}40%{transform:translate(-35%,20%)}60%{transform:translate(30%,45%)}80%{transform:translate(-40%,-25%)}}
+.stink{width:6.5%;margin:-17% 0 0 -3.2%;opacity:0;animation:stk 1.6s linear infinite}
+@keyframes stk{0%{transform:translateY(12%);opacity:0}30%{opacity:1}70%{opacity:1}100%{transform:translateY(-18%);opacity:0}}
 @keyframes bob{50%{transform:translateY(-8px) rotate(1.2deg)}}
 .aura{position:absolute;left:50%;top:45%;width:135%;aspect-ratio:1;margin:-67.5% 0 0 -67.5%;border-radius:50%;background:radial-gradient(circle,var(--a) 0,transparent 62%);opacity:.7;animation:aura 1.3s ease-in-out infinite;pointer-events:none}
 @keyframes aura{50%{transform:scale(1.16);opacity:1}}
@@ -112,7 +123,7 @@ svg.cob{display:block}
 .card.in{animation:popin .36s cubic-bezier(.3,1.7,.5,1)}
 @keyframes popin{from{transform:translateY(55%) scale(.4) rotate(-10deg);opacity:0}to{transform:none;opacity:1}}
 .card.drag{transition:none}.card.fly{transition:transform .38s cubic-bezier(.5,0,.9,.5),opacity .38s}.card.snap{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
-.stamp{position:absolute;top:10%;font-size:38px;padding:2px 14px 4px;border:4px solid var(--ol);border-radius:16px;opacity:0;pointer-events:none;box-shadow:0 5px 0 var(--ol);z-index:2}
+.stamp{will-change:opacity;position:absolute;top:10%;font-size:38px;padding:2px 14px 4px;border:4px solid var(--ol);border-radius:16px;opacity:0;pointer-events:none;box-shadow:0 5px 0 var(--ol);z-index:2}
 .stamp.keep{left:-4%;background:var(--grn);transform:rotate(-14deg)}
 .stamp.toss{right:-4%;background:var(--red);transform:rotate(14deg)}
 .hint{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:15px;transition:opacity .5s}
@@ -175,7 +186,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .mi .row{font-size:18px}
 .btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 @media (max-height:640px){.sub{display:none}.score{font-size:34px}.tbtn{height:56px;font-size:24px}.dock{padding-top:8px}.hint{display:none}.deck{margin-top:14px}}
-@media (prefers-reduced-motion:reduce){.rays,.mote,.float,#heroCob,.card.in,.aura,.badge,.logo,.logo .l1 svg,.go,.sub.hot,.tbar.low,.app.frenzy .fz{animation:none!important}.card.fly,.card.snap{transition:none}.pop,.bit{animation-duration:.01s}.shake{animation:none}}
+@media (prefers-reduced-motion:reduce){.rays,.mote,.float,.fx,.float canvas.hue,#heroCob,.card.in,.aura,.badge,.logo,.logo .l1 svg,.go,.sub.hot,.tbar.low,.app.frenzy .fz{animation:none!important}.card.fly,.card.snap{transition:none}.pop,.bit{animation-duration:.01s}.shake{animation:none}}
 </style>
 </head>
 <body>
@@ -352,7 +363,7 @@ function leaf(b,c,t,w,c1,c2,ol){
   <path d="${shape}" fill="none" stroke="${ol}" stroke-width="4" stroke-linejoin="round"/>`;
 }
 const Wd=y=>{const t=Math.max(0,Math.min(1,(y-28)/224));return 46*Math.pow(Math.sin(Math.PI*Math.min(1,.05+.95*Math.pow(t,1.3))),.6)};
-function cob(type,seed,still,skinId){
+function cob(type,seed,still,skinId,layers){
   const sk=SK.find(s=>s.id===(skinId||S.cob))||SK[0];
   const t=type==='good'?Object.assign({},T.good,{base:sk.base,ks:sk.ks,g:sk.g}):T[type];
   const id='c'+(uid++),ol=t.ol,bad=type==='bad';
@@ -414,24 +425,27 @@ function cob(type,seed,still,skinId){
   const j=()=>r(10)-5,dr=bad?14:0;
   const pair=(b,c,tp,w)=>{const a=j(),e=j();return leaf(b,c,[tp[0]+a,tp[1]+e+dr],w,hus[0],hus[1],ol)+leaf([220-b[0],b[1]],[220-c[0],c[1]],[220-tp[0]-a,tp[1]+e+dr],-w,hus[0],hus[1],ol)};
   const drop=(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="4.2" ry="5.6" fill="#e2f7ff" stroke="${ol}" stroke-width="1.6" opacity=".92"/><ellipse cx="${x-1.3}" cy="${y-1.6}" rx="1.2" ry="1.8" fill="#fff"/>`;
-  return `<svg class="cob" viewBox="-30 -40 280 380"><defs>${grad}
+  const defs=`<defs>${grad}
   <linearGradient id="${id}s" x1="0" x2="1"><stop offset="0" stop-color="${t.shade}" stop-opacity=".62"/><stop offset=".3" stop-color="${t.shade}" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset=".7" stop-color="#fff" stop-opacity=".2"/><stop offset=".84" stop-color="${t.shade}" stop-opacity="0"/><stop offset="1" stop-color="${t.shade}" stop-opacity=".68"/></linearGradient>
-  <clipPath id="${id}c"><path d="${body}"/></clipPath></defs>
-  <g transform="rotate(${f(r(8)-4)} 110 160)">
-  <ellipse cx="110" cy="302" rx="74" ry="11" fill="rgba(0,0,0,.22)"/>
-  ${pair([106,264],[12,214],[20,112],-20)}${pair([106,264],[38,190],[50,60],-24)}
-  <path d="${body}" fill="${t.base}"/>
+  <clipPath id="${id}c"><path d="${body}"/></clipPath></defs>`;
+  const rot=f(r(8)-4);
+  const U=`<ellipse cx="110" cy="302" rx="74" ry="11" fill="rgba(0,0,0,.22)"/>${pair([106,264],[12,214],[20,112],-20)}${pair([106,264],[38,190],[50,60],-24)}`;
+  const B=`<path d="${body}" fill="${t.base}"/>
   <g clip-path="url(#${id}c)">${k}${bad?extra:''}<rect x="60" y="14" width="100" height="250" fill="url(#${id}s)"/>${bad?'':extra}</g>
   <path d="${body}" fill="none" stroke="${ol}" stroke-width="5" stroke-linejoin="round"/>
-  <path d="M86 78c-6 20-7 46-5 72" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="${bad?.1:.26}"/>
-  ${silk}${heart}${worm}
+  <path d="M86 78c-6 20-7 46-5 72" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="${bad?.1:.26}"/>`;
+  const O=`${silk}${heart}${worm}
   ${pair([108,268],[52,238],[66,130],-13)}${pair([106,270],[14,172],[6,236],18)}${pair([108,272],[78,234],[76,170],-12)}
   ${leaf([110,274],[102,246],[114+j(),208+j()],9,hus[0],hus[1],ol)}
   <path d="M97 260h26l-3 34c-1 7-19 7-20 0z" fill="${hus[1]}" stroke="${ol}" stroke-width="4" stroke-linejoin="round"/>
   <path d="M98 272q12 5 24 0" fill="none" stroke="${ol}" stroke-width="2" opacity=".5"/><path d="M102 266v22" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".3"/>
   <ellipse cx="110" cy="295" rx="9" ry="3" fill="${hus[0]}" stroke="${ol}" stroke-width="2"/>
-  ${bad?'':drop(58,196)+drop(168,150)}
-  </g>${around}</svg>`;
+  ${bad?'':drop(58,196)+drop(168,150)}`;
+  if(layers){
+    const wrap=x=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -40 280 380" width="700" height="950">${defs}<g transform="rotate(${rot} 110 160)">${x}</g></svg>`;
+    return layers===3?[wrap(U),wrap(B),wrap(O)]:[wrap(U+B+O)];
+  }
+  return `<svg class="cob" viewBox="-30 -40 280 380">${defs}<g transform="rotate(${rot} 110 160)">${U}${B}${O}</g>${around}</svg>`;
 }
 
 /* ---------- sound + buzz ---------- */
@@ -574,19 +588,35 @@ function pick(){
   const q=Math.random()*(frenzyT>0?.45:1);
   return q<.025?'diamond':q<.06?'galaxy':q<.11?'rainbow':q<.19?'gold':'good';
 }
+const P=(x,y)=>`left:${((x+30)/2.8).toFixed(1)}%;top:${((y+40)/3.8).toFixed(1)}%`;
+const FLY='<ellipse cx="-5" cy="-6" rx="6" ry="4" fill="#e8f4ff" stroke="#1c140c" stroke-width="1.8" transform="rotate(-30 -5 -6)"/><ellipse cx="5" cy="-6" rx="6" ry="4" fill="#e8f4ff" stroke="#1c140c" stroke-width="1.8" transform="rotate(30 5 -6)"/><ellipse rx="5.5" ry="4.5" fill="#222" stroke="#1c140c" stroke-width="1.8"/><circle cx="3" cy="-1" r="1.6" fill="#e33"/>';
+const STINK='<path d="M0 0c-6-8 6-14 0-22s6-14 0-22" fill="none" stroke="#1c140c" stroke-width="7" stroke-linecap="round"/><path d="M0 0c-6-8 6-14 0-22s6-14 0-22" fill="none" stroke="#9fc23e" stroke-width="3.5" stroke-linecap="round"/>';
 function makeCard(){
   const type=pick(),t=T[type];
   const el=document.createElement('div');
   el.className='card back';
-  el.innerHTML=(t.aura?`<div class="aura" style="--a:${t.aura}"></div>`:'')+'<div class="float">'+cob(type,Math.floor(Math.random()*99999))+'</div>'
+  let ov='';
+  if(type==='bad')ov=[[46,34,.9],[178,42,.7],[192,150,1.1]].map(([x,y,d])=>`<svg class="fx fly" viewBox="-14 -13 28 22" style="${P(x,y)};animation-duration:${d}s">${FLY}</svg>`).join('')
+    +[[34,104,0],[190,90,.7]].map(([x,y,d])=>`<svg class="fx stink" viewBox="-9 -50 18 56" style="${P(x,y)};animation-delay:${d}s">${STINK}</svg>`).join('');
+  else if(t.name)ov=[[30,52,1.1,0],[192,44,.9,.4],[204,196,1.2,.8],[16,204,.8,.2],[140,4,.8,.6],[146,116,.7,1],[80,170,.6,.5]].map(([x,y,sc,d])=>`<i class="fx sp" style="${P(x,y)};--s:${sc};animation-delay:${d}s"></i>`).join('');
+  el.innerHTML=(t.aura?`<div class="aura" style="--a:${t.aura}"></div>`:'')+`<div class="float">${ov}</div>`
     +(t.name?`<div class="badge ol2" style="--a:${t.aura}">${t.badge||t.name+' +'+t.pts}</div>`:'')
     +'<div class="stamp keep ol2">KEEP</div><div class="stamp toss ol2">TOSS</div>';
+  const fl=el.querySelector('.float');
+  cob(type,Math.floor(Math.random()*99999),true,null,type==='rainbow'?3:1).forEach((svg,i,all)=>{
+    const cv=document.createElement('canvas');cv.width=700;cv.height=950;
+    if(all.length===3&&i===1)cv.className='hue';
+    const img=new Image();img.onload=()=>{try{cv.getContext('2d').drawImage(img,0,0,700,950)}catch(e){}};
+    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    fl.insertBefore(cv,fl.querySelector('.fx'));
+  });
   return {el,type};
 }
+let nt=0;
 function deal(){
-  cur=next||makeCard();next=makeCard();
-  deck.prepend(next.el);
+  cur=next||makeCard();next=null;
   if(!cur.el.isConnected)deck.appendChild(cur.el);
+  clearTimeout(nt);nt=setTimeout(()=>{if(playing&&!next){next=makeCard();deck.prepend(next.el)}},110);
   cur.el.classList.remove('back');cur.el.classList.add('in');
   timeMax=frenzyT>0?1.6:Math.max(1,3-eff()*.035)+ease();timeLeft=timeMax;
   if(T[cur.type].name){tone(880,0,.12,'triangle',.08);tone(1320,.08,.18,'triangle',.08)}
@@ -596,9 +626,12 @@ function bindDrag(c){
   const el=c.el,keep=el.querySelector('.keep'),toss=el.querySelector('.toss');
   let sx=0,sy=0,dx=0,dy=0,down=false,t0=0;
   el.onpointerdown=e=>{if(!playing||c!==cur)return;down=true;sx=e.clientX;sy=e.clientY;dx=dy=0;t0=performance.now();el.classList.remove('snap','in');el.classList.add('drag');try{el.setPointerCapture(e.pointerId)}catch(_){}};
+  let pend=false;
   el.onpointermove=e=>{if(!down)return;dx=e.clientX-sx;dy=e.clientY-sy;
-    el.style.transform=`translate(${dx}px,${dy*.3}px) rotate(${dx/14}deg)`;
-    keep.style.opacity=Math.max(0,Math.min(1,dx/90));toss.style.opacity=Math.max(0,Math.min(1,-dx/90))};
+    if(pend)return;pend=true;
+    requestAnimationFrame(()=>{pend=false;if(!down)return;
+      el.style.transform=`translate3d(${dx}px,${dy*.3}px,0) rotate(${dx/14}deg)`;
+      keep.style.opacity=Math.max(0,Math.min(1,dx/90));toss.style.opacity=Math.max(0,Math.min(1,-dx/90))})};
   const up=()=>{if(!down)return;down=false;el.classList.remove('drag');
     const v=Math.abs(dx)/Math.max(1,performance.now()-t0);
     if(Math.abs(dx)>90||(v>.5&&Math.abs(dx)>30))decide(dx>0);
@@ -635,12 +668,12 @@ function decide(keepIt,timedOut){
     const pts=t.pts*mult()*(frenzyT>0?2:1)+(fast?1:0);score+=pts;retrigger($('scoreWrap'),'bump');
     S.t.cobs++;track('cob',1);if(!good)track('toss',1);
     const tt=c.type==='good'?SK.find(s=>s.id===S.cob):t;
-    bits('k',t.name?16:9,tt.bit||[tt.g[1],tt.g[0],tt.g[2]],130);
-    if(good)bits('l',5,t.hus||['#8ad653','#4f9e2e'],150);
+    bits('k',t.name?12:7,tt.bit||[tt.g[1],tt.g[0],tt.g[2]],130);
+    if(good)bits('l',4,t.hus||['#8ad653','#4f9e2e'],150);
     if(c.type==='life'){lives=Math.min(3,lives+1);drawLives();popText('+1 LIFE!','#ff9ab0',true);flash(t.aura);jingle([659,880,1175]);buzz(40)}
     else if(t.rare){
       caught[c.type]=(caught[c.type]||0)+1;S.t.rare++;track('rare',1);
-      popText('+'+pts+' '+t.name+'!','#ffe14d',true);bits('s',12,['#fff',t.aura,'#ffe14d'],200);flash(t.aura);
+      popText('+'+pts+' '+t.name+'!','#ffe14d',true);bits('s',9,['#fff',t.aura,'#ffe14d'],200);flash(t.aura);
       jingle(c.type==='diamond'?[523,659,784,1047,1319,1568]:c.type==='galaxy'?[440,554,659,880,1109]:c.type==='rainbow'?[523,659,784,1047]:[523,784,1047]);buzz([20,30,20,30,40]);
     }else{
       popText('+'+pts+(fast?' FAST!':''),fast?'#ffe14d':'#fff');
@@ -665,6 +698,7 @@ function decide(keepIt,timedOut){
   if(lives<=0){if(!revived&&S.k>=REV)offerRevive();else endGame();return}
   deal();
 }
+let wasLow=false;
 function loop(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
   if(shown!==score){shown+=Math.ceil((score-shown)*.25);$('score').textContent=shown}
@@ -675,8 +709,7 @@ function loop(now){
       timeLeft-=dt;
       const fr=Math.max(0,timeLeft/timeMax),bar=$('tfill');
       bar.style.transform=`scaleX(${fr})`;
-      bar.style.background=fr<.3?'linear-gradient(#ff8a6a,#d93a2c)':'linear-gradient(#ffe46b,#f2a60c)';
-      $('tbar').classList.toggle('low',fr<.3);
+      const lo=fr<.3;if(lo!==wasLow){wasLow=lo;bar.style.background=lo?'linear-gradient(#ff8a6a,#d93a2c)':'';$('tbar').classList.toggle('low',lo)}
       if(timeLeft<=0)decide(false,true);
     }
   }
@@ -715,7 +748,7 @@ function startGame(){
   cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(loop);
 }
 function endGame(){
-  playing=false;frenzyT=0;app.classList.remove('frenzy');$('tbar').classList.remove('low');
+  playing=false;clearTimeout(nt);frenzyT=0;app.classList.remove('frenzy');$('tbar').classList.remove('low');
   const old=S.best,isBest=score>old;
   S.hist=(S.hist||[]).concat(n).slice(-8);
   S.t.games++;track('game',1);S.k+=score;if(isBest)S.best=score;
