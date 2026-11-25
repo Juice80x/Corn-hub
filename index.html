@@ -124,7 +124,6 @@ svg.cob{display:block}
 .card.in{animation:popin .36s cubic-bezier(.3,1.7,.5,1)}
 @keyframes popin{from{transform:translateY(55%) scale(.4) rotate(-10deg);opacity:0}to{transform:none;opacity:1}}
 .card.drag{transition:none}.card.x-fly,.card.x-drop{transition:transform .38s cubic-bezier(.5,0,.9,.5),opacity .38s}
-.card.x-pop{transition:transform .17s cubic-bezier(.2,1.5,.5,1),opacity .11s .07s}
 #fxc{position:absolute;left:0;top:0;pointer-events:none;z-index:5}
 .pop.streak{top:21%;font-size:min(40px,9vw)}
 .card.x-burst{transition:transform .18s cubic-bezier(.3,1.8,.6,1),opacity .1s .12s}
@@ -446,7 +445,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=47;
+const BUILD=48;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1376,12 +1375,10 @@ function decide(keepIt,timedOut){
   const dir=timedOut?0:(keepIt?1:-1);
   if(!timedOut)el.querySelector(keepIt?'.keep':'.toss').style.opacity=1;
   // where the cob is right now, in the game's own units: bursts start there
-  const rc=el.getBoundingClientRect(),ar=app.getBoundingClientRect(),dr0=deck.getBoundingClientRect(),bx=(rc.left+rc.width/2-ar.left)/SC,by=(rc.top+rc.height*.48-ar.top)/SC;
+  const rc=el.getBoundingClientRect(),ar=app.getBoundingClientRect(),bx=(rc.left+rc.width/2-ar.left)/SC,by=(rc.top+rc.height*.48-ar.top)/SC;
   el.classList.remove('drag','snap','in');
-  if(right&&!calm&&frenzyT>=0){ // a correct cob swells and pops where it is
-    el.classList.add('x-pop');el.style.transform=`translate(${((rc.left+rc.width/2-dr0.left-dr0.width/2)/SC+dir*46).toFixed(0)}px,${((rc.top+rc.height/2-dr0.top-dr0.height/2)/SC-14).toFixed(0)}px) rotate(${dir*9}deg) scale(1.3)`;
-  }else{el.classList.add(timedOut?'x-drop':'x-fly');
-  el.style.transform=timedOut?'translateY(130%) rotate(12deg) scale(.8)':`translate(${dir*160}%,-18%) rotate(${dir*38}deg) scale(.85)`}
+  el.classList.add(timedOut?'x-drop':'x-fly');
+  el.style.transform=timedOut?'translateY(130%) rotate(12deg) scale(.8)':`translate(${dir*160}%,-18%) rotate(${dir*38}deg) scale(.85)`;
   el.style.opacity=0;
   setTimeout(()=>el.remove(),420);
   n++;if(n===3)$('hint').style.opacity=0;
