@@ -410,7 +410,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=43;
+const BUILD=44;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1179,6 +1179,8 @@ const FRENZY=6,REV=250,MILE=4000;
 let revived=false,bestBeat=false,avg=25,mercy=false,revT=0,frenzies=0;
 // Adaptive pacing: a little easier below the player's usual run length, steeper past it. Always beatable.
 const eff=()=>n+Math.max(0,n-avg)*.6;
+// timer pace counts from the last revive, so a paid revive starts back at the gentle opening speed
+let revN=0;const pace=()=>{const p=n-revN;return p+Math.max(0,p-avg)*.6};
 const ease=()=>(n<avg*.8?.25:0)+(mercy&&n<20?.4:0);
 function drawLives(){
   $('lives').innerHTML=[0,1,2].map(i=>`<svg viewBox="0 0 20 24" class="${i<lives?'':'gone'}"><path d="M10 2c-5 0-7 5-7 10s2 9 7 10c5-1 7-5 7-10S15 2 10 2z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2"/><path d="M10 22C5 20 2 15 2 9c3 4 5 8 6 11M10 22c5-2 8-7 8-13-3 4-5 8-6 11" fill="#6cc63e" stroke="var(--ol)" stroke-width="1.5"/></svg>`).join('');
@@ -1235,7 +1237,7 @@ function deal(){
   if(!cur.el.isConnected)deck.appendChild(cur.el);
   clearTimeout(nt);nt=setTimeout(()=>{if(playing&&!next){next=makeCard();deck.prepend(next.el)}},110);
   cur.el.classList.remove('back');cur.el.classList.add('in');
-  timeMax=frenzyT>0?1.6:Math.max(.7,3-eff()*.014)+ease();timeLeft=timeMax;
+  timeMax=frenzyT>0?1.6:Math.max(.7,3-pace()*.014)+ease();timeLeft=timeMax;
   if(T[cur.type].name){tone(880,0,.12,'triangle',.08);tone(1320,.08,.18,'triangle',.08)}
   bindDrag(cur);
 }
@@ -1375,13 +1377,13 @@ function offerRevive(){
 }
 $('revYes').onclick=()=>{
   clearTimeout(revT);$('revive').hidden=true;
-  if(!cheat)S.k-=REV;save();revived=true;lives=1;drawLives();
+  if(!cheat)S.k-=REV;save();revived=true;revN=n;lives=1;drawLives();
   flash('#8fe060');popText('REVIVED!','#8fe060',true);jingle([392,523,659,784]);
   playing=true;last=performance.now();deal();
 };
 $('revNo').onclick=()=>{clearTimeout(revT);$('revive').hidden=true;endGame()};
 function startGame(){
-  score=shown=0;lives=3;streak=topStreak=n=0;endRun++;fever=frenzyT=0;caught={};gameDone=[];milestone=false;tutOn=!S.tut&&!cheat&&!self.__corn;tutStep=tutMade=0;revived=bestBeat=false;clearTimeout(revT);
+  score=shown=0;lives=3;streak=topStreak=n=0;revN=0;endRun++;fever=frenzyT=0;caught={};gameDone=[];milestone=false;tutOn=!S.tut&&!cheat&&!self.__corn;tutStep=tutMade=0;revived=bestBeat=false;clearTimeout(revT);
   const hs=S.hist||[];avg=hs.length?Math.min(60,Math.max(15,hs.reduce((a,b)=>a+b,0)/hs.length)):25;frenzies=0;mercy=hs.length>=2&&hs.slice(-2).every(x=>x<12);
   $('score').textContent=0;$('best').textContent=fmt(S.best);drawLives();setSub();
   deck.innerHTML='';next=null;cur=null;$('hint').style.opacity=1;app.classList.remove('frenzy');
