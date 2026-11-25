@@ -30,7 +30,7 @@ button{font:inherit;color:#fff;cursor:pointer}
 .ol{text-shadow:0 4px 0 var(--ol),3px 3px 0 var(--ol),-3px 3px 0 var(--ol),3px -2px 0 var(--ol),-3px -2px 0 var(--ol),0 -3px 0 var(--ol),3px 0 0 var(--ol),-3px 0 0 var(--ol)}
 .ol2{text-shadow:0 2px 0 var(--ol),2px 2px 0 var(--ol),-2px 2px 0 var(--ol),2px -1px 0 var(--ol),-2px -1px 0 var(--ol),0 -2px 0 var(--ol)}
 .app{--b1:#e4f3c4;--b2:#b8dc8a;--b3:#86bf5c;--b4:#5f9c43;--ray:255,255,255,.13;--hud2:#2c6a2e;--hud:#1f4d22;--ol:#173a19;--mote:#fff8c8;
-position:fixed;inset:0;margin:0 auto;max-width:520px;overflow:hidden;
+position:fixed;left:50%;top:0;width:100%;max-width:520px;height:100%;overflow:hidden;transform-origin:top center;transform:translateX(-50%) scale(var(--s,1));
 background:radial-gradient(circle at 50% 46%,var(--b1) 0%,var(--b2) 28%,var(--b3) 62%,var(--b4) 100%);box-shadow:0 0 0 6px #fff,0 0 40px rgba(0,0,0,.3)}
 .rays{position:absolute;left:50%;top:46%;width:60vmax;height:60vmax;margin:-30vmax 0 0 -30vmax;pointer-events:none;transform:scale(2.4);will-change:transform;
 background:repeating-conic-gradient(from 0deg,rgba(var(--ray)) 0 9deg,transparent 9deg 18deg);animation:rays 60s linear infinite;
@@ -157,6 +157,27 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 #revBar{animation:none}#revBar.run{animation:drain 5s linear forwards}
 @keyframes drain{to{transform:scaleX(0)}}
 @keyframes toast{0%{transform:translateY(-40px) scale(.6);opacity:0}8%{transform:translateY(0) scale(1.08);opacity:1}14%{transform:scale(1)}86%{opacity:1}100%{transform:translateY(-20px);opacity:0}}
+
+/* ---------- tablet and landscape ---------- */
+.app.fit{max-width:none}
+.app.tablet .panel{max-width:520px}
+.app.tablet .panel.full .grid{grid-template-columns:repeat(3,1fr)}
+.app.wide .panel{max-width:600px}
+.app.wide .panel.full{max-width:820px}
+.app.wide .panel.full .grid{grid-template-columns:repeat(4,1fr)}
+.app.wide #game{grid-template-columns:300px 1fr;grid-template-rows:1fr auto}
+.app.wide .hud{grid-row:1/3;border-bottom:0;border-right:4px solid var(--ol);box-shadow:6px 0 0 rgba(0,0,0,.15);display:flex;flex-direction:column;justify-content:center;gap:12px;padding:calc(env(safe-area-inset-top) + 14px) 18px}
+.app.wide .hud .score{margin-top:8px;font-size:58px}
+.app.wide .hud .sub{display:block;font-size:20px;min-height:52px}
+.app.wide .stage,.app.wide .dock{grid-column:2}
+.app.wide .hint{display:block}
+.app.wide .toasts{left:300px;top:16px}
+.app.wide #home{grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr auto;column-gap:28px}
+.app.wide #home>.row{grid-column:1/3}
+.app.wide #home>.logo{grid-column:1;grid-row:2/4;align-self:center;margin:0 auto}
+.app.wide #home>.logo .l1{font-size:104px}.app.wide #home>.logo .l2{font-size:58px}
+.app.wide #home>.hero{grid-column:2;grid-row:2}
+.app.wide #home>div:last-child{grid-column:2;grid-row:3}
 
 /* ---------- panels ---------- */
 .over{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);z-index:6;padding:calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 12px)}
@@ -639,7 +660,7 @@ function paint(cv,svg){
 }
 function fitHero(){
   const box=document.querySelector('.hero'),bh=box.clientHeight;if(bh<=0)return;
-  const h=Math.max(90,Math.min(bh-44,innerHeight*.42,400)),cv=$('heroCv');
+  const h=Math.max(90,Math.min(bh-44,LH*(app.classList.contains('wide')?.62:.42),400)),cv=$('heroCv');
   cv.style.height=h+'px';cv.style.width=(h*700/950)+'px';
 }
 try{new ResizeObserver(fitHero).observe(document.querySelector('.hero'))}catch(e){}
@@ -816,7 +837,7 @@ function bindDrag(c){
   let sx=0,sy=0,dx=0,dy=0,down=false,t0=0;
   el.onpointerdown=e=>{if(!playing||c!==cur)return;down=true;sx=e.clientX;sy=e.clientY;dx=dy=0;t0=performance.now();el.classList.remove('snap','in');el.classList.add('drag');try{el.setPointerCapture(e.pointerId)}catch(_){}};
   let pend=false;
-  el.onpointermove=e=>{if(!down)return;dx=e.clientX-sx;dy=e.clientY-sy;
+  el.onpointermove=e=>{if(!down)return;dx=(e.clientX-sx)/SC;dy=(e.clientY-sy)/SC;
     if(pend)return;pend=true;
     requestAnimationFrame(()=>{pend=false;if(!down)return;
       el.style.transform=`translate3d(${dx}px,${dy*.3}px,0) rotate(${dx/14}deg)`;
@@ -906,14 +927,26 @@ function loop(now){
   }
   raf=requestAnimationFrame(loop);
 }
+let SC=1,LH=innerHeight;
+// Size the game for the device: phones 1:1, tablets scaled up, anything on its side gets the two-column layout
+function layout(){
+  const W=innerWidth,H=innerHeight,land=W>H*1.15,tab=Math.min(W,H)>=600;
+  let s=1,maxW=520;
+  if(land){s=Math.max(.55,Math.min(1.8,H/640,W/900));maxW=1000}
+  else if(tab){s=Math.max(1,Math.min(1.8,W/540,H/820));maxW=600}
+  SC=s;LH=H/s;
+  app.style.setProperty('--s',s);app.style.width=Math.min(maxW,W/s)+'px';app.style.height=LH+'px';
+  app.classList.toggle('fit',land||tab);app.classList.toggle('wide',land);app.classList.toggle('tablet',tab&&!land);
+  fit();fitHero();
+}
 function fit(){
-  const sh=stage.clientHeight,small=innerHeight<=640,h=sh-(small?64:112);
+  const sh=stage.clientHeight,small=LH<=640&&!app.classList.contains('wide'),h=sh-(small?64:112);
   if(sh<=0)return;
-  const w=Math.max(90,Math.min(stage.clientWidth*.74,330,h*220/320));
+  const w=Math.max(90,Math.min(stage.clientWidth*.74,app.classList.contains('wide')?300:330,h*220/320));
   deck.style.width=w+'px';deck.style.height=(w*320/220)+'px';
 }
 try{new ResizeObserver(fit).observe(stage)}catch(e){}
-addEventListener('resize',fit);
+addEventListener('resize',layout);addEventListener('orientationchange',()=>setTimeout(layout,250));
 function offerRevive(){
   playing=false;$('tbar').classList.remove('low');
   $('revNote').innerHTML=`Keep your ${fmt(score)} points and carry on with 1 life. You have ${fmt(S.k)} ${KI}`;
@@ -991,7 +1024,7 @@ document.addEventListener('touchmove',e=>{if(e.target.closest('.card'))e.prevent
  for(let i=0;i<10;i++){const a=i*Math.PI/5;o+=`<ellipse cx="${f(Math.cos(a)*31)}" cy="${f(Math.sin(a)*31)}" rx="9.500" ry="12" transform="rotate(${i*36+90} ${f(Math.cos(a)*31)} ${f(Math.sin(a)*31)})" fill="#ffd83a" stroke="#b86a00" stroke-width="2.5"/>`}
  for(let i=0;i<5;i++){const a=i*Math.PI/2.5+.3;o+=`<ellipse cx="${f(Math.cos(a)*12)}" cy="${f(Math.sin(a)*12)}" rx="6.500" ry="8" transform="rotate(${i*72+107} ${f(Math.cos(a)*12)} ${f(Math.sin(a)*12)})" fill="#ffe680" stroke="#b86a00" stroke-width="2.5"/>`}
  $('logoO').innerHTML=o+'<circle r="3.500" fill="#fff2a8"/>'}
-applyTheme();daily();checkSkins();drawHome();
+applyTheme();daily();checkSkins();layout();drawHome();
 $('demoGood').innerHTML=cob('good',7)+'<span class="ol2">Good: KEEP</span>';
 $('demoBad').innerHTML=cob('bad',11)+'<span class="ol2">Yuck: TOSS</span>';
 $('demoRare').innerHTML=RARE.map((k,i)=>`<div>${cob(k,21+i)}<span class="ol2">+${T[k].pts}</span></div>`).join('');
