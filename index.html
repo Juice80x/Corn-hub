@@ -6,14 +6,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Corn Hub">
+<meta name="apple-mobile-web-app-title" content="Corn Rush">
 <meta name="theme-color" content="#1f4d22">
 <meta name="robots" content="noindex,nofollow">
-<meta name="description" content="Corn Hub: swipe to keep the good corn, toss the yuck, and chase rare cobs.">
+<meta name="description" content="Corn Rush: swipe to keep the good corn, toss the yuck, and chase rare cobs.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>Corn Hub</title>
+<title>Corn Rush</title>
 <style>
 /* VOICE: chunky comic mobile-game, glossy and juicy
    IDEA: a corn-sorting arcade with a home hub, unlockable backdrops and treasure cobs
@@ -61,7 +61,7 @@ button.pill{padding:3px 8px}
 text-shadow:0 7px 0 var(--ol),4px 5px 0 var(--ol),-4px 5px 0 var(--ol),4px -3px 0 var(--ol),-4px -3px 0 var(--ol),0 -4px 0 var(--ol),5px 0 0 var(--ol),-5px 0 0 var(--ol)}
 .logo .l1 .o{display:inline-grid;width:.82em;height:.82em;margin:0 .02em;border-radius:50%;box-shadow:0 6px 0 var(--ol)}
 .logo .l1 svg{width:100%;height:100%;animation:spin 14s linear infinite}
-.logo .l2{display:inline-block;position:relative;margin-top:2px;font-size:min(13vw,58px);padding:.06em .55em .12em;transform:rotate(-3deg);letter-spacing:.12em;
+.logo .l2{display:inline-block;position:relative;margin-top:2px;font-size:min(13vw,58px);padding:.06em .55em .12em;transform:rotate(-3deg);letter-spacing:.1em;
 background:repeating-linear-gradient(92deg,#b9793a 0 22px,#a96a2e 22px 25px,#c2853f 25px 51px,#a96a2e 51px 53px);border:5px solid var(--ol);border-radius:10px;box-shadow:0 6px 0 var(--ol),inset 0 4px 0 rgba(255,255,255,.3)}
 .logo .l2::before,.logo .l2::after{content:"";position:absolute;top:50%;width:9px;height:9px;margin-top:-5px;border-radius:50%;background:#e8e2d0;border:2px solid var(--ol)}
 .logo .l2::before{left:8px}.logo .l2::after{right:8px}
@@ -244,11 +244,11 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
         <button class="pill ol2" id="muteBtn" aria-label="Sound on or off"></button>
       </div>
     </div>
-    <div class="logo" aria-label="Corn Hub">
+    <div class="logo" aria-label="Corn Rush">
       <svg class="lf a" viewBox="-6 -2 70 126"><path d="M58 118C10 100-4 50 14 4c2 40 20 76 44 114z" fill="#8ad653" stroke="var(--ol)" stroke-width="5" stroke-linejoin="round"/><path d="M58 118C30 90 18 50 14 4" fill="none" stroke="var(--ol)" stroke-width="2" opacity=".5"/></svg>
       <svg class="lf b" viewBox="-6 -2 70 126"><path d="M58 118C10 100-4 50 14 4c2 40 20 76 44 114z" fill="#8ad653" stroke="var(--ol)" stroke-width="5" stroke-linejoin="round"/><path d="M58 118C30 90 18 50 14 4" fill="none" stroke="var(--ol)" stroke-width="2" opacity=".5"/></svg>
       <div class="l1"><span>C</span><span class="o"><svg viewBox="-50 -50 100 100" id="logoO"></svg></span><span>RN</span></div>
-      <div class="l2 ol2">HUB</div>
+      <div class="l2 ol2">RUSH</div>
     </div>
     <div class="ver" id="ver"></div>
     <div class="hero"><div id="heroCob"><canvas id="heroCv" width="700" height="950"></canvas></div><div class="bestline ol2" id="bestHome"></div></div>
@@ -359,7 +359,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
   <div class="over" id="gate" hidden style="z-index:20;background:var(--hud)">
     <div class="panel">
       <h2 class="ol">Invite only</h2>
-      <p class="ol2">Corn Hub is in private testing. Ask for an invite link to play.</p>
+      <p class="ol2">Corn Rush is in private testing. Ask for an invite link to play.</p>
     </div>
   </div>
 
@@ -378,7 +378,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=25;
+const BUILD=26;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';

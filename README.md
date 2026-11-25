@@ -1,4 +1,4 @@
-# Corn Hub
+# Corn Rush
 
 A swipe-to-sort corn game for your phone. Keep the good corn, toss the yuck, chase the rare cobs.
 
