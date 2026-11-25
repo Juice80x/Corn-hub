@@ -281,7 +281,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <div class="menu">
         <button class="mbtn ol2" id="shopBtn"><svg viewBox="0 0 24 24"><path d="M12 2.500c5.500 0 9.500 3.500 9.500 8 0 3-2.500 4.500-5 4.500h-2c-1.500 0-2 1.500-1 2.500.8.800.5 2.500-1.500 2.500-5.500 0-9.500-4-9.500-9s4-8.500 9.500-8.500z" fill="#fff" stroke="var(--ol)" stroke-width="2"/><circle cx="7.500" cy="11" r="1.600" fill="#e24a3b"/><circle cx="11" cy="7" r="1.600" fill="#ffc21a"/><circle cx="16" cy="8" r="1.600" fill="#4fb53a"/></svg>SKINS</button>
         <button class="mbtn ol2" id="misBtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.500" fill="#fff" stroke="var(--ol)" stroke-width="2"/><circle cx="12" cy="12" r="5.500" fill="#e24a3b" stroke="var(--ol)" stroke-width="1.500"/><circle cx="12" cy="12" r="1.800" fill="#fff"/></svg>MISSIONS<span class="dot" id="misDot"></span></button>
-        <button class="mbtn ol2" id="dexBtn"><svg viewBox="0 0 24 24"><path d="M12 6C9 3.500 5 3.500 2 5v14c3-1.500 7-1.500 10 1 3-2.500 7-2.500 10-1V5c-3-1.500-7-1.500-10 1z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M12 6v14" stroke="var(--ol)" stroke-width="2"/></svg>CORNPEDIA<span class="dot" id="dexDot" style="background:#f29a0c"></span></button>
+        <button class="mbtn ol2" id="dexBtn"><svg viewBox="0 0 24 24"><path d="M12 6C9 3.500 5 3.500 2 5v14c3-1.500 7-1.500 10 1 3-2.500 7-2.500 10-1V5c-3-1.500-7-1.500-10 1z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M12 6v14" stroke="var(--ol)" stroke-width="2"/></svg>CORNDEX<span class="dot" id="dexDot" style="background:#f29a0c"></span></button>
         <button class="mbtn ol2" id="lbBtn"><svg viewBox="0 0 24 24"><path d="M5 4h14v4a7 7 0 0 1-14 0zM9 15h6v3H9zM7 18h10v3H7z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/></svg>LEADERBOARD</button>
       </div>
     </div>
@@ -342,7 +342,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
   <div class="over" id="dex" hidden>
     <div class="panel full">
       <button class="x" data-close="dex" aria-label="Close">✕</button>
-      <div><h2 class="ol">Cornpedia</h2><div class="earn ol2" id="dexCount" style="font-size:20px"></div></div>
+      <div><h2 class="ol">Corndex</h2><div class="earn ol2" id="dexCount" style="font-size:20px"></div></div>
       <p class="ol2" id="dexNote" style="font-size:14px"></p>
       <div class="grid" id="dexGrid"></div>
     </div>
@@ -408,7 +408,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=38;
+const BUILD=39;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -447,7 +447,7 @@ const SK=[
  {id:'blue',name:'Blueberry',g:['#e0f0ff','#5a9aff','#1e4ac8'],base:'#1a3a9a',ks:'#12297a',tip:'#d0e4ff',cost:3000},
  {id:'lilac',name:'Lilac',g:['#f8eaff','#c88aff','#8a3ad8'],base:'#6a2ab0',ks:'#4a1a88',tip:'#f0dcff',cost:8000},
  {id:'sunset',name:'Sunset',g:['#fff0b0','#ffb02e','#f0600c'],g2:['#ffe0d0','#ff7a5a','#d8281e'],base:'#c84a10',ks:'#8a2a08',tip:'#fff0c0',req:{k:'day',n:7,txt:'Reach a 7 day streak'}},
- {id:'gem',name:'Glass Gem',g:['#fff2a8','#ffcf2e','#f0960c'],multi:[['#ffe6f4','#ff8ccb','#e0489e'],['#e0f0ff','#5a9aff','#1e4ac8'],['#e8fff0','#4fd69a','#149a6a'],['#f8eaff','#c88aff','#8a3ad8'],['#fff2a8','#ffcf2e','#f0960c'],['#ffc9b8','#e8382e','#a3141a']],base:'#7a4a8a',ks:'rgba(50,20,60,.6)',tip:'#fff6d8',req:{k:'dex',n:10,txt:'Find 10 Cornpedia entries'}},
+ {id:'gem',name:'Glass Gem',g:['#fff2a8','#ffcf2e','#f0960c'],multi:[['#ffe6f4','#ff8ccb','#e0489e'],['#e0f0ff','#5a9aff','#1e4ac8'],['#e8fff0','#4fd69a','#149a6a'],['#f8eaff','#c88aff','#8a3ad8'],['#fff2a8','#ffcf2e','#f0960c'],['#ffc9b8','#e8382e','#a3141a']],base:'#7a4a8a',ks:'rgba(50,20,60,.6)',tip:'#fff6d8',req:{k:'dex',n:10,txt:'Find 10 Corndex entries'}},
  {id:'jade',name:'Jade',g:['#e8fff0','#4fd69a','#149a6a'],base:'#0f7a55',ks:'#0a5a40',tip:'#d0ffe4',req:{k:'frenzy',n:40,txt:'Trigger 40 Frenzies'}}
 ];
 const T={
@@ -859,7 +859,7 @@ function drawMissions(){
     return `<div class="mi ${m.done?'done':''}"><div class="row ol2"><span>${d.txt}</span><span>${m.done?'DONE':'+'+d.rw+' '+KI}</span></div><div class="prog"><i style="transform:scaleX(${m.p/d.n})"></i></div><div class="ol2" style="font-size:14px">${fmt(m.p)} / ${fmt(d.n)}</div></div>`}).join('');
 }
 
-/* ---------- cornpedia ---------- */
+/* ---------- corndex ---------- */
 function drawDex(){
   const found=DEX.filter(d=>S.dex[d[0]]).length;
   $('dexCount').textContent=found+' / '+DEX.length+' found';
@@ -1035,7 +1035,7 @@ function decide(keepIt,timedOut){
     const fz=frenzyT>0,pts=t.pts*mult()*(fz?2:1)+(fast?1:0);score+=pts;retrigger($('scoreWrap'),'bump');
     S.t.cobs++;track('cob',1);if(!good)track('toss',1);
     const first=!S.dex[c.type];S.dex[c.type]=(S.dex[c.type]||0)+1;
-    if(first&&t.name){const bn=t.x?500:150;S.k+=bn;toast(`New Cornpedia entry! +${bn} ${KI}`)}
+    if(first&&t.name){const bn=t.x?500:150;S.k+=bn;toast(`New Corndex entry! +${bn} ${KI}`)}
     if(Math.floor(life()/MILE)>Math.floor((life()-pts)/MILE)){milestone=true;if(next){next.el.remove();next=null}toast(fmt(Math.floor(life()/MILE)*MILE)+' points! Special cob incoming');jingle([784,988,1175,1568])}
     const tt=c.type==='good'?SK.find(x=>x.id===S.cob):t;
     bits('k',t.name?12:7,tt.bit||[tt.g[1],tt.g[0],tt.g[2]],130);
