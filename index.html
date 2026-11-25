@@ -410,14 +410,14 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=42;
+const BUILD=43;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
 
 /* ---------- catalogue ---------- */
 const BG=[
- {id:'field',name:'Green Field',cost:0,c:['#e4f3c4','#b8dc8a','#86bf5c','#5f9c43'],ray:'255,255,255,.13',hud:['#2c6a2e','#1f4d22'],ol:'#173a19',mote:'#fff8c8'},
+ {id:'field',name:'Green Field',cost:1500,c:['#e4f3c4','#b8dc8a','#86bf5c','#5f9c43'],ray:'255,255,255,.13',hud:['#2c6a2e','#1f4d22'],ol:'#173a19',mote:'#fff8c8'},
  {id:'sunset',name:'Sunset Farm',cost:750,c:['#fff0b8','#ffc978','#f58a5a','#b8456a'],ray:'255,255,255,.15',hud:['#b04a44','#6e2740'],ol:'#3d1226',mote:'#fff2c0'},
  {id:'night',name:'Midnight Barn',cost:2500,c:['#6a88d8','#34509c','#1e2f6a','#101a40'],ray:'180,210,255,.09',hud:['#24356e','#131d45'],ol:'#080d24',mote:'#fff48a'},
  {id:'candy',name:'Candy Land',cost:6000,c:['#fff5fb','#ffd0e8','#ff9fcf','#c96bb8'],ray:'255,255,255,.22',hud:['#d85aa6','#9a3a86'],ol:'#4a1440',mote:'#ffffff'},
@@ -425,7 +425,7 @@ const BG=[
  {id:'space',name:'Deep Space',cost:30000,c:['#8a5fe0','#42258c','#1c0f4a','#07041c'],ray:'200,160,255,.1',hud:['#3a2080','#1a0d45'],ol:'#05021a',mote:'#ffffff'}
 ];
 BG.push(
-  {id:'beach',name:'Tropical Bay',cost:1500,c:['#f4fff0','#a8f0e0','#4ac8d0','#1a8aa8'],ray:'255,255,255,.18',hud:['#1a9aa8','#0f6a80'],ol:'#083a48',mote:'#ffffff'},
+  {id:'beach',name:'Tropical Bay',cost:0,c:['#f4fff0','#a8f0e0','#4ac8d0','#1a8aa8'],ray:'255,255,255,.18',hud:['#1a9aa8','#0f6a80'],ol:'#083a48',mote:'#ffffff'},
  {id:'autumn',name:'Harvest Dusk',cost:4000,c:['#fff0c8','#f8c070','#d8823a','#8a4a1a'],ray:'255,240,200,.16',hud:['#9a5a20','#603410'],ol:'#3a1c08',mote:'#ffe0a0'},
  {id:'snow',name:'Snowfield',cost:9000,c:['#ffffff','#e4f2ff','#b0d4f0','#7aa8d8'],ray:'255,255,255,.3',hud:['#5a8ac0','#3a6498'],ol:'#1a3458',mote:'#ffffff'},
  {id:'neon',name:'Neon Night',cost:20000,c:['#ff6ad8','#a02ac0','#3a1280','#12063a'],ray:'255,120,240,.12',hud:['#7a1aa0','#3a0a60'],ol:'#12042a',mote:'#7af0ff'},
@@ -437,7 +437,7 @@ BG.push(
 );
 BG.sort((a,b)=>a.cost-b.cost);
 // Worlds: the same colour themes with an illustrated landscape. Sold separately from the plain colours.
-const WCOST={field:0,sunset:1200,beach:2000,jungle:3200,night:4500,autumn:6000,candy:8000,snow:10000,city:13000,outback:17000,neon:24000,space:32000,ufo:38000,volcano:46000,vault:65000},WNAME={field:'Corn Farm',beach:'Tropical Island',neon:'Future City'};
+const WCOST={field:5000,sunset:8000,beach:12000,jungle:16000,night:20000,autumn:26000,candy:32000,snow:40000,city:50000,outback:60000,neon:75000,space:90000,ufo:110000,volcano:130000,vault:160000},WNAME={field:'Corn Farm',beach:'Tropical Island',neon:'Future City'};
 const WORLD=BG.map(b=>Object.assign({},b,{id:'w_'+b.id,art:b.id,name:WNAME[b.id]||b.name,cost:WCOST[b.id]})).sort((a,b)=>a.cost-b.cost);
 ['jungle','city','ufo'].forEach(id=>BG.splice(BG.findIndex(b=>b.id===id),1));
 const ALLBG=BG.concat(WORLD);
@@ -495,15 +495,19 @@ const MIS=[
 ];
 
 /* ---------- save ---------- */
-let S={best:0,k:0,t:{cobs:0,rare:0,games:0,frenzy:0},own:{bg:['field'],cob:['classic'],husk:['green']},bg:'field',cob:'classic',husk:'green',day:{date:'',streak:0},mis:{date:'',list:[]},mute:false,seen:false,hist:[],top:[],name:'',dex:{},tut:false};
+let S={best:0,k:0,t:{cobs:0,rare:0,games:0,frenzy:0},own:{bg:['beach'],cob:['classic'],husk:['green']},bg:'beach',cob:'classic',husk:'green',day:{date:'',streak:0},mis:{date:'',list:[]},mute:false,seen:false,hist:[],top:[],name:'',dex:{},tut:false};
+let OLD43=false;
 try{const o=JSON.parse(localStorage.getItem('cornhub')||'null');
-  if(o){S=Object.assign(S,o);S.t=Object.assign({cobs:0,rare:0,games:0,frenzy:0},o.t||{})}
+  if(o){OLD43=!o.d43;S=Object.assign(S,o);S.t=Object.assign({cobs:0,rare:0,games:0,frenzy:0},o.t||{})}
   else S.best=+localStorage.getItem('shuckBest')||0}catch(e){}
 if(!S.v){if(S.best||S.k||S.t.pts||(S.top||[]).length)S.legacy={best:S.best,k:S.k,pts:S.t.pts,top:S.top,hist:S.hist,dex:S.dex};S.best=0;S.k=0;S.t.pts=0;S.top=[];S.hist=[];S.v=4}
 if(S.v===2)S.v=4;
 if(S.v===3){S.best=Math.round(S.best/10);S.t.pts=Math.round(S.t.pts/10);for(const e of S.top)e.s=Math.round((+e.s||0)/10);for(const m of (S.mis.list||[]))if(m.id==='score'){m.p=0;m.done=false}S.v=4}
-delete S.plain;S.own.bg=S.own.bg.map(i=>i==='jungle'||i==='city'||i==='ufo'?'w_'+i:i);if(S.bg==='jungle'||S.bg==='city'||S.bg==='ufo')S.bg='w_'+S.bg;if(!S.own.bg.includes('w_field'))S.own.bg.push('w_field');
-if(!ALLBG.some(b=>b.id===S.bg)||!S.own.bg.includes(S.bg))S.bg='field';if(!SK.some(s=>s.id===S.cob)||!S.own.cob.includes(S.cob))S.cob='classic';
+delete S.plain;S.own.bg=S.own.bg.map(i=>i==='jungle'||i==='city'||i==='ufo'?'w_'+i:i);if(S.bg==='jungle'||S.bg==='city'||S.bg==='ufo')S.bg='w_'+S.bg;
+// v43: Tropical Bay is the free starting colour (refunded if it was bought); no world is free any more
+if(OLD43){if(S.own.bg.includes('beach'))S.k+=1500;else S.own.bg.push('beach');S.own.bg=S.own.bg.filter(i=>i!=='w_field');if(S.bg==='w_field'||S.bg==='field')S.bg='beach'}
+S.d43=1;if(!S.own.bg.includes('beach'))S.own.bg.push('beach');
+if(!ALLBG.some(b=>b.id===S.bg)||!S.own.bg.includes(S.bg))S.bg='beach';if(!SK.some(s=>s.id===S.cob)||!S.own.cob.includes(S.cob))S.cob='classic';
 if(S.tut===undefined||S.tut===false&&S.t.games>0&&!('tut' in (JSON.parse(localStorage.getItem('cornhub')||'{}'))))S.tut=S.t.games>0;
 if(!Array.isArray(S.top))S.top=[];
 S.own.cob=S.own.cob.filter(id=>SK.some(x=>x.id===id));
