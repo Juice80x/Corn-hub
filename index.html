@@ -195,8 +195,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:8px 0}
 .chip{background:var(--a,rgba(0,0,0,.3));border:3px solid var(--ol);border-radius:12px;padding:1px 10px 3px;font-size:17px;box-shadow:0 3px 0 var(--ol)}
 .earn{font-size:26px;color:#ffe14d}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}
-.tab{height:46px;font-size:15px;border:4px solid var(--ol);border-radius:14px;background:rgba(0,0,0,.3)}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 10px}
+.tab{height:46px;font-size:13px;padding:0;border:4px solid var(--ol);border-radius:14px;background:rgba(0,0,0,.3)}
 .tab.on{background:linear-gradient(#ffd84a,#f29a0c);box-shadow:0 4px 0 var(--ol)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:auto;align-content:start;padding:2px 2px 8px}
 .item{background:rgba(0,0,0,.25);border:4px solid var(--ol);border-radius:18px;padding:8px 8px 10px;display:grid;gap:6px}
@@ -300,7 +300,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     <div class="panel full">
       <button class="x" data-close="shop" aria-label="Close">✕</button>
       <div><h2 class="ol">Skins</h2><div class="earn ol2" id="walletShop"></div></div>
-      <div class="tabs"><button class="tab on ol2" id="tabBg">SCENES</button><button class="tab ol2" id="tabCob">COBS</button><button class="tab ol2" id="tabHusk">HUSKS</button></div>
+      <div class="tabs"><button class="tab on ol2" id="tabBg">SCENES</button><button class="tab ol2" id="tabCob">COBS</button><button class="tab ol2" id="tabHusk">HUSKS</button><button class="tab ol2" id="tabCamo">CAMOS</button></div>
       <div class="grid" id="shopGrid"></div>
     </div>
   </div>
@@ -380,7 +380,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=29;
+const BUILD=30;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -422,6 +422,26 @@ const SK=[
  {id:'gem',name:'Glass Gem',g:['#fff2a8','#ffcf2e','#f0960c'],multi:[['#ffe6f4','#ff8ccb','#e0489e'],['#e0f0ff','#5a9aff','#1e4ac8'],['#e8fff0','#4fd69a','#149a6a'],['#f8eaff','#c88aff','#8a3ad8'],['#fff2a8','#ffcf2e','#f0960c'],['#ffc9b8','#e8382e','#a3141a']],base:'#7a4a8a',ks:'rgba(50,20,60,.6)',tip:'#fff6d8',req:{k:'dex',n:10,txt:'Find 10 Cornpedia entries'}},
  {id:'jade',name:'Jade',g:['#e8fff0','#4fd69a','#149a6a'],base:'#0f7a55',ks:'#0a5a40',tip:'#d0ffe4',req:{k:'frenzy',n:40,txt:'Trigger 40 Frenzies'}}
 ];
+SK.push(
+ {id:'cwood',camo:1,name:'Woodland',pat:'blotch',pal:['#7a9a4a','#4a6a2a','#a8824a','#2a3a1a'],base:'#3a4a22',ks:'rgba(0,0,0,.45)',tip:'#a8c070',g:['#a8c070','#7a9a4a','#4a6a2a'],req:{k:'cobs',n:300,txt:'Sort 300 cobs'}},
+ {id:'cdigi',camo:1,name:'Digital',pat:'digital',pal:['#9aa88a','#6a7a5a','#c8c8a8','#3a4a3a'],base:'#4a5a44',ks:'rgba(0,0,0,.45)',tip:'#c8c8a8',g:['#c8c8a8','#9aa88a','#6a7a5a'],req:{k:'toss',n:150,txt:'Toss 150 rotten cobs'}},
+ {id:'curban',camo:1,name:'Urban',pat:'blotch',pal:['#b8bcc4','#7a808a','#e4e6ea','#4a4e58'],base:'#5a5e68',ks:'rgba(0,0,0,.45)',tip:'#e4e6ea',g:['#e4e6ea','#b8bcc4','#7a808a'],req:{k:'games',n:25,txt:'Play 25 games'}},
+ {id:'carctic',camo:1,name:'Arctic',pat:'blotch',pal:['#ffffff','#cfe4f4','#9ab8d0','#e8f4ff'],base:'#8aa8c0',ks:'rgba(20,50,80,.45)',tip:'#ffffff',g:['#ffffff','#cfe4f4','#9ab8d0'],req:{k:'rare',n:25,txt:'Catch 25 rare cobs'}},
+ {id:'cautumn',camo:1,name:'Autumn',pat:'blotch',pal:['#e8902a','#a8521a','#f0c86a','#5a2a10'],base:'#8a4214',ks:'rgba(0,0,0,.45)',tip:'#f0c86a',g:['#f0c86a','#e8902a','#a8521a'],req:{k:'streak',n:50,txt:'Reach a 50 streak'}},
+ {id:'credt',camo:1,name:'Red Tiger',pat:'tiger',pal:['#e02222','#1a0808','#ff6a4a'],base:'#8a1010',ks:'rgba(0,0,0,.5)',tip:'#ff6a4a',g:['#ff6a4a','#e02222','#1a0808'],req:{k:'best',n:1000,txt:'Score 1,000 in a game'}},
+ {id:'cbluet',camo:1,name:'Blue Tiger',pat:'tiger',pal:['#2a6ae8','#08102a','#6ab0ff'],base:'#12307a',ks:'rgba(0,0,0,.5)',tip:'#6ab0ff',g:['#6ab0ff','#2a6ae8','#08102a'],req:{k:'frenzy',n:25,txt:'Trigger 25 Frenzies'}},
+ {id:'cgold',camo:1,name:'Gold',g:['#fffbe0','#ffd83a','#c98500'],base:'#b87400',ks:'#8a5200',tip:'#fff3b0',req:{k:'camos',n:7,txt:'Unlock all 7 other camos'}}
+);
+const hash=(x,y,k)=>{const v=Math.sin(x*127.1+y*311.7+k*74.7)*43758.5453;return v-Math.floor(v)};
+function vnoise(x,y,k){const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);
+  return (hash(xi,yi,k)*(1-u)+hash(xi+1,yi,k)*u)*(1-v)+(hash(xi,yi+1,k)*(1-u)+hash(xi+1,yi+1,k)*u)*v}
+// Which palette colour a kernel at (x,y) gets, for each camo pattern
+function camoPick(sk,x,y,k){
+  const p=sk.pal;
+  if(sk.pat==='tiger'){const w=Math.sin(y*.085+Math.sin(x*.05+k)*1.8+vnoise(x*.03,y*.03,k)*3);return w>.4?p[1]:w<-.9?p[2]:p[0]}
+  const n=sk.pat==='digital'?hash(Math.round(x/13),Math.round(y/20),k)*.55+vnoise(x*.03,y*.03,k)*.45:vnoise(x*.035,y*.03,k)*.65+vnoise(x*.09,y*.08,k+9)*.35;
+  return n<.38?p[1]:n<.52?p[0]:n<.66?p[2]:p[3];
+}
 const T={
   good:{pts:1,ol:'#3b2208',shade:'#5a2a00',silk:'#f1d27a'},
   bad:{pts:1,ol:'#1c140c',base:'#2e1e12',ks:'#140c06',shade:'#000000',silk:'#4a3a24',hus:['#8a7448','#5b4a2a'],bit:['#4a3326','#7d8099','#b4d455']},
@@ -474,7 +494,7 @@ if(!S.top.length&&S.best>0)S.top=[{nm:S.name||'Player',s:S.best,n:0,st:0,d:''}];
 const esc=x=>String(x).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
 let cheat=false,snap='';
 const save=()=>{if(cheat)return;try{localStorage.setItem('cornhub',JSON.stringify(S))}catch(e){}};
-const has=(cat,id)=>cheat||S.own[cat].includes(id);
+const has=(cat,id)=>cheat||S.own[cat==='camo'?'cob':cat].includes(id);
 const kf=()=>cheat?'∞':fmt(S.k);
 const dstr=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 
@@ -507,6 +527,7 @@ function cob(type,seed,still,skinId,layers,huskId){
   const side=sg=>vy.map((y,i)=>{const p=`${f(110+sg*(Wd(y)-1.5))} ${f(y)}`;if(!i)return p;const m=y-9.75;return `Q${f(110+sg*(Wd(m)+7))} ${f(m)} ${p}`});
   const lf=side(-1),rt=side(1),up=rt.map((q,i)=>{if(i===rt.length-1)return '';const y=vy[i],m=y+9.75;return `Q${f(110+Wd(m)+7)} ${f(m)} ${f(110+Wd(y)-1.5)} ${f(y)}`}).reverse().join('');
   const body=`M${lf.join('')}Q110 276 ${f(110+Wd(vy[vy.length-1])-1.5)} ${f(vy[vy.length-1])}${up}Q150 11 127 18Q110 5 93 18Q70 11 ${lf[0]}z`;
+  const cs=r(50);
   let k='';
   for(let row=0;row<13;row++){
     for(let i=0;i<5;i++){
@@ -519,6 +540,7 @@ function cob(type,seed,still,skinId,layers,huskId){
       else if(type==='candy')fill=`url(#${id}${row<4?'k':row<9?'j':'l'})`;
       else if(type==='neon'){fill=`url(#${id}${'kjl'[(row+i)%3]})`;hi=.9}
       else if(type==='void'){hi=.18;if(r(1)<.3)dot=`<circle cx="${f(x+r(8)-4)}" cy="${f(yy+r(8)-4)}" r="${f(.8+r(1.2))}" fill="#fff"/>`}
+      else if(plain&&sk.pat){fill=camoPick(sk,x,yy,cs);hi=.45;if(sneak&&!tip&&r(1)<.1){fill=r(1)<.6?'#4a3326':'#6a7a2a';hi=0}}
       else if(plain){if(tip)fill=sk.tip;else if(sk.multi)fill=`url(#${id}m${Math.floor(r(sk.multi.length))})`;else if(sk.g2&&r(1)<.42)fill=`url(#${id}j)`;if(sneak&&!tip&&r(1)<.1){fill=r(1)<.6?'#4a3326':'#6a7a2a';hi=0}}
       else if(type==='lava'){if(r(1)<.18){fill='#3a1410';hi=.12}}
       else if(type==='royal'){if(r(1)<.25)fill=`url(#${id}j)`}
@@ -854,21 +876,21 @@ $('nameIn').oninput=e=>{S.name=e.target.value.slice(0,12);save()};
 
 /* ---------- shop ---------- */
 let tab='bg';
-const stat=k=>k==='best'?S.best:k==='dex'?Object.keys(S.dex).length:k==='day'?S.day.streak:S.t[k]||0;
+const stat=k=>k==='camos'?SK.filter(x=>x.camo&&x.id!=='cgold'&&S.own.cob.includes(x.id)).length:k==='best'?S.best:k==='dex'?Object.keys(S.dex).length:k==='day'?S.day.streak:S.t[k]||0;
 function checkSkins(){
   const fresh=[];
   for(const s of SK)if(s.req&&!S.own.cob.includes(s.id)&&stat(s.req.k)>=s.req.n){S.own.cob.push(s.id);fresh.push(s.name)}
   return fresh;
 }
-const CATS={bg:BG,cob:SK,husk:HUSK},EQ={bg:'bg',cob:'cob',husk:'husk'};
+const CATS={bg:BG,cob:SK.filter(x=>!x.camo),husk:HUSK,camo:SK.filter(x=>x.camo)},EQ={bg:'bg',cob:'cob',husk:'husk',camo:'cob'};
 function drawShop(){
   $('walletShop').innerHTML=KI+' '+kf();
-  $('tabBg').classList.toggle('on',tab==='bg');$('tabCob').classList.toggle('on',tab==='cob');$('tabHusk').classList.toggle('on',tab==='husk');
+  $('tabBg').classList.toggle('on',tab==='bg');$('tabCob').classList.toggle('on',tab==='cob');$('tabHusk').classList.toggle('on',tab==='husk');$('tabCamo').classList.toggle('on',tab==='camo');
   const list=CATS[tab].slice().sort((a,b)=>(a.req?1e9:a.cost||0)-(b.req?1e9:b.cost||0));
   $('shopGrid').innerHTML=list.map((it,i)=>{
     const own=has(tab,it.id),eq=S[EQ[tab]]===it.id,p=it.req?Math.min(stat(it.req.k),it.req.n):0;
     const pic=tab==='bg'?`<div class="sw" style="--ray:${it.ray};background:radial-gradient(circle,${it.c[0]},${it.c[1]} 30%,${it.c[2]} 65%,${it.c[3]})"><i></i></div>`
-      :`<div class="sw" style="background:rgba(255,255,255,.18)">${tab==='cob'?cob('good',31+i,true,it.id):cob('good',51+i,true,null,null,it.id)}</div>`;
+      :`<div class="sw" style="background:rgba(255,255,255,.18)">${tab==='husk'?cob('good',51+i,true,null,null,it.id):cob('good',31+i,true,it.id)}</div>`;
     const act=own||!it.req?`<button class="ibtn ol2 ${eq?'cur':own?'':S.k>=it.cost?'buy':'no'}" data-id="${it.id}">${eq?'EQUIPPED':own?'USE':KI+' '+fmt(it.cost)}</button>`
       :`<div class="ol2" style="font-size:14px">${it.req.txt}</div><div class="prog"><i style="transform:scaleX(${p/it.req.n})"></i></div><div class="ol2" style="font-size:13px">${fmt(p)} / ${fmt(it.req.n)}</div>`;
     return `<div class="item ${eq?'eq':''}">${pic}<b class="ol2">${it.name}</b>${act}</div>`}).join('');
@@ -877,11 +899,11 @@ $('shopGrid').onclick=e=>{
   const b=e.target.closest('button');if(!b)return;
   const it=CATS[tab].find(x=>x.id===b.dataset.id);if(!it)return;
   if(has(tab,it.id)){S[EQ[tab]]=it.id;tone(784,0,.1,'triangle')}
-  else if(!it.req&&S.k>=it.cost){S.k-=it.cost;S.own[tab].push(it.id);S[EQ[tab]]=it.id;applyTheme();flash('#fff');bits('s',16,['#fff','#ffe14d','#ff7ac8'],240,app);jingle([523,659,784,1047,1319]);toast('Unlocked '+it.name+'!')}
+  else if(!it.req&&S.k>=it.cost){S.k-=it.cost;S.own[EQ[tab]].push(it.id);S[EQ[tab]]=it.id;applyTheme();flash('#fff');bits('s',16,['#fff','#ffe14d','#ff7ac8'],240,app);jingle([523,659,784,1047,1319]);toast('Unlocked '+it.name+'!')}
   else{retrigger(b,'shake');tone(160,0,.2,'sawtooth',.1,.6);toast(`Need ${fmt(it.cost-S.k)} more ${KI}. Keep shucking!`);return}
   applyTheme();save();drawShop();drawHome();
 };
-$('tabBg').onclick=()=>{tab='bg';drawShop()};$('tabCob').onclick=()=>{tab='cob';drawShop()};$('tabHusk').onclick=()=>{tab='husk';drawShop()};
+$('tabBg').onclick=()=>{tab='bg';drawShop()};$('tabCob').onclick=()=>{tab='cob';drawShop()};$('tabHusk').onclick=()=>{tab='husk';drawShop()};$('tabCamo').onclick=()=>{tab='camo';drawShop()};
 
 /* ---------- game ---------- */
 let score=0,shown=0,lives=3,streak=0,topStreak=0,n=0,caught={},playing=false,cur=null,next=null,timeLeft=0,timeMax=0,last=0,raf=0,fever=0,frenzyT=0;
@@ -985,7 +1007,7 @@ function decide(keepIt,timedOut){
   if(right){
     streak++;topStreak=Math.max(topStreak,streak);track('streak',streak,true);
     const fz=frenzyT>0,pts=t.pts*mult()*(fz?2:1)+(fast?1:0);score+=pts;retrigger($('scoreWrap'),'bump');
-    S.t.cobs++;track('cob',1);if(!good)track('toss',1);
+    S.t.cobs++;track('cob',1);if(!good){track('toss',1);S.t.toss=(S.t.toss||0)+1}S.t.streak=Math.max(S.t.streak||0,streak);
     const first=!S.dex[c.type];S.dex[c.type]=(S.dex[c.type]||0)+1;
     if(first&&t.name){const bn=t.x?500:150;S.k+=bn;toast(`New Cornpedia entry! +${bn} ${KI}`)}
     if(Math.floor(life()/MILE)>Math.floor((life()-pts)/MILE)){milestone=true;if(next){next.el.remove();next=null}toast(fmt(Math.floor(life()/MILE)*MILE)+' points! Special cob incoming');jingle([784,988,1175,1568])}
@@ -1137,7 +1159,7 @@ document.addEventListener('touchmove',e=>{if(e.target.closest('.card'))e.prevent
  for(let i=0;i<10;i++){const a=i*Math.PI/5;o+=`<ellipse cx="${f(Math.cos(a)*31)}" cy="${f(Math.sin(a)*31)}" rx="9.500" ry="12" transform="rotate(${i*36+90} ${f(Math.cos(a)*31)} ${f(Math.sin(a)*31)})" fill="#ffd83a" stroke="#b86a00" stroke-width="2.5"/>`}
  for(let i=0;i<5;i++){const a=i*Math.PI/2.5+.3;o+=`<ellipse cx="${f(Math.cos(a)*12)}" cy="${f(Math.sin(a)*12)}" rx="6.500" ry="8" transform="rotate(${i*72+107} ${f(Math.cos(a)*12)} ${f(Math.sin(a)*12)})" fill="#ffe680" stroke="#b86a00" stroke-width="2.5"/>`}
  $('logoO').innerHTML=o+'<circle r="3.500" fill="#fff2a8"/>'}
-applyTheme();daily();checkSkins();layout();drawHome();$('ver').textContent='v'+BUILD;
+applyTheme();daily();if(checkSkins().length)save();layout();drawHome();$('ver').textContent='v'+BUILD;
 $('demoGood').innerHTML=cob('good',7)+'<span class="ol2">Good: KEEP</span>';
 $('demoBad').innerHTML=cob('bad',11)+'<span class="ol2">Yuck: TOSS</span>';
 $('demoRare').innerHTML=RARE.map((k,i)=>`<div>${cob(k,21+i)}<span class="ol2">+${T[k].pts}</span></div>`).join('');
