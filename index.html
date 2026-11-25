@@ -159,27 +159,6 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 @keyframes toast{0%{transform:translateY(-40px) scale(.6);opacity:0}8%{transform:translateY(0) scale(1.08);opacity:1}14%{transform:scale(1)}86%{opacity:1}100%{transform:translateY(-20px);opacity:0}}
 
 /* ---------- living backgrounds ---------- */
-.amb{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.am{position:absolute;pointer-events:none;will-change:transform;animation-timing-function:linear;animation-iteration-count:infinite}
-.am.fall{top:-8%;animation-name:amFall}
-.am.rise{bottom:-8%;animation-name:amRise}
-.am.drift{left:-30%;animation-name:amDrift}
-.am.twk{animation-name:amTwk;animation-timing-function:ease-in-out}
-.am.wander{animation-name:amWander;animation-timing-function:ease-in-out}
-.am.shoot{left:-20%;animation-name:amShoot}
-.am.roll{left:-20%;animation-name:amRoll}
-@keyframes amFall{0%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(var(--sx),calc(var(--lh)*.58)) rotate(calc(var(--r)*.5))}100%{transform:translate(var(--dx),calc(var(--lh)*1.16)) rotate(var(--r))}}
-@keyframes amRise{0%{transform:translate(0,0);opacity:0}12%{opacity:var(--o)}50%{transform:translate(var(--sx),calc(var(--lh)*-.58))}88%{opacity:var(--o)}100%{transform:translate(var(--dx),calc(var(--lh)*-1.16));opacity:0}}
-@keyframes amDrift{from{transform:translateX(0)}to{transform:translateX(calc(var(--lw)*1.6))}}
-@keyframes amTwk{0%,100%{transform:scale(.3);opacity:.15}50%{transform:scale(1);opacity:var(--o)}}
-@keyframes amWander{0%,100%{transform:translate(0,0);opacity:.2}25%{transform:translate(var(--sx),-26px);opacity:var(--o)}50%{transform:translate(var(--dx),18px);opacity:.35}75%{transform:translate(calc(var(--sx)*-1),30px);opacity:var(--o)}}
-@keyframes amShoot{0%,86%{transform:translate(0,0) rotate(18deg);opacity:0}88%{opacity:1}100%{transform:translate(calc(var(--lw)*1.5),calc(var(--lw)*.5)) rotate(18deg);opacity:0}}
-@keyframes amRoll{from{transform:translateX(0) rotate(0deg)}to{transform:translateX(calc(var(--lw)*1.6)) rotate(1080deg)}}
-.am.cloud{height:0;border-radius:60px}
-.am.cloud::before,.am.cloud::after{content:"";position:absolute;background:inherit;border-radius:50%}
-.am.flap{left:-30%;animation-name:amDrift}
-.am.flap>i{display:block;width:100%;height:100%;background-size:contain;background-repeat:no-repeat;animation:amFlap .28s ease-in-out infinite alternate}
-@keyframes amFlap{from{transform:scaleY(1)}to{transform:scaleY(.35)}}
 
 /* ---------- first-run coach ---------- */
 .coach{position:absolute;inset:0;pointer-events:none;z-index:5}
@@ -277,13 +256,13 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .goal{margin:2px 6px 4px;font-size:15px;color:#ffe14d}.goal .prog{margin-top:4px}.goal .prog i{transform:scaleX(0);transition:transform .9s cubic-bezier(.2,.8,.3,1)}
 .btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 @media (max-height:640px){.sub{display:none}.score{font-size:34px}.tbtn{height:56px;font-size:24px}.dock{padding-top:8px}.hint{display:none}.deck{margin-top:14px}}
-@media (prefers-reduced-motion:reduce){.rays,.mote,.am,.am>i,.float,.fx,.float canvas.hue,#heroCob,.card.in,.aura,.badge,.logo,.logo .l1 svg,.go,.sub.hot,.tbar.low,.app.frenzy .fz{animation:none!important}.card[class*=x-],.card.snap{transition:none}.pop,.bit,.px,.ring{animation-duration:.01s}.shake{animation:none}}
+@media (prefers-reduced-motion:reduce){.rays,.mote,.float,.fx,.float canvas.hue,#heroCob,.card.in,.aura,.badge,.logo,.logo .l1 svg,.go,.sub.hot,.tbar.low,.app.frenzy .fz{animation:none!important}.card[class*=x-],.card.snap{transition:none}.pop,.bit,.px,.ring{animation-duration:.01s}.shake{animation:none}}
 </style>
 </head>
 <body>
 <div id="vpFix" style="position:fixed;inset:0;visibility:hidden;pointer-events:none"></div><div id="vpVh" style="position:fixed;left:0;top:0;width:1px;height:100vh;visibility:hidden;pointer-events:none"></div>
 <div class="app" id="app">
-  <div class="rays"></div><div class="amb" id="amb"></div><div class="fz"></div>
+  <div class="rays"></div><div class="fz"></div>
 
   <section class="screen on" id="home">
     <div class="row">
@@ -429,7 +408,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=36;
+const BUILD=37;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -805,9 +784,8 @@ function applyTheme(){
   // The page itself carries the sunburst, so it continues past the game panel on any screen
   const de=document.documentElement.style;de.backgroundColor=b.c[3];de.backgroundImage=`radial-gradient(circle at 50% 46%,${b.c[0]} 0%,${b.c[1]} 28%,${b.c[2]} 62%,${b.c[3]} 100%)`;de.backgroundRepeat='no-repeat';de.backgroundAttachment='fixed';de.backgroundSize='100% 100%';
   document.body.style.background='transparent';
-  if(ambKey!==S.bg){ambKey=S.bg;buildAmb()}
 }
-let heroKey='',ambKey='';
+let heroKey='';
 function paint(cv,svg){
   const img=new Image();img.onload=()=>{try{const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(img,0,0,cv.width,cv.height)}catch(e){}};
   img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
@@ -848,52 +826,6 @@ $('whoGo').onclick=()=>{S.name=($('whoIn').value||'').trim().slice(0,12)||'Playe
  });}
 
 /* ---------- living backgrounds: a few moving details per scene ---------- */
-const svgBg=x=>`url('data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">'+x+'</svg>').replace(/'/g,'%27')}')`;
-const AMPIC={
-  bird:svgBg('<path d="M4 22q8-12 16-2q8-10 16 2" fill="none" stroke="#3a2a2a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'),
-  bfly:svgBg('<path d="M20 20C10 4 0 8 4 18c2 6 10 6 16 2zM20 20C30 4 40 8 36 18c-2 6-10 6-16 2z" fill="#ffb02e" stroke="#5a2a08" stroke-width="2.5"/><path d="M20 20c-8 2-10 10-6 14 4 2 6-6 6-14zM20 20c8 2 10 10 6 14-4 2-6-6-6-14z" fill="#ffd84a" stroke="#5a2a08" stroke-width="2.5"/>'),
-  leaf:c=>svgBg(`<path d="M6 34C4 14 16 4 36 6C36 24 24 36 6 34z" fill="${c}" stroke="rgba(0,0,0,.35)" stroke-width="2.5"/><path d="M8 32L30 10" stroke="rgba(0,0,0,.3)" stroke-width="2"/>`),
-  star:svgBg('<path d="M20 2Q22 18 38 20Q22 22 20 38Q18 22 2 20Q18 18 20 2z" fill="#fff"/>'),
-  coin:svgBg('<circle cx="20" cy="20" r="16" fill="#ffc21a" stroke="#7a4a00" stroke-width="3"/><circle cx="20" cy="20" r="9" fill="#ffe46b"/>'),
-  bubble:svgBg('<circle cx="20" cy="20" r="16" fill="rgba(255,255,255,.18)" stroke="#fff" stroke-width="2.5"/><path d="M11 15q3-6 9-6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>'),
-  weed:svgBg('<circle cx="20" cy="20" r="15" fill="none" stroke="#8a5a2a" stroke-width="3" stroke-dasharray="5 4"/><circle cx="20" cy="20" r="9" fill="none" stroke="#a8743a" stroke-width="3" stroke-dasharray="3 5"/><path d="M6 20h28M20 6v28M10 10l20 20M30 10L10 30" stroke="#8a5a2a" stroke-width="2"/>')
-};
-// each entry: [kind, count, motion, size range, seconds range, extra]
-const AMB={
-  field:[['cloud',3,'drift',[70,120],[55,90],{c:'#ffffff',o:.5,y:[3,26]}],['dot',9,'rise',[4,9],[9,16],{c:['#fff8c8'],o:.5}],['bfly',2,'flap',[20,26],[16,26],{y:[30,66]}]],
-  sunset:[['cloud',3,'drift',[80,130],[50,85],{c:'#ffe6c8',o:.4,y:[3,24]}],['bird',3,'flap',[18,26],[20,34],{y:[6,26]}],['dot',7,'rise',[4,8],[10,16],{c:['#fff2c0'],o:.45}]],
-  night:[['star',22,'twk',[5,11],[2,5],{o:.9,y:[2,62]}],['dot',8,'wander',[6,9],[5,9],{c:['#fff48a'],o:1,glow:1,y:[30,88]}],['shoot',1,'shoot',[90,90],[9,9],{y:[6,22]}]],
-  candy:[['pill',16,'fall',[10,16],[7,12],{c:['#ff8ccb','#8ae0ff','#ffe14d','#a8f08a','#ffffff'],o:.9}],['bubble',5,'rise',[18,30],[9,14],{o:.8}]],
-  outback:[['dot',12,'drift',[3,7],[9,16],{c:['#ffe9b0'],o:.55,y:[38,94]}],['weed',1,'roll',[46,46],[13,13],{y:[80,80]}],['bird',2,'flap',[16,22],[24,36],{y:[6,20]}]],
-  space:[['star',30,'twk',[4,10],[2,5],{o:.95,y:[2,96]}],['shoot',2,'shoot',[100,100],[8,13],{y:[4,40]}]],
-  beach:[['cloud',2,'drift',[80,120],[55,85],{c:'#ffffff',o:.45,y:[3,20]}],['bubble',9,'rise',[12,26],[8,14],{o:.8}],['bird',2,'flap',[18,24],[20,30],{y:[8,24]}]],
-  autumn:[['leaf',14,'fall',[16,26],[7,13],{c:['#e8902a','#c8501a','#f0c040','#a83a1a'],o:.95}]],
-  snow:[['dot',26,'fall',[4,10],[6,14],{c:['#ffffff'],o:.95,ring:'rgba(90,140,200,.45)'}]],
-  neon:[['sq',16,'rise',[4,9],[4,9],{c:['#ff3df0','#3df0ff','#b8ff3d'],o:.9,glow:1}]],
-  volcano:[['dot',18,'rise',[3,7],[4,9],{c:['#ffb04a','#ff6a2a','#ffe14d'],o:.95,glow:1}],['dot',6,'fall',[3,6],[10,16],{c:['#5a4a44'],o:.6}]],
-  vault:[['star',16,'twk',[10,22],[2,4],{o:1,y:[2,92]}],['coin',5,'fall',[16,22],[10,16],{o:.9}]]
-};
-function buildAmb(){
-  const host=$('amb'),R2=(a,b)=>a+Math.random()*(b-a);let h='';
-  for(const [k,n,mo,sz,du,x] of (AMB[S.bg]||AMB.field)){
-    for(let i=0;i<n;i++){
-      const w=R2(sz[0],sz[1]),d=R2(du[0],du[1]),c=x.c?(Array.isArray(x.c)?x.c[i%x.c.length]:x.c):'#fff';
-      let st=`width:${w.toFixed(0)}px;height:${w.toFixed(0)}px;animation-duration:${d.toFixed(1)}s;animation-delay:${(-Math.random()*d).toFixed(1)}s;--o:${x.o||1};--sx:${R2(-34,34).toFixed(0)}px;--dx:${R2(-60,60).toFixed(0)}px;--r:${R2(-540,540).toFixed(0)}deg;opacity:${x.o||1};`;
-      if(mo==='fall'||mo==='rise')st+=`left:${R2(0,98).toFixed(1)}%;`;else if(mo==='twk'||mo==='wander')st+=`left:${R2(2,96).toFixed(1)}%;top:${R2(x.y[0],x.y[1]).toFixed(1)}%;`;else st+=`top:${R2(x.y[0],x.y[1]).toFixed(1)}%;`;
-      let cls='am '+mo,inner='';
-      if(k==='cloud'){cls+=' cloud';st+=`height:${(w*.34).toFixed(0)}px;background:${c};box-shadow:${(w*.3).toFixed(0)}px ${(-w*.16).toFixed(0)}px 0 ${(w*.07).toFixed(0)}px ${c},${(w*.62).toFixed(0)}px ${(-w*.06).toFixed(0)}px 0 ${(w*.02).toFixed(0)}px ${c};`}
-      else if(k==='dot'){st+=`border-radius:50%;background:${c};`+(x.ring?`box-shadow:0 0 0 1.5px ${x.ring};`:'')+(x.glow?`box-shadow:0 0 ${(w*1.6).toFixed(0)}px ${(w*.4).toFixed(0)}px ${c};`:'')}
-      else if(k==='sq'){st+=`background:${c};box-shadow:0 0 10px 2px ${c};`}
-      else if(k==='pill'){st+=`height:${(w*.38).toFixed(0)}px;border-radius:6px;background:${c};`}
-      else if(k==='shoot'){st+=`height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,#fff);`}
-      else if(k==='bird'||k==='bfly'){inner=`<i style="background-image:${AMPIC[k]}"></i>`}
-      else if(k==='leaf'){st+=`background:${AMPIC.leaf(c)} center/contain no-repeat;`}
-      else st+=`background:${AMPIC[k]} center/contain no-repeat;`;
-      h+=`<i class="${cls}" style="${st}">${inner}</i>`;
-    }
-  }
-  host.innerHTML=h;
-}
 
 /* ---------- daily ---------- */
 function daily(){
@@ -1312,6 +1244,9 @@ $('demoBad').innerHTML=cob('bad',11)+'<span class="ol2">Yuck: TOSS</span>';
 $('demoRare').innerHTML=RARE.map((k,i)=>`<div>${cob(k,21+i)}<span class="ol2">+${T[k].pts}</span></div>`).join('');
 try{TILE=`url("data:image/svg+xml,${encodeURIComponent(cob('good',3,true,'classic').replace('class="cob"','xmlns="http://www.w3.org/2000/svg"'))}")`}catch(e){}
 layout();
+for(let i=0;i<10;i++){const m=document.createElement('i');m.className='mote';const s=4+Math.random()*7;
+  m.style.cssText=`left:${Math.random()*100}%;width:${s}px;height:${s}px;animation-duration:${7+Math.random()*8}s;animation-delay:${-Math.random()*12}s;--dx:${(Math.random()*80-40)|0}px`;
+  app.insertBefore(m,app.children[2])}
 if(!S.seen)$('help').hidden=false;else if(!S.name)$('who').hidden=false;
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){const d=S.day.date;daily();if(d!==S.day.date&&!playing)drawHome()}});
 if(/\.github\.io$/.test(location.hostname)){
