@@ -373,7 +373,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=33;
+const BUILD=34;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1144,7 +1144,6 @@ function drawLogo(){
   ${word('fill="#fff" stroke="#fff" stroke-width="44" stroke-linejoin="round"')}<circle cx="${f(cx)}" cy="${cy}" r="92" fill="#fff"/>
   <g transform="translate(0 13)">${word('fill="var(--ol)" stroke="var(--ol)" stroke-width="24" stroke-linejoin="round"')}<circle cx="${f(cx)}" cy="${cy}" r="80" fill="var(--ol)"/></g>
   ${word('fill="url(#lgG)" stroke="var(--ol)" stroke-width="18" stroke-linejoin="round" paint-order="stroke"')}
-  ${word('fill="none" stroke="#fff" stroke-width="3" opacity=".55" transform="translate(-3 -4)"')}
   <g transform="translate(${f(cx)} ${cy}) scale(1.52)"><g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="14s" repeatCount="indefinite"/>${WHEEL}</g></g>
   <g transform="translate(300 276) rotate(-4) skewX(-9)">
     <g stroke="#fff" stroke-width="10" stroke-linecap="round"><path d="M${f(px-92)} -26h56M${f(px-70)} 2h40M${f(px-104)} 30h66"/></g>
