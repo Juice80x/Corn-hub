@@ -442,7 +442,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=45;
+const BUILD=46;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1352,7 +1352,8 @@ function decide(keepIt,timedOut){
     S.t.cobs++;track('cob',1);if(!good)track('toss',1);
     const first=!S.dex[c.type];S.dex[c.type]=(S.dex[c.type]||0)+1;
     if(first&&t.name){const bn=t.x?500:150;S.k+=bn;toast(`New Corndex entry! +${bn} ${KI}`)}
-    if(Math.floor(life()/MILE)>Math.floor((life()-pts)/MILE)){milestone=true;if(next){next.el.remove();next=null}toast(fmt(Math.floor(life()/MILE)*MILE)+' points! Special cob incoming');jingle([784,988,1175,1568])}
+    const lp=S.t.pts+score; // real lifetime points, so Dev Mode gets the same milestones as a normal run
+    if(Math.floor(lp/MILE)>Math.floor((lp-pts)/MILE)){milestone=true;if(next){next.el.remove();next=null}toast(fmt(Math.floor(lp/MILE)*MILE)+' points! Special cob incoming');jingle([784,988,1175,1568])}
     const tt=c.type==='good'?SK.find(x=>x.id===S.cob):t;
     bits('k',t.name?12:7,tt.bit||[tt.g[1],tt.g[0],tt.g[2]],130);
     if(good)bits('l',4,t.hus||(HUSK.find(h=>h.id===S.husk)||{}).c||['#8ad653','#4f9e2e'],150);
