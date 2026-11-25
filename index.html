@@ -410,7 +410,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=41;
+const BUILD=42;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -789,140 +789,220 @@ function toast(html){const d=document.createElement('div');d.className='toast ol
 
 /* ---------- theme + home ---------- */
 /* ---------- scenery: still, illustrated landscapes drawn once to a bitmap ---------- */
-let VA=-800,VB=1200;
+let VA=-800,VB=1200,GN=0;
 const X0=-800,X1=1200;
 function srand(a){return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const hx=c=>c.length===4?[1,2,3].map(i=>parseInt(c[i]+c[i],16)):[1,3,5].map(i=>parseInt(c.substr(i,2),16));
+const mix=(c,t,k)=>{const a=hx(c),b=hx(t);return '#'+a.map((v,i)=>Math.round(v+(b[i]-v)*k).toString(16).padStart(2,'0')).join('')};
+const lt=(c,k=.28)=>mix(c,'#ffffff',k),dk=(c,k=.22)=>mix(c,'#1c1436',k);
 const hf=(y,amp,seed,len=230)=>{const r=srand(seed),p=r()*6,q=r()*6;return x=>y+Math.sin(x/len+p)*amp+Math.sin(x/(len*.37)+q)*amp*.3};
-const hill=(fn,col,ex='')=>{const a=Math.floor(VA/25)*25,b=Math.ceil(VB/25)*25;let d=`M${a} 800`;for(let x=a;x<=b;x+=25)d+=`L${x} ${fn(x).toFixed(1)}`;return `<path d="${d}L${b} 800Z" fill="${col}" ${ex}/>`};
+// a hill: soft top-to-bottom shading plus a lit rim, no outline
+const hill=(fn,col,o={})=>{const a=Math.floor(VA/25)*25,b=Math.ceil(VB/25)*25,id='h'+(GN++),y0=fn(200);let d='',t='';
+ for(let x=a;x<=b;x+=25){const y=fn(x);d+=`L${x} ${y.toFixed(1)}`;t+=`${x},${(y+2.5).toFixed(1)} `}
+ return `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" y1="${(y0-30).toFixed(0)}" x2="0" y2="${(y0+(o.d||150)).toFixed(0)}"><stop offset="0" stop-color="${lt(col,.16)}"/><stop offset=".3" stop-color="${col}"/><stop offset="1" stop-color="${o.to||dk(col,.2)}"/></linearGradient><path d="M${a} 800${d}L${b} 800Z" fill="url(#${id})"/>`
+ +(o.rim===0?'':`<polyline points="${t}" fill="none" stroke="${o.rim||lt(col,.4)}" stroke-width="${o.w||4}" opacity="${o.ro||.75}"/>`)};
 // every item gets its own random stream, so cropping the view never reshuffles the picture
 const scat=(n,seed,fn,a=X0,b=X1)=>{let o='';for(let i=0;i<n;i++){const r=srand(seed*7919+i*104729),x=a+(i+.15+r()*.7)*(b-a)/n;if(x>VA&&x<VB)o+=fn(x,r,i)}return o};
 const G=(x,y,s,inner)=>`<g transform="translate(${(+x).toFixed(1)} ${(+y).toFixed(1)}) scale(${(+s).toFixed(2)})">${inner}</g>`;
 const near=(x,...c)=>c.some(v=>Math.abs(x-v)<36);
 const on=(fn,n,seed,el,s0=.5,sr=.3,skip)=>scat(n,seed,(x,r)=>{const s=s0+r()*sr;return skip&&skip(x)?'':G(x,fn(x)+4,s,typeof el==='function'?el(r):el)});
+const sp=(fn,n,seed,y0,yr,f)=>scat(n,seed,(x,r)=>f(x,fn(x)+y0+r()*yr,r));
+const pk=(r,a)=>a[r()*a.length|0];
+const tuft=c=>(x,y,r)=>`<path transform="translate(${x|0} ${y|0}) scale(${(.5+r()*.6).toFixed(2)})" d="M-6 0Q-5 -8 -8 -13Q-2 -8 -2 0ZM-1 0Q0 -12 2 -17Q3 -9 3 0ZM4 0Q6 -8 10 -11Q7 -5 8 0Z" fill="${c}"/>`;
+const flower=cols=>(x,y,r)=>`<g transform="translate(${x|0} ${y|0}) scale(${(.6+r()*.5).toFixed(2)})"><path d="M0 0V-9" stroke="#5aa646" stroke-width="1.6"/><circle cy="-11" r="4.500" fill="${pk(r,cols)}"/><circle cy="-11" r="1.800" fill="#fff6c0"/></g>`;
+const pebble=c=>(x,y,r)=>`<ellipse cx="${x|0}" cy="${y|0}" rx="${(3+r()*5).toFixed(1)}" ry="${(1.5+r()*2).toFixed(1)}" fill="${c}"/>`;
+const speck=(cols,rot)=>(x,y,r)=>`<rect x="${x|0}" y="${y|0}" width="7" height="3" rx="1.5" transform="rotate(${(r()*180)|0} ${x|0} ${y|0})" fill="${pk(r,cols)}"/>`;
+const spark=c=>(x,y,r)=>`<path transform="translate(${x|0} ${y|0}) scale(${(.5+r()*.8).toFixed(2)})" d="M0 -7L1.500 -1.500L7 0L1.500 1.500L0 7L-1.500 1.500L-7 0L-1.500 -1.500Z" fill="${c}" opacity="${(.5+r()*.5).toFixed(2)}"/>`;
+const sh=(rx=18,o=.13)=>`<ellipse cy="1" rx="${rx}" ry="${(rx*.24).toFixed(1)}" fill="#000" opacity="${o}"/>`;
+const sun=(x,y,r,c)=>`<circle cx="${x}" cy="${y}" r="${r*2.5}" fill="${c}" opacity=".13"/><circle cx="${x}" cy="${y}" r="${r*1.7}" fill="${c}" opacity=".22"/><circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/><circle cx="${x-r*.25}" cy="${y-r*.25}" r="${r*.55}" fill="#fff" opacity=".45"/>`;
 const EL={
- tree:(c,c2,t='#6b4423')=>`<rect x="-4" y="-24" width="8" height="26" rx="3" fill="${t}"/><circle cy="-44" r="24" fill="${c}"/><circle cx="-16" cy="-30" r="15" fill="${c}"/><circle cx="16" cy="-30" r="15" fill="${c}"/><circle cx="-7" cy="-50" r="10" fill="${c2}"/>`,
- pine:(c,cap)=>`<rect x="-3" y="-10" width="6" height="12" fill="#5a3a20"/><path d="M0 -78L20 -44H-20Z" fill="${c}"/><path d="M0 -60L26 -24H-26Z" fill="${c}"/><path d="M0 -40L32 -6H-32Z" fill="${c}"/>`+(cap?`<path d="M0 -78L9 -62Q0 -57 -9 -62Z" fill="${cap}"/><path d="M0 -60L12 -43Q0 -37 -12 -43Z" fill="${cap}"/><path d="M0 -40L14 -25Q0 -18 -14 -25Z" fill="${cap}"/>`:''),
- palm:(c,c2,t)=>`<path d="M-5 0Q-12 -46 4 -92L13 -90Q1 -45 6 0Z" fill="${t}"/>`+[[-52,6,c],[-40,-26,c2],[-8,-40,c],[36,-28,c2],[52,4,c]].map(([dx,dy,k])=>`<path d="M9 -92Q${9+dx*.55} ${-92+dy-22} ${9+dx} ${-92+dy+16}Q${9+dx*.5} ${-92+dy-4} 9 -84Z" fill="${k}"/>`).join('')+`<circle cx="6" cy="-86" r="5" fill="${t}"/>`,
- barn:(b,r,tr,w)=>`<path d="M-34 0V-34L-22 -52L0 -62L22 -52L34 -34V0Z" fill="${b}"/><path d="M-39 -32L-24 -56L0 -67L24 -56L39 -32L33 -29L21 -49L0 -58L-21 -49L-33 -29Z" fill="${r}"/><rect x="-11" y="-24" width="22" height="24" fill="${tr}"/><path d="M-11 -24L11 0M11 -24L-11 0" stroke="${b}" stroke-width="2.5"/><rect x="-6" y="-46" width="12" height="11" rx="1" fill="${w}"/>`,
- silo:(b,r)=>`<rect x="-10" y="-58" width="20" height="58" fill="${b}"/><path d="M-11 -58Q0 -76 11 -58Z" fill="${r}"/><path d="M-10 -40h20M-10 -22h20" stroke="${r}" stroke-width="2" opacity=".5"/>`,
- mill:(b,bl)=>`<path d="M-9 0L-5 -62H5L9 0Z" fill="${b}"/><g transform="translate(0 -62) rotate(22)">${[0,90,180,270].map(a=>`<path transform="rotate(${a})" d="M-2 0L-7 -36H7L2 0Z" fill="${bl}"/>`).join('')}<circle r="4" fill="${b}"/></g>`,
- bale:(c,c2)=>`<ellipse cy="-11" rx="16" ry="12" fill="${c}"/><ellipse cx="10" cy="-11" rx="6" ry="12" fill="${c2}"/>`,
- cloud:c=>`<g fill="${c}"><ellipse rx="34" ry="13"/><circle cx="-14" cy="-9" r="13"/><circle cx="7" cy="-14" r="17"/><circle cx="24" cy="-5" r="10"/></g>`,
- cactus:c=>`<g fill="none" stroke="${c}" stroke-width="9" stroke-linecap="round"><path d="M0 0V-48"/><path d="M0 -18H-14V-34"/><path d="M0 -26H13V-42"/></g>`,
- rock:(c,c2)=>`<path d="M-22 0L-14 -16L2 -22L18 -12L24 0Z" fill="${c}"/><path d="M2 -22L18 -12L24 0H8Z" fill="${c2}"/>`,
- lolly:(c,c2)=>`<rect x="-2.500" y="-34" width="5" height="36" fill="#fff"/><circle cy="-48" r="20" fill="${c}"/><path d="M-13 -48a13 13 0 1 1 13 13a8 8 0 1 1 -8 -8" fill="none" stroke="${c2}" stroke-width="5" stroke-linecap="round"/>`,
- gum:c=>`<path d="M-16 0Q-16 -26 0 -26Q16 -26 16 0Z" fill="${c}"/><ellipse cx="-5" cy="-17" rx="4" ry="6" fill="#fff" opacity=".5"/>`,
- cane:()=>`<path d="M0 0V-40Q0 -54 12 -54Q22 -54 22 -42" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/><path d="M0 -2V-40Q0 -54 12 -54Q22 -54 22 -44" fill="none" stroke="#f0425a" stroke-width="8" stroke-dasharray="7 9"/>`,
- bush:c=>`<circle cx="-10" cy="-6" r="10" fill="${c}"/><circle cx="2" cy="-11" r="13" fill="${c}"/><circle cx="14" cy="-6" r="9" fill="${c}"/>`,
- gumtree:()=>`<path d="M0 0Q-4 -30 2 -54M1 -30Q12 -40 17 -54" stroke="#eadfcb" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cy="-62" rx="24" ry="12" fill="#7d9a58"/><ellipse cx="20" cy="-58" rx="15" ry="8" fill="#8fae68"/><ellipse cx="-16" cy="-56" rx="13" ry="7" fill="#6f8c4e"/>`,
- tuft:c=>`<path d="M-9 0L-6 -12L-3 0L0 -17L3 0L6 -12L9 0Z" fill="${c}"/>`,
- fern:(c,c2)=>[-64,-32,0,32,64].map((a,i)=>`<path transform="rotate(${a})" d="M0 0Q-9 -24 0 -50Q9 -24 0 0Z" fill="${i%2?c2:c}"/>`).join(''),
- coin:()=>`<ellipse rx="9" ry="4" fill="#fff0a0" stroke="#b87a10" stroke-width="1.5"/>`,
- gem:c=>`<path d="M-7 -6L0 -13L7 -6L0 5Z" fill="${c}"/><path d="M-7 -6L0 -13L0 5Z" fill="#fff" opacity=".4"/>`,
- chest:()=>`<path d="M-20 -30Q0 -50 20 -30Z" fill="#ffe680"/><rect x="-24" y="-26" width="48" height="26" rx="3" fill="#8a4a1c"/><path d="M-24 -26Q-24 -44 -14 -47L-18 -30Z" fill="#a85e26"/><rect x="-24" y="-29" width="48" height="5" fill="#ffd24a"/><rect x="-5" y="-32" width="10" height="12" rx="2" fill="#ffd24a"/>`
+ tree:(c,t='#7a5230')=>sh(22)+`<path d="M-5 2L-3 -28H3L5 2Z" fill="${t}"/><path d="M0 2L1 -28H3L5 2Z" fill="${dk(t)}"/><g fill="${dk(c,.2)}"><circle cx="2" cy="-43" r="25"/><circle cx="19" cy="-28" r="15"/><circle cx="-15" cy="-28" r="15"/></g><g fill="${c}"><circle cy="-46" r="23"/><circle cx="-17" cy="-32" r="14"/><circle cx="15" cy="-33" r="14"/><circle cy="-30" r="13"/></g><g fill="${lt(c,.3)}"><circle cx="-8" cy="-55" r="10"/><circle cx="-20" cy="-36" r="6"/><circle cx="8" cy="-40" r="4"/></g>`,
+ pine:(c,cap)=>sh(20)+`<rect x="-3" y="-10" width="6" height="12" fill="#6a4426"/>`+[[-78,-44,20],[-60,-24,26],[-40,-6,32]].map(([a,b,w])=>`<path d="M0 ${a}L${w} ${b}H-${w}Z" fill="${c}"/><path d="M0 ${a}L${w} ${b}H0Z" fill="${dk(c,.2)}"/>`).join('')+(cap?`<path d="M0 -78L9 -62Q0 -57 -9 -62Z" fill="${cap}"/><path d="M0 -60L12 -43Q0 -37 -12 -43Z" fill="${cap}"/><path d="M0 -40L14 -25Q0 -18 -14 -25Z" fill="${cap}"/>`:''),
+ palm:(c,t='#9a6a3a')=>sh(16)+`<path d="M-5 0Q-12 -46 4 -92L13 -90Q1 -45 6 0Z" fill="${t}"/><path d="M1 0Q-4 -46 9 -91L13 -90Q1 -45 6 0Z" fill="${dk(t)}"/><path d="M-6 -16Q0 -19 5 -15M-7 -34Q-1 -37 4 -33M-6 -52Q0 -56 5 -51M-2 -70Q4 -74 9 -69" stroke="${lt(t,.3)}" stroke-width="2" fill="none"/>`
+  +[[-52,6,0],[-40,-26,1],[-8,-40,0],[36,-28,1],[52,4,0]].map(([dx,dy,k])=>`<path d="M9 -92Q${9+dx*.55} ${-92+dy-22} ${9+dx} ${-92+dy+16}Q${9+dx*.5} ${-92+dy-4} 9 -84Z" fill="${k?lt(c,.2):c}"/><path d="M9 -90Q${9+dx*.55} ${-92+dy-16} ${9+dx} ${-92+dy+15}" stroke="${dk(c,.18)}" stroke-width="1.5" fill="none"/>`).join('')+`<circle cx="4" cy="-84" r="5" fill="#7a4a22"/><circle cx="12" cy="-83" r="4.500" fill="#8a5a2c"/>`,
+ barn:(b,r,tr,w)=>sh(40)+`<path d="M-34 0V-34L-22 -52L0 -62L22 -52L34 -34V0Z" fill="${b}"/><path d="M12 0V-57L22 -52L34 -34V0Z" fill="${dk(b,.18)}"/><path d="M-26 0V-38M-18 0V-46M18 0V-50M26 0V-40" stroke="${dk(b,.14)}" stroke-width="1.5"/><path d="M-39 -32L-24 -56L0 -67L24 -56L39 -32L33 -29L21 -49L0 -58L-21 -49L-33 -29Z" fill="${r}"/><path d="M-39 -32L-24 -56L0 -67L0 -63L-22 -53L-36 -31Z" fill="${lt(r,.3)}"/><rect x="-12" y="-25" width="24" height="25" fill="${tr}"/><rect x="-9" y="-22" width="18" height="22" fill="${b}"/><path d="M-9 -22L9 0M9 -22L-9 0" stroke="${tr}" stroke-width="2.500"/><rect x="-7" y="-47" width="14" height="13" rx="1" fill="${tr}"/><rect x="-5" y="-45" width="10" height="9" fill="${w}"/>`,
+ silo:(b,r)=>sh(14)+`<rect x="-10" y="-58" width="20" height="58" fill="${b}"/><rect x="-10" y="-58" width="5" height="58" fill="${lt(b,.4)}"/><rect x="4" y="-58" width="6" height="58" fill="${dk(b,.16)}"/><path d="M-11 -58Q0 -76 11 -58Z" fill="${r}"/><path d="M-11 -58Q-6 -70 0 -72Q-5 -66 -6 -58Z" fill="${lt(r,.35)}"/><path d="M-10 -40h20M-10 -22h20" stroke="${r}" stroke-width="2" opacity=".5"/>`,
+ mill:(b,bl)=>sh(14)+`<path d="M-9 0L-5 -62H5L9 0Z" fill="${b}"/><path d="M1 0L2 -62H5L9 0Z" fill="${dk(b,.16)}"/><rect x="-3" y="-20" width="6" height="9" rx="3" fill="${dk(b,.35)}"/><g transform="translate(0 -62) rotate(22)">${[0,90,180,270].map(a=>`<g transform="rotate(${a})"><path d="M-2 0L-7 -36H7L2 0Z" fill="${bl}"/><path d="M0 -4V-36M-5 -14H5M-6 -24H6" stroke="${dk(bl,.18)}" stroke-width="1.2"/></g>`).join('')}<circle r="4.500" fill="${dk(b,.3)}"/></g>`,
+ bale:(c,c2)=>sh(18)+`<ellipse cy="-11" rx="16" ry="12" fill="${c}"/><ellipse cx="-3" cy="-15" rx="9" ry="4" fill="${lt(c,.3)}"/><ellipse cx="10" cy="-11" rx="6" ry="12" fill="${c2}"/><path d="M10 -17a3 6 0 1 0 .1 0M10 -14a1.500 3 0 1 0 .1 0" stroke="${dk(c2,.2)}" stroke-width="1.2" fill="none"/>`,
+ cloud:(c,s)=>`<ellipse cy="5" rx="37" ry="11" fill="${s}"/><g fill="${c}"><ellipse rx="34" ry="12"/><circle cx="-14" cy="-9" r="13"/><circle cx="7" cy="-14" r="17"/><circle cx="24" cy="-5" r="10"/></g><circle cx="3" cy="-20" r="8" fill="#fff" opacity=".55"/><circle cx="-16" cy="-13" r="5" fill="#fff" opacity=".45"/>`,
+ cactus:c=>sh(14,.25)+`<g fill="none" stroke-linecap="round"><g stroke="${c}" stroke-width="10"><path d="M0 0V-48"/><path d="M0 -18H-14V-34"/><path d="M0 -26H13V-42"/></g><g stroke="${lt(c,.3)}" stroke-width="2.500"><path d="M-2 -4V-48"/><path d="M-15 -22V-34"/><path d="M11 -30V-42"/></g></g><circle cy="-54" r="3" fill="#ff8ad0"/>`,
+ rock:(c,c2)=>sh(24)+`<path d="M-22 0L-14 -16L2 -22L18 -12L24 0Z" fill="${c}"/><path d="M2 -22L18 -12L24 0H8Z" fill="${c2}"/><path d="M-14 -16L2 -22L-2 -14L-12 -10Z" fill="${lt(c,.25)}"/>`,
+ lolly:(c,c2)=>sh(10,.1)+`<rect x="-2.500" y="-34" width="5" height="36" fill="#ffffff"/><rect x="0" y="-34" width="2.500" height="36" fill="#e6d4e6"/><circle cx="1.500" cy="-46.500" r="20" fill="${dk(c,.18)}"/><circle cy="-48" r="19.500" fill="${c}"/><path d="M-13 -48a13 13 0 1 1 13 13a8 8 0 1 1 -8 -8" fill="none" stroke="${c2}" stroke-width="5" stroke-linecap="round"/><ellipse cx="-8" cy="-58" rx="5" ry="3" fill="#fff" opacity=".7" transform="rotate(-35 -8 -58)"/>`,
+ gum:c=>sh(16,.1)+`<path d="M-16 0Q-16 -26 0 -26Q16 -26 16 0Z" fill="${c}"/><path d="M4 -26Q16 -24 16 0H7Q10 -16 4 -26Z" fill="${dk(c,.16)}"/><ellipse cx="-6" cy="-17" rx="3.500" ry="6" fill="#fff" opacity=".6"/><g fill="#fff" opacity=".8"><circle cx="4" cy="-12" r="1"/><circle cx="-2" cy="-6" r="1"/><circle cx="9" cy="-6" r="1"/></g>`,
+ cane:()=>`<path d="M0 0V-40Q0 -54 12 -54Q22 -54 22 -42" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/><path d="M0 -2V-40Q0 -54 12 -54Q22 -54 22 -44" fill="none" stroke="#f0425a" stroke-width="8" stroke-dasharray="7 9"/><path d="M-2 -4V-40Q-2 -50 8 -52" fill="none" stroke="#fff" stroke-width="1.500" opacity=".7"/>`,
+ bush:c=>`<g fill="${dk(c,.18)}"><circle cx="-8" cy="-5" r="10"/><circle cx="4" cy="-9" r="13"/><circle cx="16" cy="-5" r="9"/></g><g fill="${c}"><circle cx="-10" cy="-7" r="9.500"/><circle cx="2" cy="-12" r="12"/><circle cx="13" cy="-7" r="8.500"/></g><circle cx="-2" cy="-17" r="5" fill="${lt(c,.25)}"/>`,
+ gumtree:()=>sh(20)+`<path d="M0 0Q-4 -30 2 -54M1 -30Q12 -40 17 -54" stroke="#efe6d6" stroke-width="4.500" fill="none" stroke-linecap="round"/><path d="M2 0Q-1 -30 4 -54" stroke="#cdbfa8" stroke-width="1.500" fill="none"/><ellipse cx="2" cy="-60" rx="25" ry="12" fill="#5f7c44"/><ellipse cy="-63" rx="24" ry="11" fill="#7d9a58"/><ellipse cx="20" cy="-58" rx="15" ry="8" fill="#8fae68"/><ellipse cx="-16" cy="-56" rx="13" ry="7" fill="#6f8c4e"/><ellipse cx="-6" cy="-67" rx="10" ry="4" fill="#a4c07c"/>`,
+ fern:(c,c2)=>[-64,-32,0,32,64].map((a,i)=>`<g transform="rotate(${a})"><path d="M0 0Q-9 -24 0 -50Q9 -24 0 0Z" fill="${i%2?c2:c}"/><path d="M0 -2V-44" stroke="${lt(c,.3)}" stroke-width="1.200"/></g>`).join(''),
+ bigleaf:(c)=>`<path d="M0 0Q-34 -30 -22 -78Q-6 -96 4 -100Q28 -70 22 -30Q14 -8 0 0Z" fill="${c}"/><path d="M0 0Q-2 -50 4 -100Q28 -70 22 -30Q14 -8 0 0Z" fill="${dk(c,.16)}"/><path d="M0 0Q-2 -50 4 -98M0 -22L-18 -40M0 -42L-22 -62M2 -62L-14 -82M1 -30L18 -44M2 -52L22 -66M3 -72L16 -84" stroke="${lt(c,.3)}" stroke-width="2" fill="none"/>`,
+ coin:()=>`<ellipse cy="1.500" rx="9" ry="4" fill="#b87a10"/><ellipse rx="9" ry="4" fill="#ffe680"/><ellipse rx="5.500" ry="2.200" fill="#ffd24a"/><ellipse cx="-3" cy="-1.200" rx="3" ry="1" fill="#fff" opacity=".8"/>`,
+ gem:c=>`<path d="M-7 -6L0 -13L7 -6L0 5Z" fill="${c}"/><path d="M-7 -6L0 -13L0 5Z" fill="#fff" opacity=".4"/><path d="M-7 -6H7" stroke="#fff" stroke-width="1" opacity=".6"/>`,
+ chest:()=>sh(28,.2)+`<path d="M-20 -30Q0 -52 20 -30Z" fill="#ffe680"/><circle cx="-8" cy="-34" r="3" fill="#ff5a8a"/><circle cx="6" cy="-37" r="3" fill="#5ad8ff"/><rect x="-24" y="-26" width="48" height="26" rx="3" fill="#8a4a1c"/><rect x="8" y="-26" width="16" height="26" rx="3" fill="#6e3814"/><path d="M-24 -26Q-24 -44 -14 -47L-18 -30Z" fill="#a85e26"/><rect x="-24" y="-29" width="48" height="5" fill="#ffd24a"/><path d="M-14 -26V0M14 -26V0" stroke="#ffd24a" stroke-width="3"/><rect x="-5" y="-32" width="10" height="12" rx="2" fill="#ffd24a"/><circle cy="-25" r="2" fill="#8a4a1c"/>`,
+ corn:(c,k)=>`<path d="M0 0V-30" stroke="${c}" stroke-width="3" stroke-linecap="round"/><path d="M0 -8Q-12 -16 -15 -6M0 -14Q12 -24 15 -12M0 -22Q-9 -30 -12 -22" stroke="${c}" fill="none" stroke-width="3" stroke-linecap="round"/><ellipse cx="4" cy="-17" rx="3" ry="6" fill="${k}"/>`,
+ pumpkin:()=>sh(14)+`<ellipse cy="-9" rx="14" ry="10" fill="#e8742a"/><ellipse cx="-6" cy="-9" rx="6" ry="10" fill="#f28a3a"/><ellipse cx="6" cy="-9" rx="6" ry="10" fill="#d9622a"/><ellipse cx="-7" cy="-13" rx="2.500" ry="4" fill="#ffb066" opacity=".8"/><path d="M-1 -19Q0 -25 5 -25" stroke="#5a8a3a" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+ snowman:()=>sh(16,.1)+`<circle cy="-13" r="14" fill="#ffffff"/><circle cy="-35" r="10" fill="#ffffff"/><path d="M9 -24A14 14 0 0 1 -6 0A16 16 0 0 0 13 -8Z" fill="#cfe2f6"/><circle cx="-3" cy="-37" r="1.500" fill="#39456a"/><circle cx="4" cy="-37" r="1.500" fill="#39456a"/><path d="M1 -34L10 -32L1 -31Z" fill="#ff8a3a"/><rect x="-9" y="-28" width="18" height="4" rx="2" fill="#e0485a"/><rect x="-7" y="-52" width="14" height="9" fill="#39456a"/><rect x="-10" y="-44" width="20" height="3" fill="#39456a"/><path d="M-13 -20L-24 -30M13 -20L24 -28" stroke="#7a5230" stroke-width="2" stroke-linecap="round"/>`,
+ cabin:()=>sh(36)+`<rect x="-28" y="-30" width="56" height="30" fill="#9a6a44"/><rect x="10" y="-30" width="18" height="30" fill="#84583a"/><path d="M-28 -24h56M-28 -16h56M-28 -8h56" stroke="#7e5232" stroke-width="2"/><path d="M-34 -28L0 -54L34 -28Z" fill="#7e5232"/><path d="M-37 -27L0 -57L37 -27L30 -26L0 -49L-30 -26Z" fill="#ffffff"/><path d="M0 -57L37 -27L30 -26L0 -49Z" fill="#dcecff"/><rect x="-6" y="-18" width="12" height="18" fill="#5e3a22"/><rect x="12" y="-22" width="11" height="10" fill="#ffe08a"/><rect x="-23" y="-22" width="11" height="10" fill="#ffe08a"/><path d="M17.500 -22v10M-17.500 -22v10" stroke="#9a6a44" stroke-width="1.500"/><rect x="14" y="-58" width="8" height="16" fill="#8a8a94"/><g fill="#ffffff" opacity=".7"><circle cx="19" cy="-66" r="5"/><circle cx="24" cy="-76" r="7"/><circle cx="20" cy="-90" r="9"/></g>`,
+ tractor:()=>sh(26)+`<rect x="-20" y="-24" width="30" height="14" rx="3" fill="#3f9a4a"/><rect x="-20" y="-24" width="30" height="5" rx="2" fill="#62bb6a"/><rect x="-6" y="-38" width="16" height="16" rx="2" fill="#3f9a4a"/><rect x="-3" y="-35" width="10" height="9" fill="#cfeeff"/><rect x="-18" y="-34" width="3" height="11" fill="#4a4a54"/><circle cx="6" cy="-9" r="11" fill="#3a3a44"/><circle cx="6" cy="-9" r="5" fill="#ffd24a"/><circle cx="-15" cy="-6" r="7" fill="#3a3a44"/><circle cx="-15" cy="-6" r="3" fill="#ffd24a"/>`,
+ scarecrow:()=>`<path d="M0 0V-34M-14 -24H14" stroke="#8a5a2c" stroke-width="3.500"/><path d="M-9 -26H9L7 -10H-7Z" fill="#d9482f"/><path d="M1 -26H9L7 -10H2Z" fill="#b5362a"/><circle cy="-34" r="6" fill="#f2d9a0"/><path d="M-9 -38H9L5 -46H-5Z" fill="#b5803a"/>`,
+ mushroom:c=>`<rect x="-2.500" y="-8" width="5" height="9" rx="2" fill="#fff3dc"/><path d="M-10 -7Q-9 -18 0 -18Q9 -18 10 -7Z" fill="${c}"/><path d="M2 -18Q9 -17 10 -7H5Q6 -13 2 -18Z" fill="${dk(c,.18)}"/><circle cx="-4" cy="-12" r="1.800" fill="#fff"/><circle cx="3" cy="-14" r="1.500" fill="#fff"/>`,
+ car:c=>sh(24,.2)+`<path d="M-22 -4V-12Q-22 -15 -18 -15H-12L-7 -24H9L15 -15H19Q22 -15 22 -11V-4Z" fill="${c}"/><path d="M-12 -15L-7 -24H9L11 -21H-5L-9 -15Z" fill="${lt(c,.35)}"/><path d="M-9 -15L-5 -22H1V-15ZM3 -22H8L12 -15H3Z" fill="#cfeeff"/><path d="M-22 -8H22V-4H-22Z" fill="${dk(c)}"/><circle cx="-12" cy="-4" r="5" fill="#2a2a34"/><circle cx="12" cy="-4" r="5" fill="#2a2a34"/><circle cx="-12" cy="-4" r="2" fill="#c8c8d0"/><circle cx="12" cy="-4" r="2" fill="#c8c8d0"/><circle cx="20" cy="-11" r="1.800" fill="#fff3b0"/>`,
+ boat:()=>`<path d="M-18 0H18L12 9H-12Z" fill="#b5553a"/><path d="M-18 0H18L16 3H-16Z" fill="#d97a5a"/><path d="M0 -2V-34" stroke="#7a4a22" stroke-width="2"/><path d="M2 -32L20 -6H2Z" fill="#ffffff"/><path d="M-2 -28L-15 -6H-2Z" fill="#ffe9c0"/><ellipse cy="10" rx="20" ry="2.500" fill="#fff" opacity=".5"/>`,
+ umbrella:c=>sh(22,.1)+`<path d="M0 0L5 -44" stroke="#8a5a2c" stroke-width="2.500"/><path d="M-22 -34Q6 -64 32 -40Q20 -44 14 -40Q6 -46 -4 -39Q-12 -42 -22 -34Z" fill="${c}"/><path d="M-4 -39Q2 -52 6 -57Q10 -48 14 -40Q6 -46 -4 -39Z" fill="#ffffff"/><path d="M14 -40Q12 -50 6 -57Q22 -52 32 -40Q20 -44 14 -40Z" fill="${dk(c,.15)}"/><rect x="-28" y="-2" width="30" height="6" rx="2" fill="#5ad8ff" transform="rotate(4)"/><rect x="-28" y="-2" width="8" height="6" rx="2" fill="#ffffff" transform="rotate(4)"/>`,
+ starfish:c=>`<path d="M0 -8L2.300 -2.500L8 -2L3.500 1.500L5 7L0 4L-5 7L-3.500 1.500L-8 -2L-2.300 -2.500Z" fill="${c}"/><circle r="1.500" fill="${lt(c,.4)}"/>`,
+ rocket:()=>sh(16,.25)+`<path d="M-9 -8Q-12 -40 0 -62Q12 -40 9 -8Z" fill="#f2f2f8"/><path d="M0 -62Q12 -40 9 -8H2Q6 -40 0 -62Z" fill="#c8c8dc"/><path d="M-6.500 -48Q0 -62 6.500 -48Z" fill="#ff5a6a"/><circle cy="-36" r="5.500" fill="#8a8aa0"/><circle cy="-36" r="4" fill="#5ad8ff"/><circle cx="-1.500" cy="-37.500" r="1.300" fill="#fff"/><path d="M-9 -18L-18 0H-8ZM9 -18L18 0H8Z" fill="#ff5a6a"/><rect x="-5" y="-8" width="10" height="5" fill="#8a8aa0"/>`,
+ flag:c=>`<path d="M0 0V-30" stroke="#d8d8e8" stroke-width="2"/><path d="M1 -30H18L14 -24L18 -18H1Z" fill="${c}"/>`,
+ dish:()=>sh(18,.25)+`<path d="M-4 0L0 -24L4 0Z" fill="#8ea6b6"/><path d="M-22 -34Q-2 -12 22 -42Q4 -30 -22 -34Z" fill="#dbe8ef"/><path d="M-22 -34Q-2 -12 22 -42Q2 -20 -22 -34Z" fill="#8ea6b6" opacity=".6"/><path d="M0 -30L8 -46" stroke="#dbe8ef" stroke-width="2"/><circle cx="8" cy="-46" r="2.500" fill="#ff6ad8"/>`,
+ pump:c=>sh(12,.2)+`<path d="M-7 0L0 -52L7 0M-5 -14H5M-3 -30H3" stroke="${c}" stroke-width="2.500" fill="none"/><g transform="translate(0 -54)">${[0,30,60,90,120,150].map(a=>`<path transform="rotate(${a})" d="M0 -14L2 0L0 14L-2 0Z" fill="${c}"/>`).join('')}<path d="M0 -1.500H18L24 -6V6L18 1.500H0Z" fill="${c}"/></g>`,
+ termite:c=>sh(10,.2)+`<path d="M-9 0Q-8 -22 -3 -30Q0 -36 3 -28Q8 -18 9 0Z" fill="${c}"/><path d="M2 -31Q8 -18 9 0H3Q5 -16 2 -31Z" fill="${dk(c)}"/><path d="M-6 -4Q-5 -20 -2 -28" stroke="${lt(c,.3)}" stroke-width="1.500" fill="none"/>`,
+ cupcake:c=>sh(22,.1)+`<path d="M-18 -22H18L13 0H-13Z" fill="#f2b56a"/><path d="M-10 -22L-8 0M0 -22V0M10 -22L8 0" stroke="#d9914a" stroke-width="2.500"/><path d="M-22 -22Q-24 -34 -12 -36Q-12 -50 0 -50Q12 -50 12 -36Q24 -34 22 -22Q14 -16 8 -22Q0 -15 -8 -22Q-14 -16 -22 -22Z" fill="${c}"/><ellipse cx="-7" cy="-40" rx="5" ry="3" fill="#fff" opacity=".6"/><circle cy="-54" r="5" fill="#f0425a"/><circle cx="-1.500" cy="-55.500" r="1.500" fill="#fff" opacity=".8"/>`,
+ donut:c=>sh(18,.1)+`<ellipse cy="-8" rx="16" ry="9" fill="#e0a868"/><path d="M-16 -9Q-16 -18 0 -18Q16 -18 16 -9Q10 -4 6 -8Q0 -3 -6 -8Q-10 -4 -16 -9Z" fill="${c}"/><ellipse cy="-10" rx="5" ry="2.500" fill="#b07a44"/><g stroke="#fff" stroke-width="1.500" stroke-linecap="round"><path d="M-10 -13l3 -1M8 -14l3 1M-2 -16l2 -1"/></g>`,
+ goldbar:()=>`<path d="M-14 0L-10 -9H10L14 0Z" fill="#ffc832"/><path d="M-10 -9H10L8 -12H-8Z" fill="#fff0a0"/><path d="M4 -9H10L14 0H7Z" fill="#d9981c"/>`,
+ crown:()=>`<path d="M-12 0V-14L-6 -7L0 -18L6 -7L12 -14V0Z" fill="#ffd24a"/><path d="M0 -18L6 -7L12 -14V0H2Z" fill="#e8a820"/><rect x="-12" y="-4" width="24" height="4" fill="#d9981c"/><circle cy="-18" r="2.500" fill="#ff5a8a"/><circle cx="-12" cy="-14" r="2" fill="#5ad8ff"/><circle cx="12" cy="-14" r="2" fill="#5ad8ff"/>`,
+ torch:()=>`<rect x="-2.500" y="-26" width="5" height="26" fill="#8a5a2c"/><path d="M-6 -26H6L4 -32H-4Z" fill="#b87a10"/><circle cy="-40" r="22" fill="#ffd24a" opacity=".22"/><path d="M0 -54Q10 -40 5 -32Q0 -28 -5 -32Q-10 -40 0 -54Z" fill="#ff8a1e"/><path d="M0 -44Q4 -38 2 -33Q0 -31 -2 -33Q-4 -38 0 -44Z" fill="#fff0a0"/>`,
+ parrot:()=>`<ellipse cy="-12" rx="6" ry="10" fill="#f0425a"/><path d="M2 -14Q10 -6 6 8Q0 0 -2 -8Z" fill="#3a8af0"/><circle cx="-1" cy="-22" r="5.500" fill="#f0425a"/><path d="M-6 -23Q-11 -22 -8 -17L-4 -20Z" fill="#ffd24a"/><circle cx="-2" cy="-23" r="1.300" fill="#ffffff"/><path d="M0 -3L-3 12L3 12Z" fill="#ffd24a"/>`,
+ deadtree:c=>`<path d="M-3 0L-1 -34L-10 -48M-1 -26L9 -40M0 -34L3 -52" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/>`
 };
-const stars=(n,seed,c='#fff',ym=520)=>scat(n,seed,(x,r)=>`<circle cx="${x.toFixed(0)}" cy="${(30+r()*ym).toFixed(0)}" r="${(.8+r()*1.6).toFixed(1)}" fill="${c}" opacity="${(.4+r()*.6).toFixed(2)}"/>`);
-const clouds=(n,seed,c,op,y0=230,yr=130)=>`<g opacity="${op}">`+scat(n,seed,(x,r)=>G(x,y0+r()*yr,.7+r()*.7,EL.cloud(c)))+'</g>';
-const fence=(fn,c)=>{let p='',q='',o='';for(let x=Math.floor(VA/26)*26;x<=VB;x+=26){const y=fn(x)-3;o+=`<rect x="${x-2}" y="${(y-15).toFixed(1)}" width="4" height="17" rx="1" fill="${c}"/>`;p+=`${x},${(y-11).toFixed(1)} `;q+=`${x},${(y-5).toFixed(1)} `}return o+`<polyline points="${p}" fill="none" stroke="${c}" stroke-width="2.5"/><polyline points="${q}" fill="none" stroke="${c}" stroke-width="2.5"/>`};
+const stars=(n,seed,c='#fff',ym=520)=>scat(n,seed,(x,r)=>`<circle cx="${x.toFixed(0)}" cy="${(30+r()*ym).toFixed(0)}" r="${(.8+r()*1.6).toFixed(1)}" fill="${c}" opacity="${(.4+r()*.6).toFixed(2)}"/>`)+scat(n/9|0,seed+1,(x,r)=>spark(c)(x,30+r()*ym*.8,r));
+const clouds=(n,seed,c,s,op,y0=230,yr=130)=>`<g opacity="${op}">`+scat(n,seed,(x,r)=>G(x,y0+r()*yr,.7+r()*.7,EL.cloud(c,s)))+'</g>';
+const birds=(n,seed,c)=>scat(n,seed,(x,r)=>`<path transform="translate(${x|0} ${(250+r()*110)|0}) scale(${(.6+r()*.6).toFixed(2)})" d="M-7 0Q-3 -5 0 0Q3 -5 7 0" stroke="${c}" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>`);
+const fence=(fn,c)=>{let p='',q='',o='';for(let x=Math.floor(VA/26)*26;x<=VB;x+=26){const y=fn(x)-3;o+=`<rect x="${x-2}" y="${(y-15).toFixed(1)}" width="4" height="17" rx="1" fill="${c}"/><rect x="${x}" y="${(y-15).toFixed(1)}" width="2" height="17" fill="${dk(c,.14)}"/>`;p+=`${x},${(y-11).toFixed(1)} `;q+=`${x},${(y-5).toFixed(1)} `}return `<polyline points="${p}" fill="none" stroke="${c}" stroke-width="2.500"/><polyline points="${q}" fill="none" stroke="${c}" stroke-width="2.500"/>`+o};
 const band=(y,h,c,op=1)=>`<rect x="${VA|0}" y="${y}" width="${(VB-VA)|0}" height="${h}" fill="${c}" opacity="${op}"/>`;
 // a row of buildings; sizes come from one stream so the skyline is stable, details from per-building streams
 const skyline=(seed,base,wmin,wr,hmin,hr,gap,draw)=>{const r=srand(seed);let o='',i=0;for(let x=X0;x<X1;i++){const w=wmin+r()*wr,h=hmin+r()*hr;if(x+w>VA&&x<VB)o+=draw(x|0,(base-h)|0,w|0,srand(seed*31+i),i);x+=w+gap}return o};
-const isle=(x,y,s)=>G(x,y,s,`<ellipse rx="64" ry="11" fill="#f7e3a6"/><path d="M-52 -3Q0 -44 52 -3Z" fill="#3fae5c"/>`+G(-14,-20,.55,EL.palm('#2a9a56','#55c272','#8a5a2c'))+G(20,-15,.45,EL.palm('#2a9a56','#55c272','#8a5a2c')));
-const farm=(P,lit)=>{const a=hf(400,20,P.s+1),b=hf(468,24,P.s+2),c=hf(588,16,P.s+3,320),d=hf(700,10,P.s+4,400);
- return hill(a,P.h[0])+on(a,30,P.s+5,EL.tree(P.t[0],P.h[0],P.t[0]),.28,.14)
- +hill(b,P.h[1])+on(b,24,P.s+6,EL.tree(P.t[1],P.t[2],P.tr),.5,.3,x=>near(x,68,108,332))
- +G(108,b(108)+3,.95,EL.silo(P.silo[0],P.silo[1]))+G(68,b(68)+5,1.05,EL.barn(P.barn[0],P.barn[1],P.barn[2],P.barn[3]))+(lit?'':G(332,b(332)+4,1,EL.mill(P.mill[0],P.mill[1])))
- +hill(c,P.h[2])+fence(c,P.fence)+hill(d,P.h[3])+on(d,40,P.s+7,EL.bush(P.bush),.5,.4)};
+const mesa=(x,y,w,h,c)=>{const f=v=>v.toFixed(0);return `<path d="M${f(x-w)} ${y}L${f(x-w*.72)} ${f(y-h)}H${f(x+w*.62)}L${f(x+w)} ${y}Z" fill="${c}"/><path d="M${f(x+w*.2)} ${f(y-h)}H${f(x+w*.62)}L${f(x+w)} ${y}H${f(x+w*.45)}Z" fill="${dk(c,.2)}"/><path d="M${f(x-w*.8)} ${f(y-h*.7)}H${f(x+w*.72)}M${f(x-w*.9)} ${f(y-h*.38)}H${f(x+w*.86)}" stroke="${lt(c,.22)}" stroke-width="2.500" opacity=".7"/><path d="M${f(x-w*.72)} ${f(y-h)}H${f(x+w*.62)}" stroke="${lt(c,.4)}" stroke-width="3"/>`};
+const peak=(x,base,h,c,cap)=>{const w=h*1.1,f=v=>v.toFixed(0);return `<path d="M${f(x-w)} ${base}L${f(x)} ${f(base-h)}L${f(x+w)} ${base}Z" fill="${c}"/><path d="M${f(x)} ${f(base-h)}L${f(x+w)} ${base}H${f(x+w*.25)}L${f(x+w*.1)} ${f(base-h*.45)}Z" fill="${dk(c,.2)}"/>`+(cap?`<path d="M${f(x)} ${f(base-h)}L${f(x+w*.3)} ${f(base-h*.7)}L${f(x+w*.12)} ${f(base-h*.6)}L${f(x)} ${f(base-h*.72)}L${f(x-w*.14)} ${f(base-h*.58)}L${f(x-w*.3)} ${f(base-h*.7)}Z" fill="${cap}"/><path d="M${f(x)} ${f(base-h)}L${f(x+w*.3)} ${f(base-h*.7)}L${f(x+w*.12)} ${f(base-h*.6)}L${f(x)} ${f(base-h*.72)}Z" fill="${dk(cap,.1)}"/>`:'')};
+const isle=(x,y,s)=>G(x,y,s,`<ellipse cy="3" rx="70" ry="9" fill="#fff" opacity=".5"/><ellipse rx="64" ry="11" fill="#f7e3a6"/><path d="M-52 -3Q0 -44 52 -3Z" fill="#3fae5c"/><path d="M4 -24Q36 -18 52 -3H14Z" fill="#2f9450"/><path d="M-40 -8Q-20 -30 2 -24" stroke="#6fd084" stroke-width="3" fill="none"/>`+G(-14,-20,.55,EL.palm('#2a9a56'))+G(20,-15,.45,EL.palm('#2a9a56')));
+const farm=P=>{const a=hf(400,20,P.s+1),b=hf(468,24,P.s+2),c=hf(588,16,P.s+3,320),d=hf(700,10,P.s+4,400),B=P.barn;let rows='';
+ for(let k=0;k<4;k++)rows+=scat(150-k*24,P.s+20+k,x=>G(x,c(x)+16+k*24,.42+k*.15,EL.corn(P.crop[0],P.crop[1])));
+ return hill(a,P.h[0])+on(a,34,P.s+5,EL.tree(P.t[0],P.tr),.26,.16)+sp(a,70,P.s+8,10,50,tuft(dk(P.h[0],.1)))
+ +hill(b,P.h[1])+on(b,24,P.s+6,EL.tree(P.t[1],P.tr),.5,.3,x=>near(x,68,108,332))
+ +G(108,b(108)+3,.95,EL.silo(P.silo[0],P.silo[1]))+G(68,b(68)+5,1.05,EL.barn(B[0],B[1],B[2],B[3]))+G(332,b(332)+4,1,P.mill?EL.mill(P.mill[0],P.mill[1]):EL.tree(P.t[1],P.tr))
+ +scat(12,P.s+9,(x,r)=>x>-30&&x<430?'':G(x,b(x)+4,.8+r()*.3,r()<.5||!P.mill?EL.barn(B[0],B[1],B[2],B[3]):EL.mill(P.mill[0],P.mill[1])))
+ +sp(b,90,P.s+10,12,70,tuft(dk(P.h[1],.12)))+sp(b,50,P.s+11,14,70,flower(P.fl))
+ +on(b,10,P.s+12,EL.bale(P.bale[0],P.bale[1]),.5,.2,x=>near(x,68,108,332))+(P.extra?P.extra(b):'')
+ +hill(c,P.h[2])+fence(c,P.fence)+rows
+ +hill(d,P.h[3])+on(d,40,P.s+7,EL.bush(P.bush),.5,.4)+sp(d,70,P.s+13,10,80,flower(P.fl))+sp(d,90,P.s+14,6,90,tuft(lt(P.h[3],.14)))};
 const SCN={
- field:()=>clouds(8,11,'#fff',.7)+farm({s:0,h:['#a9d98a','#86c665','#6bb04c','#519639'],t:['#86c468','#5aa646','#8ad06a'],tr:'#6b4423',silo:['#ece4d2','#b5432e'],barn:['#d44a30','#8f2c1f','#fff1d8','#ffe9a8'],mill:['#efe6d2','#fff'],fence:'#f4ecd8',bush:'#3f7f2c'}),
- sunset:()=>`<circle cx="200" cy="405" r="150" fill="#fff6c8" opacity=".25"/><circle cx="200" cy="405" r="96" fill="#fff3b0"/>`+clouds(7,24,'#ffd9a0',.55,220,120)
-  +farm({s:20,h:['#d8607a','#9a3a64','#6a2350','#4a1640'],t:['#c04f70','#7a2a55','#8a3260'],tr:'#7a2a55',silo:['#7a2a55','#5e2046'],barn:['#7a2a55','#5e2046','#5e2046','#ffd27a'],mill:['#7a2a55','#7a2a55'],fence:'#4a1640',bush:'#38103a'}),
- night:()=>stars(160,34)+`<circle cx="322" cy="318" r="48" fill="#fff8c0" opacity=".16"/><circle cx="322" cy="318" r="30" fill="#fff6c0"/><circle cx="312" cy="310" r="6" fill="#e8dc98"/><circle cx="331" cy="328" r="4" fill="#e8dc98"/>`
-  +farm({s:30,h:['#2d4690','#213470','#18275a','#0f1a40'],t:['#263c80','#16224e','#1b2a5e'],tr:'#16224e',silo:['#1b2a5e','#16224e'],barn:['#1b2a5e','#16224e','#ffd75a','#ffd75a'],mill:[],fence:'#0f1a40',bush:'#0a1232'},true),
- autumn(){const a=hf(400,20,51),b=hf(468,24,52),c=hf(588,16,53,320),d=hf(700,10,54,400),L=['#e8742a','#d9482f','#f2b23a','#c9602a'];
-  return clouds(7,55,'#fff3d8',.6)+hill(a,'#e0a45a')+on(a,30,56,r=>EL.tree(L[r()*4|0],'#f6c96a','#8a5a2c'),.28,.14)
-  +hill(b,'#c98a3e')+on(b,26,57,r=>EL.tree(L[r()*4|0],'#ffd27a','#5a3418'),.5,.35)
-  +hill(c,'#a86a2a')+on(c,16,58,EL.bale('#f2c95a','#d9a63a'),.9,.4)+hill(d,'#7e4a1c')
-  +scat(90,59,(x,r)=>`<ellipse cx="${x.toFixed(0)}" cy="${(d(x)+8+r()*70).toFixed(0)}" rx="5" ry="2.5" transform="rotate(${(r()*180)|0} ${x.toFixed(0)} ${(d(x)+40).toFixed(0)})" fill="${L[r()*4|0]}"/>`)},
+ field:()=>sun(318,300,26,'#fffbe0')+clouds(8,11,'#ffffff','#d6ecc8',.8)+birds(7,16,'#5f9c43')
+  +farm({s:0,h:['#a9d98a','#86c665','#6bb04c','#519639'],t:['#86c468','#5aa646'],tr:'#7a5230',silo:['#ece4d2','#b5432e'],barn:['#d44a30','#8f2c1f','#fff1d8','#ffe9a8'],mill:['#efe6d2','#ffffff'],fence:'#f4ecd8',bush:'#3f7f2c',crop:['#3f8a2e','#ffd24a'],fl:['#ffffff','#ffe14d','#ff9ac0'],bale:['#f2c95a','#d9a63a'],
+   extra:b=>G(250,b(250)+14,.5,EL.tractor())+G(150,b(150)+8,.55,EL.scarecrow())+`<ellipse cx="282" cy="${(b(282)+40).toFixed(0)}" rx="30" ry="7" fill="#8fd8e8"/><ellipse cx="276" cy="${(b(282)+38).toFixed(0)}" rx="14" ry="2.500" fill="#fff" opacity=".6"/>`}),
+ sunset:()=>`<circle cx="200" cy="405" r="170" fill="#fff6c8" opacity=".18"/><circle cx="200" cy="405" r="128" fill="#fff6c8" opacity=".22"/><circle cx="200" cy="405" r="96" fill="#fff3b0"/><path d="M110 380H290M104 404H296M112 428H288" stroke="#ffc978" stroke-width="5" opacity=".55"/>`+clouds(7,24,'#ffd9a0','#f58a5a',.6,220,120)+birds(8,28,'#7a2a55')
+  +farm({s:20,h:['#d8607a','#9a3a64','#6a2350','#4a1640'],t:['#c04f70','#7a2a55'],tr:'#5e2046',silo:['#7a2a55','#5e2046'],barn:['#7a2a55','#5e2046','#5e2046','#ffd27a'],mill:['#7a2a55','#7a2a55'],fence:'#4a1640',bush:'#38103a',crop:['#38103a','#ffb04a'],fl:['#ffc978','#ff9a7a'],bale:['#b85a6a','#8a3a5a']}),
+ night:()=>stars(170,34)+`<circle cx="322" cy="318" r="62" fill="#fff8c0" opacity=".08"/><circle cx="322" cy="318" r="46" fill="#fff8c0" opacity=".14"/><circle cx="322" cy="318" r="30" fill="#fff6c0"/><circle cx="312" cy="310" r="6" fill="#e8dc98"/><circle cx="331" cy="328" r="4" fill="#e8dc98"/><circle cx="326" cy="304" r="2.500" fill="#e8dc98"/>`+clouds(4,38,'#3a55a0','#213470',.6,240,100)
+  +farm({s:30,h:['#2d4690','#213470','#18275a','#0f1a40'],t:['#263c80','#1b2a5e'],tr:'#101a40',silo:['#1b2a5e','#16224e'],barn:['#1b2a5e','#16224e','#ffd75a','#ffd75a'],mill:null,fence:'#0f1a40',bush:'#0a1232',crop:['#0a1232','#6a88d8'],fl:['#fff48a','#b8d0ff'],bale:['#2d4690','#213470'],
+   extra:b=>sp(b,40,39,-40,90,(x,y,r)=>`<circle cx="${x|0}" cy="${y|0}" r="5" fill="#fff48a" opacity=".18"/><circle cx="${x|0}" cy="${y|0}" r="1.600" fill="#fff48a"/>`)}),
+ autumn(){const a=hf(400,20,51),b=hf(468,24,52),c=hf(588,16,53,320),d=hf(700,10,54,400),L=['#e8742a','#d9482f','#f2b23a','#c9602a','#b8862a'];
+  return sun(312,306,26,'#fff3d0')+clouds(7,55,'#fff3d8','#f8c070',.7)+birds(8,50,'#8a4a1a')+hill(a,'#e0a45a')+on(a,34,56,r=>EL.tree(pk(r,L),'#8a5a2c'),.26,.16)+sp(a,60,60,10,50,tuft('#c98a3e'))
+  +hill(b,'#c98a3e')+on(b,28,57,r=>EL.tree(pk(r,L),'#5a3418'),.5,.35,x=>near(x,70))+G(70,b(70)+5,.95,EL.barn('#9a4a2a','#5e2a18','#f2d9a0','#ffd27a'))+G(300,b(300)+10,.6,EL.scarecrow())
+  +sp(b,60,61,14,70,(x,y,r)=>G(x,y,.35+r()*.2,EL.mushroom(pk(r,['#d9482f','#e8742a']))))+sp(b,80,62,12,70,tuft('#a86a2a'))
+  +hill(c,'#a86a2a')+fence(c,'#7e4a1c')+on(c,16,58,EL.bale('#f2c95a','#d9a63a'),.9,.4)+sp(c,46,63,18,70,(x,y,r)=>G(x,y,.5+r()*.5,EL.pumpkin()))
+  +hill(d,'#7e4a1c')+sp(d,130,59,8,80,speck(L))+sp(d,26,64,14,60,(x,y,r)=>G(x,y,.8+r()*.6,EL.pumpkin()))+sp(d,60,65,6,90,tuft('#96602a'))},
  snow(){const b=hf(480,18,62),c=hf(590,14,63,320),d=hf(700,10,64,400);
-  return clouds(6,65,'#fff',.8)+scat(9,61,(x,r)=>{const h=120+r()*90,w=h*1.1,f=v=>v.toFixed(0);return `<path d="M${f(x-w)} 520L${f(x)} ${f(520-h)}L${f(x+w)} 520Z" fill="#9dbfe6"/><path d="M${f(x)} ${f(520-h)}L${f(x+w*.3)} ${f(520-h*.7)}L${f(x+w*.12)} ${f(520-h*.6)}L${f(x)} ${f(520-h*.72)}L${f(x-w*.14)} ${f(520-h*.58)}L${f(x-w*.3)} ${f(520-h*.7)}Z" fill="#fff"/>`})
-  +hill(b,'#dcecff')+on(b,26,66,EL.pine('#3f7f72','#fff'),.45,.3)+hill(c,'#eef6ff')+on(c,10,67,EL.pine('#2f6a60','#fff'),.8,.4,x=>x>105&&x<295)+hill(d,'#ffffff')},
- candy(){const a=hf(410,22,71),b=hf(476,24,72),c=hf(590,16,73,320),d=hf(700,10,74,400),C=['#ff5aa8','#7ad8ff','#ffd24a','#b48cff','#7ae0a0'];
-  return clouds(7,75,'#fff',.85)+hill(a,'#ffc2e2')+on(a,26,76,r=>EL.lolly(C[r()*5|0],'#fff'),.35,.15)
-  +hill(b,'#ff9fd0')+on(b,20,78,r=>EL.gum(C[r()*5|0]),.6,.5)+on(b,22,77,r=>EL.lolly(C[r()*5|0],'#fff'),.7,.4)
-  +hill(c,'#f77fbe')+on(c,16,79,EL.cane(),.7,.4)+hill(d,'#d85aa6')
-  +scat(120,70,(x,r)=>`<rect x="${x.toFixed(0)}" y="${(d(x)+8+r()*80).toFixed(0)}" width="8" height="3" rx="1.5" transform="rotate(${(r()*180)|0} ${x.toFixed(0)} ${(d(x)+40).toFixed(0)})" fill="${C[r()*5|0]}"/>`)},
- outback(){const a=hf(432,7,81,400),b=hf(490,12,82),c=hf(600,12,83,320),d=hf(700,8,84,400);
-  return `<circle cx="318" cy="322" r="60" fill="#fff3c0" opacity=".3"/><circle cx="318" cy="322" r="32" fill="#fff6d0"/>`+clouds(4,85,'#ffe9c0',.5)
-  +scat(6,89,(x,r)=>x>-160&&x<520?'':G(x,440,.5+r()*.5,`<path d="M-150 0Q-130 -62 -70 -72Q10 -84 75 -70Q122 -60 140 0Z" fill="#b8562e"/>`))
-  +`<path d="M-10 440Q10 374 70 366Q150 354 215 368Q262 378 280 440Z" fill="#b04a26"/><path d="M70 366Q150 354 215 368Q262 378 280 440H246Q232 392 198 382Q140 368 70 366Z" fill="#8f3a1e" opacity=".55"/><path d="M40 392V436M92 372V436M150 364V436" stroke="#8f3a1e" stroke-width="3" opacity=".4"/>`
-  +hill(a,'#e09a52')+hill(b,'#d07a3c')+on(b,16,86,EL.gumtree(),.6,.45)+hill(c,'#b85a2a')+on(c,44,87,EL.tuft('#e0c06a'),.6,.5)+hill(d,'#96421e')+on(d,14,88,EL.rock('#7a3418','#5e260f'),.6,.5)},
- beach(){const s=hf(650,12,41,300),P=()=>EL.palm('#2a9a56','#55c272','#8a5a2c');
-  return `<circle cx="300" cy="330" r="56" fill="#fffbe0" opacity=".35"/><circle cx="300" cy="330" r="32" fill="#fffbe0"/>`+clouds(7,42,'#fff',.8,230,110)
-  +band(440,360,'#35b8c8')+band(440,24,'#8fe6e0')+scat(70,43,(x,r)=>`<rect x="${x.toFixed(0)}" y="${(470+r()*160).toFixed(0)}" width="${(18+r()*30).toFixed(0)}" height="3" rx="1.5" fill="#fff" opacity=".45"/>`)
+  return sun(318,300,22,'#ffffff')+clouds(6,65,'#ffffff','#c4dcf4',.9)+scat(9,61,(x,r)=>peak(x,520,120+r()*90,'#9dbfe6','#ffffff'))
+  +hill(b,'#dcecff',{to:'#b8d4f0'})+on(b,30,66,EL.pine('#3f7f72','#ffffff'),.45,.3,x=>near(x,80))+G(80,b(80)+6,.9,EL.cabin())+scat(8,68,(x,r)=>x>-40&&x<440?'':G(x,b(x)+6,.8+r()*.3,EL.cabin()))
+  +`<ellipse cx="290" cy="${(b(290)+52).toFixed(0)}" rx="46" ry="9" fill="#bfe4f6"/><path d="M262 ${(b(290)+50).toFixed(0)}h26M296 ${(b(290)+55).toFixed(0)}h22" stroke="#fff" stroke-width="2" opacity=".8"/>`
+  +hill(c,'#eef6ff',{to:'#c8dff4'})+on(c,12,67,EL.pine('#2f6a60','#ffffff'),.8,.4,x=>x>105&&x<295)+G(128,c(128)+20,.75,EL.snowman())+scat(9,69,(x,r)=>x>0&&x<400?'':G(x,c(x)+20,.7+r()*.3,EL.snowman()))
+  +sp(c,50,60,10,80,pebble('#d4e6f8'))+hill(d,'#ffffff',{to:'#d4e6f8'})+sp(d,60,59,8,80,spark('#bfe4f6'))+sp(d,40,58,8,80,pebble('#e0eefc'))},
+ candy(){const a=hf(410,22,71),b=hf(476,24,72),c=hf(590,16,73,320),d=hf(700,10,74,400),C=['#ff5aa8','#7ad8ff','#ffd24a','#b48cff','#7ae0a0'],F=['#ffb0d8','#b8ecff','#fff0a0','#d8c0ff'];
+  return clouds(7,75,'#ffffff','#ffd0e8',.95)+scat(8,70,(x,r)=>{const h=110+r()*70,w=h*.5,f=v=>v.toFixed(0),k=pk(r,F);return `<path d="M${f(x-w)} 470L${f(x)} ${f(470-h)}L${f(x+w)} 470Z" fill="#f2c890"/><path d="M${f(x)} ${f(470-h)}L${f(x+w)} 470H${f(x+w*.3)}Z" fill="#dba868"/><path d="M${f(x-w*.5)} ${f(470-h*.5)}Q${f(x-w*.4)} ${f(470-h*.42)} ${f(x-w*.25)} ${f(470-h*.5)}Q${f(x)} ${f(470-h*.36)} ${f(x+w*.25)} ${f(470-h*.5)}Q${f(x+w*.4)} ${f(470-h*.42)} ${f(x+w*.5)} ${f(470-h*.5)}L${f(x)} ${f(470-h)}Z" fill="${k}"/><circle cx="${f(x)}" cy="${f(470-h-4)}" r="6" fill="#f0425a"/>`})
+  +hill(a,'#ffc2e2')+on(a,28,76,r=>EL.lolly(pk(r,C),'#ffffff'),.35,.15)
+  +hill(b,'#ff9fd0')+on(b,20,78,r=>EL.gum(pk(r,C)),.6,.5)+on(b,22,77,r=>EL.lolly(pk(r,C),'#ffffff'),.7,.4,x=>near(x,72,330))+G(72,b(72)+6,1.15,EL.cupcake('#ffffff'))+G(330,b(330)+6,.95,EL.cupcake('#b48cff'))+scat(10,69,(x,r)=>x>0&&x<400?'':G(x,b(x)+6,.9+r()*.4,EL.cupcake(pk(r,F))))
+  +sp(b,60,68,16,70,speck(C))
+  +hill(c,'#f77fbe')+on(c,18,79,EL.cane(),.7,.4)+sp(c,24,67,18,70,(x,y,r)=>G(x,y,.6+r()*.5,EL.donut(pk(r,C))))+sp(c,26,66,14,80,(x,y,r)=>G(x,y,.5+r()*.5,EL.gum(pk(r,C))))
+  +hill(hf(684,6,65,170),'#8a4a2a',{rim:'#b87a50'})+hill(d,'#d85aa6')+sp(d,150,64,8,80,speck(C.concat('#ffffff')))},
+ outback(){const a=hf(432,7,81,400),b=hf(490,12,82),c=hf(600,12,83,320),d=hf(700,8,84,400),R='#b04a26';
+  return sun(318,322,32,'#fff6d0')+clouds(4,85,'#ffe9c0','#f2b56a',.6)+birds(5,80,'#9a3d22')
+  +scat(6,89,(x,r)=>x>-160&&x<520?'':mesa(x,442,90+r()*70,50+r()*40,'#b8562e'))
+  +`<path d="M-10 440Q10 374 70 366Q150 354 215 368Q262 378 280 440Z" fill="${R}"/><path d="M150 358Q200 362 215 368Q262 378 280 440H236Q222 392 150 358Z" fill="${dk(R,.22)}"/><path d="M14 398Q130 378 262 400M4 420Q130 402 274 422" stroke="${lt(R,.22)}" stroke-width="3" fill="none" opacity=".7"/><path d="M22 384Q46 368 70 366Q110 358 150 358" stroke="${lt(R,.45)}" stroke-width="4" fill="none"/><path d="M40 392V436M92 372V436M130 366V436" stroke="${dk(R,.16)}" stroke-width="2.500" opacity=".5"/>`
+  +hill(a,'#e09a52')+hill(b,'#d07a3c')+on(b,18,86,EL.gumtree(),.6,.45,x=>near(x,330))+G(330,b(330)+5,.9,EL.pump('#7a4a2c'))+sp(b,22,79,14,60,(x,y,r)=>G(x,y,.5+r()*.5,EL.termite('#b85a2a')))+sp(b,70,78,12,70,tuft('#e0c06a'))
+  +hill(c,'#b85a2a')+on(c,50,87,r=>`<g transform="scale(1.4)">${tuft('#e0c06a')(0,0,r)}</g>`,.6,.5)+sp(c,60,77,14,70,pebble('#96421e'))+on(c,8,76,EL.gumtree(),1,.5,x=>x>90&&x<310)
+  +hill(d,'#96421e')+on(d,16,88,EL.rock('#7a3418','#5e260f'),.6,.5)+sp(d,60,75,10,80,tuft('#c8a050'))+sp(d,50,74,10,80,pebble('#7a3418'))},
+ beach(){const s=hf(650,12,41,300),P=()=>EL.palm('#2a9a56');let sea='';
+  for(let i=0;i<6;i++)sea+=band(440+i*34,36,mix('#8fe6e0','#2aa6c0',i/5));
+  return sun(300,326,30,'#fffbe0')+clouds(7,42,'#ffffff','#c8f0ee',.9,230,110)+birds(6,48,'#1a8aa8')
+  +sea+scat(90,43,(x,r)=>`<rect x="${x.toFixed(0)}" y="${(466+r()*170).toFixed(0)}" width="${(18+r()*30).toFixed(0)}" height="3" rx="1.500" fill="#fff" opacity="${(.3+r()*.4).toFixed(2)}"/>`)
+  +G(232,470,.5,EL.boat())+scat(6,49,(x,r)=>x>-60&&x<460?'':G(x,470+r()*40,.5+r()*.4,EL.boat()))
   +isle(74,452,1)+isle(338,446,.5)+scat(7,44,(x,r)=>x>-60&&x<460?'':isle(x,448,.45+r()*.5))
-  +hill(s,'#f7e3a6')+hill(hf(722,8,45,300),'#eccf86')+G(356,s(356)+8,2.1,P())+G(24,s(24)+8,1.5,P())
-  +scat(12,46,(x,r)=>x>-20&&x<420?'':G(x,s(x)+8,1.3+r()*.9,P()))+scat(26,47,(x,r)=>`<circle cx="${x.toFixed(0)}" cy="${(s(x)+30+r()*80).toFixed(0)}" r="3.500" fill="${r()<.5?'#ff9a7a':'#fff'}"/>`)},
- jungle(){const a=hf(380,24,131,110),b=hf(452,22,132,85),c=hf(600,18,133,200),d=hf(704,12,134,260);
-  const canopy=(fn,n,seed,c,c2,r0,rr)=>scat(n,seed,(x,r)=>{const q=r0+r()*rr;return `<circle cx="${x.toFixed(0)}" cy="${(fn(x)+q*.2).toFixed(0)}" r="${q.toFixed(0)}" fill="${r()<.5?c:c2}"/>`});
-  return canopy(a,70,130,'#9be0a0','#86d492',26,22)+hill(x=>a(x)+14,'#8fd896')
-  +`<path d="M300 392H344V600H300Z" fill="#6a8a7a"/><path d="M308 392H336V600H308Z" fill="#c8f4ff"/><path d="M314 400V590M324 396V596M331 404V586" stroke="#fff" stroke-width="2.5" opacity=".8"/><ellipse cx="322" cy="598" rx="34" ry="9" fill="#fff" opacity=".8"/>`
-  +canopy(b,60,140,'#48ac6c','#3c9c60',24,20)+hill(x=>b(x)+12,'#48ac6c')
-  +`<path d="M296 400Q286 500 300 600H310V400ZM348 400Q358 500 344 600H334V400Z" fill="#3c9c60"/>`
-  +scat(16,135,(x,r)=>{if(x>96&&x<304)return '';const w=14+r()*12,f=v=>v.toFixed(0);return `<path d="M${f(x-w/2)} 640L${f(x-w/3)} 130H${f(x+w/3)}L${f(x+w/2)} 640Z" fill="#3c6a3c"/><path d="M${f(x)} 420Q${f(x+30)} 380 ${f(x+46)} 330" stroke="#3c6a3c" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="${f(x+48)}" cy="318" r="22" fill="#2f9a5c"/><circle cx="${f(x-10)}" cy="150" r="46" fill="#2a8a52"/><circle cx="${f(x+34)}" cy="176" r="36" fill="#34a060"/><circle cx="${f(x-42)}" cy="190" r="30" fill="#34a060"/>`})
-  +scat(22,136,(x,r)=>{if(x>80&&x<320)return '';const l=150+r()*220,f=v=>v.toFixed(0);let o=`<path d="M${f(x)} 0Q${f(x+16)} ${f(l/2)} ${f(x)} ${f(l)}" stroke="#267a46" stroke-width="3" fill="none"/>`;for(let y=40;y<l;y+=34)o+=`<ellipse cx="${f(x+8)}" cy="${y}" rx="7" ry="4" fill="#3cae62"/>`;return o})
-  +hill(c,'#2f9258')+on(c,30,137,EL.fern('#3fb468','#2a8a50'),.7,.5)
-  +scat(30,139,(x,r)=>`<circle cx="${x.toFixed(0)}" cy="${(c(x)+14+r()*50).toFixed(0)}" r="5" fill="${['#ff5a6a','#ffd24a','#ff8ad0'][r()*3|0]}"/>`)
-  +hill(d,'#1f6e42')+on(d,22,138,EL.fern('#2f9a58','#1a5a36'),1.2,1.1)},
- city(){const B=['#6f7fa8','#8a6f9a','#5f8f9a','#a87f6a','#7a8a6a'];
-  return `<circle cx="312" cy="318" r="56" fill="#fff8d8" opacity=".4"/><circle cx="312" cy="318" r="30" fill="#fffbe6"/>`+clouds(7,142,'#fff',.8,220,120)
-  +skyline(143,560,26,34,70,150,2,(x,y,w)=>`<rect x="${x}" y="${y}" width="${w}" height="${570-y}" fill="#d9b4bc"/>`)
-  +skyline(141,612,36,40,60,190,5,(x,y,w,r)=>{const c=B[r()*5|0];let o=`<rect x="${x}" y="${y}" width="${w}" height="${620-y}" fill="${c}"/><rect x="${x}" y="${y}" width="${w}" height="5" fill="#fff" opacity=".25"/>`;
-    if(r()<.4)o+=`<rect x="${x+6}" y="${y-12}" width="${(w*.4)|0}" height="12" fill="${c}"/>`;else if(r()<.4)o+=`<rect x="${x+(w>>1)-1}" y="${y-22}" width="2" height="22" fill="#4a5470"/>`;
-    for(let yy=y+12;yy<600;yy+=14)for(let xx=x+6;xx<x+w-9;xx+=11)o+=`<rect x="${xx}" y="${yy}" width="6" height="8" fill="${r()<.55?'#ffe9a8':'#3f4a6a'}" opacity=".9"/>`;return o})
-  +band(610,12,'#d8d0c4')+band(622,178,'#5a5f72')+band(700,6,'#5a5f72')
+  +hill(x=>s(x)-7,'#ffffff',{rim:0,to:'#ffffff'})+hill(s,'#f7e3a6',{rim:0})+hill(hf(722,8,45,300),'#eccf86',{rim:'#f7e3a6'})
+  +G(356,s(356)+8,2.1,P())+G(24,s(24)+8,1.5,P())+scat(12,46,(x,r)=>x>-20&&x<420?'':G(x,s(x)+8,1.3+r()*.9,P()))
+  +G(120,s(120)+34,.95,EL.umbrella('#ff6a5a'))+scat(8,40,(x,r)=>x>0&&x<400?'':G(x,s(x)+34,.9+r()*.3,EL.umbrella(pk(r,['#ff6a5a','#ffd24a','#5ad8ff']))))
+  +sp(s,30,47,22,80,(x,y,r)=>G(x,y,.8+r()*.6,EL.starfish(pk(r,['#ff9a7a','#ff7ab0','#ffb04a']))))+sp(s,60,39,18,90,pebble('#e2c27a'))+sp(s,40,38,18,90,(x,y,r)=>`<path transform="translate(${x|0} ${y|0})" d="M-4 0Q0 -8 4 0Z" fill="#fff"/>`)},
+ jungle(){const a=hf(380,24,131,110),b=hf(452,22,132,85),c=hf(600,18,133,200),d=hf(704,12,134,260),FL=['#ff5a6a','#ffd24a','#ff8ad0','#ffffff'];
+  const canopy=(fn,n,seed,cc,r0,rr)=>scat(n,seed,(x,r)=>{const q=r0+r()*rr,y=fn(x)+q*.2,k=pk(r,cc);return `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${q.toFixed(0)}" fill="${k}"/><circle cx="${(x-q*.3).toFixed(0)}" cy="${(y-q*.4).toFixed(0)}" r="${(q*.4).toFixed(0)}" fill="${lt(k,.22)}"/>`});
+  return sun(310,300,24,'#ffffe0')+canopy(a,80,130,['#9be0a0','#86d492','#a8e8a8'],26,22)+hill(x=>a(x)+14,'#8fd896',{rim:0})
+  +`<path d="M292 392H352V610H292Z" fill="#6f8f80"/><path d="M292 392H304V610H292Z" fill="#8fb0a0"/><path d="M306 392H338V610H306Z" fill="#c8f4ff"/><path d="M312 400V596M320 396V600M328 398V596M334 404V590" stroke="#fff" stroke-width="2.500" opacity=".8"/><g fill="#fff" opacity=".8"><ellipse cx="322" cy="602" rx="36" ry="9"/><circle cx="300" cy="598" r="8"/><circle cx="344" cy="598" r="9"/></g>`
+  +canopy(b,70,140,['#48ac6c','#3c9c60','#54b878'],24,20)+hill(x=>b(x)+12,'#48ac6c',{rim:0})
+  +scat(16,135,(x,r)=>{if(x>96&&x<288)return '';const w=14+r()*12,f=v=>v.toFixed(0),T='#4a7a48';let o=`<path d="M${f(x-w/2)} 640L${f(x-w/3)} 130H${f(x+w/3)}L${f(x+w/2)} 640Z" fill="${T}"/><path d="M${f(x)} 640V130H${f(x+w/3)}L${f(x+w/2)} 640Z" fill="${dk(T,.2)}"/><path d="M${f(x)} 420Q${f(x+30)} 380 ${f(x+46)} 330" stroke="${T}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+    for(let y=200;y<620;y+=46)o+=`<path d="M${f(x-w/3)} ${y}Q${f(x-w/6)} ${y+5} ${f(x-1)} ${y}" stroke="${lt(T,.25)}" stroke-width="2" fill="none"/>`;
+    return o+`<circle cx="${f(x+50)}" cy="320" r="23" fill="#267a4a"/><circle cx="${f(x+46)}" cy="315" r="21" fill="#2f9a5c"/><circle cx="${f(x+40)}" cy="308" r="9" fill="#52ba78"/><circle cx="${f(x-6)}" cy="154" r="48" fill="#216e44"/><circle cx="${f(x-10)}" cy="150" r="45" fill="#2a8a52"/><circle cx="${f(x+34)}" cy="176" r="36" fill="#34a060"/><circle cx="${f(x-42)}" cy="190" r="30" fill="#34a060"/><circle cx="${f(x-22)}" cy="134" r="16" fill="#4cb872"/><circle cx="${f(x+28)}" cy="164" r="11" fill="#58c480"/>`+(r()<.6?G(x+46,300,.9,EL.parrot()):'')})
+  +scat(22,136,(x,r)=>{if(x>80&&x<320)return '';const l=150+r()*220,f=v=>v.toFixed(0);let o=`<path d="M${f(x)} 0Q${f(x+16)} ${f(l/2)} ${f(x)} ${f(l)}" stroke="#267a46" stroke-width="3" fill="none"/>`;for(let y=40;y<l;y+=34)o+=`<ellipse cx="${f(x+8)}" cy="${y}" rx="7" ry="4" fill="#3cae62"/><ellipse cx="${f(x-4)}" cy="${y+16}" rx="6" ry="3.500" fill="#52c078"/>`;return o+`<circle cx="${f(x)}" cy="${f(l)}" r="5" fill="${pk(r,FL)}"/>`})
+  +hill(c,'#2f9258')+on(c,34,137,EL.fern('#3fb468','#2a8a50'),.7,.5)+sp(c,50,139,14,60,flower(FL))+sp(c,26,129,16,60,(x,y,r)=>G(x,y,.5+r()*.4,EL.mushroom(pk(r,['#ff5a6a','#ffb04a']))))+on(c,10,128,EL.rock('#6f8f80','#557366'),.6,.5)
+  +hill(d,'#1f6e42')+on(d,20,138,r=>EL.bigleaf(pk(r,['#2f9a58','#27864c','#38a862'])),.9,.7,x=>x>130&&x<270)+on(d,24,127,EL.fern('#2f9a58','#1a5a36'),1.1,.9)+sp(d,40,126,10,70,flower(FL))},
+ city(){const B=['#6f7fa8','#8a6f9a','#5f8f9a','#a87f6a','#7a8a6a'],K=['#e0485a','#3a8af0','#ffd24a','#5ac878','#f2f2f8'];
+  return sun(312,316,28,'#fffbe6')+clouds(7,142,'#ffffff','#ffdfae',.9,220,120)+birds(8,147,'#9a6a8a')
+  +skyline(143,560,26,34,70,150,2,(x,y,w,r)=>{let o=`<rect x="${x}" y="${y}" width="${w}" height="${570-y}" fill="#d9b4bc"/><rect x="${x+w-6}" y="${y}" width="6" height="${570-y}" fill="#c69aa6"/>`;for(let yy=y+10;yy<556;yy+=12)o+=`<rect x="${x+4}" y="${yy}" width="${w-14}" height="3" fill="#f0d4d8" opacity=".7"/>`;return o})
+  +skyline(141,612,36,40,60,190,5,(x,y,w,r)=>{const c=pk(r,B),side=Math.max(6,w*.2|0);let o=`<rect x="${x}" y="${y}" width="${w}" height="${620-y}" fill="${c}"/><rect x="${x+w-side}" y="${y}" width="${side}" height="${620-y}" fill="${dk(c,.2)}"/><rect x="${x}" y="${y}" width="${w}" height="4" fill="${lt(c,.4)}"/>`;
+    const t=r();if(t<.3)o+=`<rect x="${x+6}" y="${y-12}" width="${(w*.4)|0}" height="12" fill="${dk(c,.1)}"/>`;else if(t<.55)o+=`<rect x="${x+(w>>1)-1}" y="${y-22}" width="2" height="22" fill="#4a5470"/><circle cx="${x+(w>>1)}" cy="${y-23}" r="2.500" fill="#ff5a6a"/>`;else if(t<.75)o+=`<rect x="${x+5}" y="${y-9}" width="3" height="9" fill="#5a4a44"/><rect x="${x+13}" y="${y-9}" width="3" height="9" fill="#5a4a44"/><rect x="${x+2}" y="${y-20}" width="17" height="12" rx="2" fill="#a8785a"/>`;
+    for(let yy=y+12;yy<588;yy+=14)for(let xx=x+6;xx<x+w-side-7;xx+=11){const lit=r()<.5;o+=`<rect x="${xx}" y="${yy}" width="6" height="8" fill="${lit?'#ffe9a8':'#3f4a6a'}"/>`+(lit?'':`<rect x="${xx}" y="${yy}" width="6" height="3" fill="#6a7aa0"/>`)}
+    const aw=pk(r,K);return o+`<rect x="${x+3}" y="596" width="${w-side-6}" height="16" fill="#2f3a54"/><path d="M${x+2} 592H${x+w-side-2}L${x+w-side+2} 600H${x-2}Z" fill="${aw}"/><rect x="${x+(w-side>>1)-3}" y="600" width="7" height="12" fill="#ffe9a8"/>`})
+  +band(610,12,'#d8d0c4')+band(610,3,'#f0e8dc')+band(622,178,'#5a5f72')+band(622,6,'#4a4f62')
   +scat(60,144,x=>`<rect x="${x.toFixed(0)}" y="700" width="22" height="5" rx="2" fill="#ffe680"/>`)
-  +scat(30,145,(x,r)=>G(x,614,.42+r()*.1,EL.tree('#5aa646','#8ad06a')))
-  +scat(16,146,x=>`<rect x="${x.toFixed(0)}" y="560" width="3" height="52" fill="#39456a"/><rect x="${(x-8).toFixed(0)}" y="558" width="19" height="4" rx="2" fill="#39456a"/><circle cx="${(x-6).toFixed(0)}" cy="564" r="3.500" fill="#fff3b0"/>`)},
+  +scat(30,145,(x,r)=>G(x,614,.42+r()*.1,EL.tree('#5aa646')))
+  +scat(16,146,x=>`<rect x="${x.toFixed(0)}" y="560" width="3" height="52" fill="#39456a"/><rect x="${(x-8).toFixed(0)}" y="558" width="19" height="4" rx="2" fill="#39456a"/><circle cx="${(x-6).toFixed(0)}" cy="565" r="8" fill="#fff3b0" opacity=".3"/><circle cx="${(x-6).toFixed(0)}" cy="564" r="3.500" fill="#fff3b0"/>`)
+  +scat(22,148,(x,r)=>G(x,666+r()*6,1.25+r()*.2,EL.car(pk(r,K))))+scat(16,149,(x,r)=>`<g transform="translate(${x|0} 760) scale(-1.600 1.600)">${EL.car(pk(r,K))}</g>`)},
  neon(){const N=['#3af0ff','#ff4ad8'];let fl=band(600,200,'#160840');
   for(let i=1;i<9;i++)fl+=band((600+i*i*3.1).toFixed(1),1.6,'#ff4ad8',.7);
-  for(let k=-34;k<=34;k++){const x1=200+k*13,x2=200+k*92;if(Math.max(x1,x2)>VA&&Math.min(x1,x2)<VB)fl+=`<path d="M${x1} 600L${x2} 800" stroke="#3af0ff" stroke-width="1.3" opacity=".55"/>`}
-  return stars(90,92,'#fff',380)+`<circle cx="200" cy="480" r="130" fill="#ff8ae0" opacity=".3"/>`
-  +skyline(93,548,24,30,90,160,2,(x,y,w)=>`<rect x="${x}" y="${y}" width="${w}" height="${560-y}" fill="#5a1f9a"/>`)
-  +skyline(91,600,34,40,70,200,4,(x,y,w,r)=>{const c=N[r()*2|0];let o=`<rect x="${x}" y="${y}" width="${w}" height="${604-y}" fill="#1c0a4a"/><rect x="${x}" y="${y}" width="${w}" height="3" fill="${c}"/>`;
-    for(let yy=y+14;yy<594;yy+=16)if(r()<.7)o+=`<rect x="${x+5}" y="${yy}" width="${w-10}" height="4" fill="${N[r()*2|0]}" opacity="${(.35+r()*.5).toFixed(2)}"/>`;
-    if(r()<.35)o+=`<rect x="${x+(w>>1)-1}" y="${y-28}" width="2" height="28" fill="${c}"/><circle cx="${x+(w>>1)}" cy="${y-30}" r="3" fill="#fff"/>`;
-    else if(r()<.3)o+=`<path d="M${x} ${y}Q${x+w/2} ${y-w*.7} ${x+w} ${y}Z" fill="#1c0a4a" stroke="${c}" stroke-width="2"/>`;return o})+fl},
+  for(let k=-34;k<=34;k++){const x1=200+k*13,x2=200+k*92;if(Math.max(x1,x2)>VA&&Math.min(x1,x2)<VB)fl+=`<path d="M${x1} 600L${x2} 800" stroke="#3af0ff" stroke-width="1.300" opacity=".55"/>`}
+  return stars(90,92,'#ffffff',380)+`<circle cx="200" cy="470" r="150" fill="#ff8ae0" opacity=".16"/><circle cx="200" cy="470" r="110" fill="#ffd0f0" opacity=".85"/><g fill="#a02ac0" opacity=".9"><rect x="80" y="486" width="240" height="5"/><rect x="80" y="504" width="240" height="7"/><rect x="80" y="524" width="240" height="9"/><rect x="80" y="546" width="240" height="12"/></g>`
+  +skyline(93,548,24,30,90,160,2,(x,y,w,r)=>{let o=`<rect x="${x}" y="${y}" width="${w}" height="${560-y}" fill="#5a1f9a"/><rect x="${x+w-5}" y="${y}" width="5" height="${560-y}" fill="#4a1784"/>`;for(let yy=y+10;yy<540;yy+=13)if(r()<.5)o+=`<rect x="${x+4}" y="${yy}" width="${w-12}" height="2" fill="#c06af0" opacity=".6"/>`;return o})
+  +scat(14,94,(x,r)=>{const y=330+r()*150,c=pk(r,N),f=v=>v.toFixed(0);return `<path d="M${f(x-26)} ${f(y)}h20" stroke="${c}" stroke-width="2" opacity=".5"/><ellipse cx="${f(x)}" cy="${f(y)}" rx="10" ry="3.500" fill="#2a1060"/><ellipse cx="${f(x+2)}" cy="${f(y-2.500)}" rx="5" ry="2.500" fill="${c}"/><circle cx="${f(x+10)}" cy="${f(y)}" r="1.500" fill="#fff"/>`})
+  +skyline(91,600,34,40,70,200,4,(x,y,w,r)=>{const c=pk(r,N),side=Math.max(5,w*.18|0);let o=`<rect x="${x}" y="${y}" width="${w}" height="${604-y}" fill="#1c0a4a"/><rect x="${x+w-side}" y="${y}" width="${side}" height="${604-y}" fill="#12063a"/><rect x="${x}" y="${y}" width="${w}" height="3" fill="${c}"/><rect x="${x}" y="${y}" width="2" height="${604-y}" fill="${c}" opacity=".35"/>`;
+    for(let yy=y+14;yy<594;yy+=16)if(r()<.7)o+=`<rect x="${x+5}" y="${yy}" width="${w-side-9}" height="4" fill="${pk(r,N)}" opacity="${(.35+r()*.5).toFixed(2)}"/>`;
+    const t=r();if(t<.35)o+=`<rect x="${x+(w>>1)-1}" y="${y-28}" width="2" height="28" fill="${c}"/><circle cx="${x+(w>>1)}" cy="${y-30}" r="6" fill="${c}" opacity=".3"/><circle cx="${x+(w>>1)}" cy="${y-30}" r="3" fill="#fff"/>`;
+    else if(t<.6)o+=`<path d="M${x} ${y}Q${x+w/2} ${y-w*.7} ${x+w} ${y}Z" fill="#1c0a4a" stroke="${c}" stroke-width="2"/>`;
+    if(r()<.4&&w>44){const sy=y+20+r()*40|0,sc=pk(r,['#ffe14d','#3af0ff','#ff4ad8','#7af0a0']);o+=`<rect x="${x+w-side-13}" y="${sy-3}" width="16" height="46" rx="3" fill="${sc}" opacity=".25"/><rect x="${x+w-side-10}" y="${sy}" width="10" height="40" rx="2" fill="${sc}"/><rect x="${x+w-side-8}" y="${sy+4}" width="6" height="5" fill="#1c0a4a"/><rect x="${x+w-side-8}" y="${sy+13}" width="6" height="5" fill="#1c0a4a"/><rect x="${x+w-side-8}" y="${sy+22}" width="6" height="5" fill="#1c0a4a"/>`}
+    return o})+fl+band(600,60,'#ff4ad8',.1)},
  space(){const c=hf(606,10,103,300),d=hf(650,14,101,260);
-  return stars(240,102,'#fff',600)+`<g transform="translate(318 316)"><ellipse rx="70" ry="16" fill="none" stroke="#ffd98a" stroke-width="6" transform="rotate(-18)"/><circle r="38" fill="#ff9a5a"/><path d="M-36 -10Q0 -2 36 -14M-37 6Q0 16 37 4" stroke="#e0703a" stroke-width="6" fill="none"/><path d="M-70 0A70 16 0 0 0 70 0" fill="none" stroke="#ffd98a" stroke-width="6" transform="rotate(-18)"/></g>`
-  +`<circle cx="62" cy="352" r="20" fill="#7ad8ff"/><circle cx="56" cy="346" r="6" fill="#b8ecff"/>`
-  +scat(8,105,(x,r)=>x>-40&&x<440?'':`<circle cx="${x.toFixed(0)}" cy="${(260+r()*160).toFixed(0)}" r="${(12+r()*26).toFixed(0)}" fill="${['#7ad8ff','#ff9a5a','#c89aff','#8af0b0'][r()*4|0]}"/>`)
+  return `<g opacity=".28"><ellipse cx="90" cy="250" rx="150" ry="60" fill="#ff6ad8" transform="rotate(-20 90 250)"/><ellipse cx="300" cy="460" rx="170" ry="50" fill="#5ad8ff" transform="rotate(14 300 460)"/><ellipse cx="200" cy="330" rx="110" ry="40" fill="#b48cff"/></g>`+stars(260,102,'#ffffff',600)
+  +`<g transform="translate(318 316)"><ellipse rx="70" ry="16" fill="none" stroke="#ffd98a" stroke-width="6" transform="rotate(-18)"/><circle r="38" fill="#ff9a5a"/><path d="M-36 -10Q0 -2 36 -14M-37 6Q0 16 37 4M-30 22Q0 30 30 20" stroke="#e0703a" stroke-width="6" fill="none"/><path d="M14 -35A38 38 0 0 1 14 35A46 46 0 0 0 14 -35Z" fill="#a8482a" opacity=".55"/><circle cx="-14" cy="-16" r="9" fill="#ffc08a" opacity=".7"/><path d="M-70 0A70 16 0 0 0 70 0" fill="none" stroke="#ffd98a" stroke-width="6" transform="rotate(-18)"/><path d="M-70 0A70 16 0 0 0 70 0" fill="none" stroke="#fff3c8" stroke-width="1.500" transform="rotate(-18)"/></g>`
+  +`<circle cx="62" cy="352" r="20" fill="#7ad8ff"/><path d="M52 340Q62 346 58 356Q50 358 46 350ZM66 352Q76 350 78 360Q72 368 64 364Z" fill="#6ad08a"/><path d="M70 334A20 20 0 0 1 70 370A26 26 0 0 0 70 334Z" fill="#2a6ab0" opacity=".5"/><circle cx="55" cy="344" r="5" fill="#fff" opacity=".5"/>`
+  +scat(8,105,(x,r)=>{if(x>-40&&x<440)return '';const y=260+r()*160,q=12+r()*26,k=pk(r,['#7ad8ff','#ff9a5a','#c89aff','#8af0b0']);return `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${q.toFixed(0)}" fill="${k}"/><circle cx="${(x-q*.3).toFixed(0)}" cy="${(y-q*.3).toFixed(0)}" r="${(q*.4).toFixed(0)}" fill="#fff" opacity=".4"/>`})
   +hill(c,'#6a4ab0')+hill(d,'#4a2f8a')
-  +scat(46,104,(x,r)=>{const y=d(x)+26+r()*110,w=10+r()*22;return `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${w.toFixed(0)}" ry="${(w*.34).toFixed(1)}" fill="#2f1c66"/><ellipse cx="${x.toFixed(0)}" cy="${(y+2).toFixed(0)}" rx="${(w*.78).toFixed(0)}" ry="${(w*.2).toFixed(1)}" fill="#3c2578"/>`})
-  +on(d,14,106,EL.rock('#3c2578','#2f1c66'),.5,.5)},
- volcano(){const b=hf(566,14,112),c=hf(640,12,113,300),d=hf(716,8,114,400);
-  return `<g fill="#5a1c14" opacity=".5"><circle cx="205" cy="272" r="30"/><circle cx="234" cy="240" r="36"/><circle cx="272" cy="206" r="44"/><circle cx="182" cy="236" r="24"/><circle cx="318" cy="176" r="34"/></g><circle cx="200" cy="334" r="84" fill="#ffd24a" opacity=".3"/>`
-  +scat(7,115,(x,r)=>{if(x>-150&&x<550)return '';const h=110+r()*90,w=h*1.2,f=v=>v.toFixed(0);return `<path d="M${f(x-w)} 580L${f(x-18)} ${f(580-h)}H${f(x+18)}L${f(x+w)} 580Z" fill="#5a1a12"/>`})
-  +`<path d="M-50 590L148 332Q200 320 252 332L450 590Z" fill="#4a1410"/><path d="M252 332L450 590H360L236 344Z" fill="#35100c" opacity=".6"/><path d="M148 332Q200 320 252 332L262 348Q200 336 138 348Z" fill="#ffb02e"/>`
-  +`<g fill="none" stroke-linecap="round"><path d="M170 342Q160 400 122 470Q108 502 96 566" stroke="#ff7a1a" stroke-width="10"/><path d="M236 342Q250 412 296 472Q316 512 332 574" stroke="#ff7a1a" stroke-width="10"/><path d="M202 340Q206 400 196 452" stroke="#ff7a1a" stroke-width="8"/><path d="M170 342Q160 400 122 470Q108 502 96 566" stroke="#ffd24a" stroke-width="3.500"/><path d="M236 342Q250 412 296 472Q316 512 332 574" stroke="#ffd24a" stroke-width="3.500"/><path d="M202 340Q206 400 196 452" stroke="#ffd24a" stroke-width="3"/></g>`
-  +hill(b,'#35100c')+hill(c,'#260a08')+hill(hf(676,6,116,150),'#ff7a1a')+hill(hf(686,6,116,150),'#ffc23a')+hill(d,'#1a0605')+on(d,16,117,EL.rock('#2c0c0a','#120403'),.7,.8)
-  +scat(30,118,(x,r)=>`<circle cx="${x.toFixed(0)}" cy="${(d(x)+16+r()*60).toFixed(0)}" r="${(2+r()*3).toFixed(1)}" fill="#ff7a1a" opacity=".8"/>`)},
+  +scat(46,104,(x,r)=>{const y=d(x)+26+r()*110,w=10+r()*22,f=v=>v.toFixed(0);return `<ellipse cx="${f(x)}" cy="${f(y-1.500)}" rx="${f(w+2)}" ry="${(w*.36).toFixed(1)}" fill="#7a5ac0"/><ellipse cx="${f(x)}" cy="${f(y)}" rx="${f(w)}" ry="${(w*.32).toFixed(1)}" fill="#2f1c66"/><ellipse cx="${f(x)}" cy="${f(y+2)}" rx="${f(w*.78)}" ry="${(w*.2).toFixed(1)}" fill="#3c2578"/>`})
+  +G(96,d(96)+14,.95,EL.rocket())+G(138,d(138)+18,.8,EL.flag('#ff5a6a'))+scat(8,107,(x,r)=>x>-20&&x<420?'':G(x,d(x)+14,.8+r()*.4,r()<.5?EL.rocket():EL.flag('#ffd24a')))
+  +on(d,16,106,EL.rock('#5a3c9a','#2f1c66'),.5,.6)+sp(d,50,108,12,110,pebble('#3c2578'))},
+ volcano(){const b=hf(566,14,112),c=hf(640,12,113,300),d=hf(716,8,114,400),V='#4a1410';
+  return `<g opacity=".55"><g fill="#5a1c14"><circle cx="205" cy="272" r="30"/><circle cx="234" cy="240" r="36"/><circle cx="272" cy="206" r="44"/><circle cx="182" cy="236" r="24"/><circle cx="318" cy="176" r="34"/></g><g fill="#a03a1c"><circle cx="200" cy="280" r="20"/><circle cx="226" cy="252" r="22"/><circle cx="262" cy="224" r="26"/></g></g><circle cx="200" cy="334" r="110" fill="#ffd24a" opacity=".16"/><circle cx="200" cy="334" r="70" fill="#ffd24a" opacity=".3"/>`
+  +scat(7,115,(x,r)=>x>-150&&x<550?'':mesa(x,580,(110+r()*90)*1.1,110+r()*90,'#5a1a12'))
+  +`<path d="M-50 590L148 332Q200 320 252 332L450 590Z" fill="${V}"/><path d="M252 332L450 590H360L236 344Z" fill="#35100c" opacity=".7"/><path d="M148 332L-50 590H10L160 344Z" fill="#7a2a16" opacity=".6"/><path d="M96 400L60 446M300 398L338 446M78 470L40 520M322 470L362 520M130 430L112 470M272 430L292 470" stroke="#2a0a08" stroke-width="3" opacity=".5"/><path d="M148 332Q200 320 252 332L262 348Q200 336 138 348Z" fill="#ffb02e"/><path d="M160 334Q200 326 240 334" stroke="#fff0a0" stroke-width="3" fill="none"/>`
+  +`<g fill="none" stroke-linecap="round"><g stroke="#ff7a1a" opacity=".3" stroke-width="22"><path d="M170 342Q160 400 122 470Q108 502 96 566"/><path d="M236 342Q250 412 296 472Q316 512 332 574"/></g><path d="M170 342Q160 400 122 470Q108 502 96 566" stroke="#ff7a1a" stroke-width="10"/><path d="M236 342Q250 412 296 472Q316 512 332 574" stroke="#ff7a1a" stroke-width="10"/><path d="M202 340Q206 400 196 452" stroke="#ff7a1a" stroke-width="8"/><path d="M170 342Q160 400 122 470Q108 502 96 566" stroke="#ffd24a" stroke-width="3.500"/><path d="M236 342Q250 412 296 472Q316 512 332 574" stroke="#ffd24a" stroke-width="3.500"/><path d="M202 340Q206 400 196 452" stroke="#ffd24a" stroke-width="3"/></g>`
+  +scat(40,119,(x,r)=>x<60||x>340?'':`<circle cx="${x|0}" cy="${(200+r()*130)|0}" r="${(1.5+r()*2.5).toFixed(1)}" fill="${pk(r,['#ffd24a','#ff7a1a'])}"/>`,60,340)
+  +hill(b,'#35100c',{rim:'#a03a1c'})+on(b,18,110,EL.deadtree('#1a0605'),.6,.6)+hill(c,'#260a08',{rim:'#c8501c'})+on(c,16,111,EL.rock('#35100c','#1a0605'),.6,.6)
+  +hill(hf(676,6,116,150),'#ff7a1a',{rim:'#ffd24a',to:'#ff7a1a'})+hill(hf(686,6,116,150),'#ffc23a',{rim:0,to:'#ff9a1e'})
+  +scat(60,109,(x,r)=>`<ellipse cx="${x|0}" cy="${(694+r()*14)|0}" rx="${(6+r()*10).toFixed(0)}" ry="2.500" fill="#7a1a10" opacity=".7"/>`)+scat(30,108,(x,r)=>`<circle cx="${x|0}" cy="${(690+r()*12)|0}" r="${(1.5+r()*2).toFixed(1)}" fill="#fff0a0"/>`)
+  +hill(d,'#1a0605',{rim:'#ff7a1a',ro:.9})+on(d,18,117,EL.rock('#2c0c0a','#120403'),.7,.8)+sp(d,36,118,16,60,(x,y,r)=>`<circle cx="${x|0}" cy="${y|0}" r="${(2+r()*3).toFixed(1)}" fill="#ff7a1a" opacity=".8"/>`)},
  vault(){const a=hf(486,24,122,70),b=hf(566,22,123,95),d=hf(690,12,124,150),C=['#ff5a8a','#5ad8ff','#8af0a0','#c89aff'];let col='';
-  for(let x=-760;x<X1;x+=160){if(x===200||x<VA-40||x>VB+40)continue;col+=`<rect x="${x-17}" y="150" width="34" height="480" fill="#e6b040"/><rect x="${x-9}" y="150" width="5" height="480" fill="#c48a1e"/><rect x="${x+5}" y="150" width="5" height="480" fill="#c48a1e"/><rect x="${x-25}" y="132" width="50" height="20" rx="4" fill="#ffe08a"/>`}
-  const coins=(fn,n,s)=>scat(n,s,(x,r)=>G(x,fn(x)+8+r()*56,.8+r()*.5,EL.coin()));
-  return band(120,14,'#ffe08a',.9)+col+hill(a,'#e8a820')+coins(a,110,125)+hill(b,'#ffc832')+coins(b,120,126)+G(84,b(84)+6,1.2,EL.chest())+scat(8,129,(x,r)=>x>-40&&x<440?'':G(x,b(x)+6,1+r()*.5,EL.chest()))
-  +on(b,26,127,r=>EL.gem(C[r()*4|0]),.9,.7)+hill(d,'#f2b01c')+coins(d,130,128)+on(d,24,121,r=>EL.gem(C[r()*4|0]),1.1,.9)},
+  for(let x=-760;x<X1;x+=160){if(x===200||x<VA-40||x>VB+40)continue;col+=`<rect x="${x-17}" y="150" width="34" height="480" fill="#e6b040"/><rect x="${x-17}" y="150" width="7" height="480" fill="#f6d070"/><rect x="${x+8}" y="150" width="9" height="480" fill="#c48a1e"/><rect x="${x-6}" y="150" width="3" height="480" fill="#c48a1e" opacity=".6"/><rect x="${x+2}" y="150" width="3" height="480" fill="#c48a1e" opacity=".6"/><rect x="${x-25}" y="132" width="50" height="20" rx="4" fill="#ffe08a"/><rect x="${x-25}" y="146" width="50" height="6" fill="#d9a63a"/>`
+    +G(x+80,330,1.1,EL.torch())+`<path d="M${x+62} 152H${x+98}V236L${x+80} 218L${x+62} 236Z" fill="#c8384a"/><path d="M${x+80} 152H${x+98}V236L${x+80} 218Z" fill="#a82a3c"/><circle cx="${x+80}" cy="180" r="8" fill="#ffd24a"/>`}
+  const coins=(fn,n,s)=>scat(n,s,(x,r)=>G(x,fn(x)+8+r()*56,.8+r()*.5,EL.coin()));let brick='';
+  for(let y=160;y<480;y+=32)brick+=band(y,2,'#c48a1e',.25);
+  return brick+band(120,14,'#ffe08a',.9)+band(132,4,'#d9a63a',.9)+col+hill(a,'#e8a820',{rim:'#fff0a0'})+coins(a,130,125)+on(a,20,120,EL.goldbar(),.9,.5)
+  +hill(b,'#ffc832',{rim:'#fff6c0'})+coins(b,130,126)+G(84,b(84)+6,1.2,EL.chest())+G(318,b(318)+10,1.3,EL.crown())+scat(8,129,(x,r)=>x>-40&&x<440?'':G(x,b(x)+6,1+r()*.5,r()<.6?EL.chest():EL.crown()))
+  +on(b,26,127,r=>EL.gem(pk(r,C)),.9,.7)+on(b,16,119,EL.goldbar(),1,.6)+sp(b,30,118,-10,60,spark('#ffffff'))
+  +hill(d,'#f2b01c',{rim:'#fff0a0'})+coins(d,150,128)+on(d,24,121,r=>EL.gem(pk(r,C)),1.1,.9)+on(d,14,117,EL.goldbar(),1.3,.6)+sp(d,36,116,0,80,spark('#ffffff'))},
  ufo(){const a=hf(472,9,151,300),c=hf(600,12,153,320),d=hf(704,8,154,400);
-  return stars(170,155,'#eafff4',440)
-  +scat(10,156,(x,r)=>{const w=50+r()*60,h=50+r()*70,f=v=>v.toFixed(0);return `<path d="M${f(x-w)} 484L${f(x-w*.7)} ${f(484-h)}H${f(x+w*.6)}L${f(x+w)} 484Z" fill="#0f3a48"/>`})
-  +hill(a,'#104454')+`<path d="M72 330H104L152 610H20Z" fill="#b8ffd8" opacity=".3"/><ellipse cx="86" cy="604" rx="66" ry="12" fill="#b8ffd8" opacity=".35"/>`
-  +`<g transform="translate(87 470) rotate(-14)"><path d="M-9 4Q-13 -8 -3 -12L0 4ZM9 4Q13 -8 3 -12L0 4Z" fill="#4fae4a"/><ellipse rx="6.500" ry="13" fill="#ffd24a"/><path d="M-4 -6h8M-5 0h10M-4 6h8" stroke="#e8a820" stroke-width="1.5"/></g>`
-  +`<ellipse cx="87" cy="325" rx="56" ry="13" fill="#8ea6b6"/><ellipse cx="87" cy="320" rx="56" ry="11" fill="#dbe8ef"/><path d="M60 316Q87 278 114 316Z" fill="#8af0c8"/><path d="M70 312Q80 294 92 290" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/>`
-  +[-38,-19,0,19,38].map((o,i)=>`<circle cx="${87+o}" cy="${325-Math.abs(o)*.05}" r="3.500" fill="${i%2?'#ff6ad8':'#ffe14d'}"/>`).join('')
-  +hill(c,'#0c3040')+on(c,16,157,EL.cactus('#0e6a56'),.7,.5,x=>x>10&&x<160)+hill(d,'#081f2c')+on(d,14,158,EL.rock('#0c3040','#051620'),.6,.6)}
+  return stars(190,155,'#eafff4',440)+`<circle cx="330" cy="300" r="20" fill="#eafff4"/><circle cx="338" cy="294" r="18" fill="#2f9a86"/>`
+  +scat(10,156,(x,r)=>mesa(x,484,50+r()*60,50+r()*70,'#12404e'))
+  +hill(a,'#104454',{rim:'#2f8a86'})+G(300,a(300)+4,.7,EL.dish())+scat(8,159,(x,r)=>x>-40&&x<440?'':G(x,a(x)+4,.6+r()*.3,EL.dish()))
+  +`<linearGradient id="bm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8fff0" stop-opacity=".55"/><stop offset="1" stop-color="#b8ffd8" stop-opacity=".12"/></linearGradient><path d="M72 330H104L152 610H20Z" fill="url(#bm)"/><path d="M80 330H96L112 610H60Z" fill="#fff" opacity=".12"/><ellipse cx="86" cy="604" rx="70" ry="13" fill="#b8ffd8" opacity=".3"/><ellipse cx="86" cy="604" rx="44" ry="8" fill="#eafff4" opacity=".35"/>`
+  +scat(9,150,(x,r)=>spark('#eafff4')(x,380+r()*200,r),50,124)
+  +`<g transform="translate(87 470) rotate(-14)"><path d="M-9 4Q-13 -8 -3 -12L0 4ZM9 4Q13 -8 3 -12L0 4Z" fill="#4fae4a"/><ellipse rx="6.500" ry="13" fill="#ffd24a"/><ellipse cx="-2" cy="-3" rx="2" ry="6" fill="#fff0a0"/><path d="M-4 -6h8M-5 0h10M-4 6h8" stroke="#e8a820" stroke-width="1.500"/></g>`
+  +`<ellipse cx="87" cy="327" rx="58" ry="13" fill="#6f8898"/><ellipse cx="87" cy="320" rx="56" ry="11" fill="#dbe8ef"/><path d="M40 322Q87 336 134 322Q120 330 87 331Q54 330 40 322Z" fill="#a8bcc8"/><path d="M36 318Q60 310 87 309" stroke="#fff" stroke-width="2.500" fill="none"/><path d="M60 316Q87 276 114 316Z" fill="#8af0c8"/><path d="M92 284Q108 294 114 316H100Q100 298 92 284Z" fill="#4fc8a0"/><path d="M70 312Q78 294 90 290" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/><ellipse cx="87" cy="336" rx="22" ry="5" fill="#eafff4" opacity=".7"/>`
+  +[-38,-19,0,19,38].map((o,i)=>`<circle cx="${87+o}" cy="${324-Math.abs(o)*.05}" r="6" fill="${i%2?'#ff6ad8':'#ffe14d'}" opacity=".3"/><circle cx="${87+o}" cy="${324-Math.abs(o)*.05}" r="3.500" fill="${i%2?'#ff6ad8':'#ffe14d'}"/>`).join('')
+  +hill(c,'#0c3040',{rim:'#1f6a6a'})+on(c,18,157,EL.cactus('#0e6a56'),.7,.5,x=>x>10&&x<160)+sp(c,50,152,14,70,tuft('#1a5a56'))+sp(c,50,149,14,70,pebble('#082430'))
+  +hill(d,'#081f2c',{rim:'#1a5a5a'})+on(d,16,158,EL.rock('#0c3040','#051620'),.6,.6)+on(d,8,148,EL.cactus('#0a5246'),1.1,.6,x=>x>60&&x<340)+sp(d,50,147,10,80,tuft('#104454'))}
 };
 function sceneSVG(id,x,w,y,h,pw,ph){
-  VA=x-100;VB=x+w+100;
+  VA=x-100;VB=x+w+100;GN=0;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${pw}" height="${ph}" viewBox="${x.toFixed(1)} ${y} ${w.toFixed(1)} ${h}" preserveAspectRatio="xMidYMid slice">${(SCN[id]||SCN.field)()}</svg>`;
 }
 let scKey='',scTok=0,scW=0,scH=0;
@@ -936,8 +1016,16 @@ function drawScene(W,H){
   img.onload=()=>{if(tok!==scTok)return;try{cv.width=pw;cv.height=ph;cv.style.width=scW+'px';cv.style.height=scH+'px';cv.getContext('2d').drawImage(img,0,0,pw,ph)}catch(e){}};
   img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(sceneSVG(art,200-w/2,w,0,800,pw,ph));
 }
+// shop thumbnails are rendered once to small bitmaps, then swapped into any swatch that is waiting for them
 const thumbs={};
-function thumb(id){return thumbs[id]||(thumbs[id]=`url('data:image/svg+xml;charset=utf-8,${encodeURIComponent(sceneSVG(id,10,380,285,270,260,185)).replace(/'/g,'%27')}')`)}
+function thumb(id){
+  if(thumbs[id])return thumbs[id];
+  if(thumbs[id]===undefined){thumbs[id]='';const img=new Image();
+    img.onload=()=>{try{const c=document.createElement('canvas');c.width=260;c.height=186;c.getContext('2d').drawImage(img,0,0,260,186);thumbs[id]=`url(${c.toDataURL('image/png')})`;
+      document.querySelectorAll('.sw[data-th="'+id+'"]').forEach(e=>{e.style.background=thumbs[id]+' center/cover,'+e.dataset.g})}catch(e){}};
+    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(sceneSVG(id,10,380,285,272,260,186))}
+  return '';
+}
 
 function applyTheme(){
   const b=ALLBG.find(x=>x.id===S.bg)||BG[0],st=app.style;
@@ -1063,7 +1151,8 @@ function drawShop(){
   const list=CATS[tab].slice().sort((a,b)=>(a.req?1e9:a.cost||0)-(b.req?1e9:b.cost||0));
   $('shopGrid').innerHTML=list.map((it,i)=>{
     const own=has(tab,it.id),eq=S[EQ[tab]]===it.id,p=it.req?Math.min(stat(it.req.k),it.req.n):0;
-    const pic=tab==='bg'||tab==='world'?`<div class="sw" style="--ray:${it.ray};background:${it.art?thumb(it.art)+' center/cover,':''}radial-gradient(circle,${it.c[0]},${it.c[1]} 30%,${it.c[2]} 65%,${it.c[3]})">${it.art?'':'<i></i>'}</div>`
+    const gr=it.c?`radial-gradient(circle,${it.c[0]},${it.c[1]} 30%,${it.c[2]} 65%,${it.c[3]})`:'',th=it.art?thumb(it.art):'';
+    const pic=tab==='bg'||tab==='world'?`<div class="sw" ${it.art?`data-th="${it.art}" data-g="${gr}"`:''} style="--ray:${it.ray};background:${th?th+' center/cover,':''}${gr}">${it.art?'':'<i></i>'}</div>`
       :`<div class="sw" style="background:rgba(255,255,255,.18)">${tab==='cob'?cob('good',31+i,true,it.id):cob('good',51+i,true,null,null,it.id)}</div>`;
     const act=own||!it.req?`<button class="ibtn ol2 ${eq?'cur':own?'':S.k>=it.cost?'buy':'no'}" data-id="${it.id}">${eq?'EQUIPPED':own?'USE':KI+' '+fmt(it.cost)}</button>`
       :`<div class="ol2" style="font-size:14px">${it.req.txt}</div><div class="prog"><i style="transform:scaleX(${p/it.req.n})"></i></div><div class="ol2" style="font-size:13px">${fmt(p)} / ${fmt(it.req.n)}</div>`;
