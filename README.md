@@ -22,6 +22,9 @@ It then opens full screen like an app and works offline.
 - Fill the Frenzy bar for 6 seconds of all-good corn at double points.
 - Every point is a kernel. Spend kernels on backgrounds; hit milestones to unlock cob skins.
 - Three new missions every day, plus a daily streak bonus.
+- Extremely rare cobs unlock much later: Candy +250, Neon +300, Alien +400, Void +500 and Angel +1,000.
+- The shop has three tabs: scenes (12 backgrounds), cob skins (9) and husk colours (6).
+- The home screen plays an original theme tune. The speaker button mutes everything.
 - On your last life you can revive once for 250 kernels. The leaderboard keeps each player name's single best run on that phone.
 
 Progress is saved on your own device.
