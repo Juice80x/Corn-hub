@@ -14,6 +14,7 @@ It then opens full screen like an app and works offline.
 ## How to play
 
 - Swipe right (or tap Keep) for good corn. Swipe left (or tap Toss) for mouldy corn. Deeper into a run, watch for sneaky rot that looks almost fine.
+- Your first game starts with a three-cob guided run (good, rotten, rare) with the timer paused.
 - A wrong swipe or a timeout costs a life. Three strikes and the harvest is over.
 - Streaks multiply your points: x2 at 5 in a row, x3 at 10, and fast swipes score +1.
 - Rare cobs: Golden +5, Rainbow +10, Galaxy +15, Diamond +25. A Life cob gives a life back.

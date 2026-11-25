@@ -158,6 +158,18 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 @keyframes drain{to{transform:scaleX(0)}}
 @keyframes toast{0%{transform:translateY(-40px) scale(.6);opacity:0}8%{transform:translateY(0) scale(1.08);opacity:1}14%{transform:scale(1)}86%{opacity:1}100%{transform:translateY(-20px);opacity:0}}
 
+/* ---------- first-run coach ---------- */
+.coach{position:absolute;inset:0;pointer-events:none;z-index:5}
+.ctext{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:max-content;max-width:94%;text-align:center;font-size:min(19px,4.8vw);line-height:1.2;padding:5px 14px 7px;background:linear-gradient(#ffd84a,#f29a0c);border:4px solid var(--ol);border-radius:16px;box-shadow:0 5px 0 var(--ol)}
+.ctext.no{animation:shake .35s}
+.app.coaching .toasts{top:calc(env(safe-area-inset-top) + 250px)}
+.app.coaching.wide .toasts{top:96px}
+.carrow{position:absolute;left:50%;bottom:6px;width:120px;margin-left:-60px}
+.carrow svg{display:block;width:100%;animation:nudge .8s ease-in-out infinite}
+.carrow.left{transform:scaleX(-1)}
+@keyframes nudge{0%{transform:translateX(-22px);opacity:.3}60%{opacity:1}100%{transform:translateX(26px);opacity:0}}
+.tbtn.pulse{animation:throb .6s ease-in-out infinite;box-shadow:0 6px 0 var(--ol),0 0 0 5px #ffe14d,inset 0 -8px 0 rgba(0,0,0,.18),inset 0 6px 0 rgba(255,255,255,.3)}
+
 /* ---------- tablet and landscape ---------- */
 .app.fit{max-width:none}
 .app.tablet .panel{max-width:520px}
@@ -269,7 +281,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <div class="tbar" id="tbar"><i id="tfill"></i></div>
       <div class="frow ol2"><span>FRENZY</span><div class="tbar"><i id="ffill"></i></div></div>
     </header>
-    <main class="stage" id="stage"><div class="deck" id="deck"></div><div class="hint ol2" id="hint">Swipe right to keep · left to toss</div></main>
+    <main class="stage" id="stage"><div class="deck" id="deck"></div><div class="hint ol2" id="hint">Swipe right to keep · left to toss</div>
+      <div class="coach" id="coach" hidden><div class="ctext ol2" id="coachText"></div><div class="carrow" id="coachArrow"><svg viewBox="0 0 120 44"><path d="M6 22h78M66 6l22 16-22 16" fill="none" stroke="var(--ol)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22h78M66 6l22 16-22 16" fill="none" stroke="#ffe14d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></main>
     <footer class="dock">
       <button class="tbtn toss ol2" id="tossBtn" aria-label="Toss bad corn"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/></svg>Toss</button>
       <button class="tbtn keep ol2" id="keepBtn" aria-label="Keep good corn"><svg viewBox="0 0 24 24"><path d="M3.5 12.5l5.5 5.5L20.5 6" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Keep</button>
@@ -286,6 +299,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <div class="demo rare" id="demoRare"></div>
       <p class="ol2">Streaks multiply points: x2 at 5 in a row, x3 at 10. Fast swipes score +1. Fill the FRENZY bar for a x2 all-good-corn rush. Every point becomes a kernel to spend on skins or a second chance.</p>
       <button class="go ol2" data-close="help">GOT IT</button>
+      <div class="btnrow" style="grid-template-columns:1fr"><button class="mbtn ol2" id="tutBtn">REPLAY TUTORIAL</button></div>
     </div>
   </div>
 
@@ -373,7 +387,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=34;
+const BUILD=35;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -450,7 +464,7 @@ const MIS=[
 ];
 
 /* ---------- save ---------- */
-let S={best:0,k:0,t:{cobs:0,rare:0,games:0,frenzy:0},own:{bg:['field'],cob:['classic'],husk:['green']},bg:'field',cob:'classic',husk:'green',day:{date:'',streak:0},mis:{date:'',list:[]},mute:false,seen:false,hist:[],top:[],name:'',dex:{}};
+let S={best:0,k:0,t:{cobs:0,rare:0,games:0,frenzy:0},own:{bg:['field'],cob:['classic'],husk:['green']},bg:'field',cob:'classic',husk:'green',day:{date:'',streak:0},mis:{date:'',list:[]},mute:false,seen:false,hist:[],top:[],name:'',dex:{},tut:false};
 try{const o=JSON.parse(localStorage.getItem('cornhub')||'null');
   if(o){S=Object.assign(S,o);S.t=Object.assign({cobs:0,rare:0,games:0,frenzy:0},o.t||{})}
   else S.best=+localStorage.getItem('shuckBest')||0}catch(e){}
@@ -458,6 +472,7 @@ if(!S.v){if(S.best||S.k||S.t.pts||(S.top||[]).length)S.legacy={best:S.best,k:S.k
 if(S.v===2)S.v=4;
 if(S.v===3){S.best=Math.round(S.best/10);S.t.pts=Math.round(S.t.pts/10);for(const e of S.top)e.s=Math.round((+e.s||0)/10);for(const m of (S.mis.list||[]))if(m.id==='score'){m.p=0;m.done=false}S.v=4}
 if(!BG.some(b=>b.id===S.bg)||!S.own.bg.includes(S.bg))S.bg='field';if(!SK.some(s=>s.id===S.cob)||!S.own.cob.includes(S.cob))S.cob='classic';
+if(S.tut===undefined||S.tut===false&&S.t.games>0&&!('tut' in (JSON.parse(localStorage.getItem('cornhub')||'{}'))))S.tut=S.t.games>0;
 if(!Array.isArray(S.top))S.top=[];
 S.own.cob=S.own.cob.filter(id=>SK.some(x=>x.id===id));
 if(!Array.isArray(S.own.husk))S.own.husk=['green'];if(!HUSK.some(h=>h.id===S.husk)||!S.own.husk.includes(S.husk))S.husk='green';
@@ -887,10 +902,18 @@ const ease=()=>(n<avg*.8?.25:0)+(mercy&&n<20?.4:0);
 function drawLives(){
   $('lives').innerHTML=[0,1,2].map(i=>`<svg viewBox="0 0 20 24" class="${i<lives?'':'gone'}"><path d="M10 2c-5 0-7 5-7 10s2 9 7 10c5-1 7-5 7-10S15 2 10 2z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2"/><path d="M10 22C5 20 2 15 2 9c3 4 5 8 6 11M10 22c5-2 8-7 8-13-3 4-5 8-6 11" fill="#6cc63e" stroke="var(--ol)" stroke-width="1.5"/></svg>`).join('');
 }
-let milestone=false;
+let milestone=false,tutOn=false,tutStep=0,tutMade=0;
+const TUT=[['good','This one is good. Swipe RIGHT to keep it!'],['bad','Yuck, rotten! Swipe LEFT to toss it.'],['gold','A rare cob! Swipe RIGHT for big points.']];
+function coach(){
+  const on=tutOn&&tutStep<3;$('coach').hidden=!on;app.classList.toggle('coaching',on);$('hint').style.visibility=on?'hidden':'';
+  $('keepBtn').classList.toggle('pulse',on&&TUT[tutStep][0]!=='bad');$('tossBtn').classList.toggle('pulse',on&&TUT[tutStep][0]==='bad');
+  if(!on)return;
+  $('coachText').textContent=TUT[tutStep][1];$('coachText').classList.remove('no');$('coachArrow').classList.toggle('left',TUT[tutStep][0]==='bad');
+}
 const life=()=>cheat?1e12:S.t.pts+score;
 const bestTier=()=>TIERS.find(k=>!T[k].x&&(T[k].unlock||0)<=life())||'diamond';
 function pick(){
+  if(tutOn&&tutMade<3)return TUT[tutMade++][0];
   if(self.__corn)return self.__corn;
   if(n<1)return 'good';
   if(milestone){milestone=false;return bestTier()}
@@ -967,6 +990,14 @@ function startFrenzy(){
 }
 function decide(keepIt,timedOut){
   if(!playing||!cur)return;
+  if(tutOn&&tutStep<3){
+    // Guided first run: the wrong way just bounces back, nothing is lost
+    const want=cur.type!=='bad';
+    if(timedOut||keepIt!==want){const e=cur.el;e.classList.remove('drag');e.classList.add('snap');e.style.transform='';e.querySelector('.keep').style.opacity=e.querySelector('.toss').style.opacity=0;
+      $('coachText').textContent='Other way! '+(want?'Swipe RIGHT to keep it.':'Swipe LEFT to toss it.');retrigger($('coachText'),'no');tone(200,0,.12,'square',.07,.7);return}
+    tutStep++;if(tutStep>=3){tutOn=false;S.tut=true;save();setTimeout(()=>toast('You are ready! Now beat the timer'),500)}
+    coach();
+  }
   const c=cur,t=T[c.type],good=c.type!=='bad'&&c.type!=='sneak',el=c.el;cur=null;
   const right=!timedOut&&keepIt===good,fast=right&&n>2&&timeLeft/timeMax>.72;
   const dir=timedOut?0:(keepIt?1:-1);
@@ -1021,7 +1052,7 @@ function loop(now){
     if(frenzyT>0){frenzyT-=dt;if(frenzyT<=0){frenzyT=0;fever=0;app.classList.remove('frenzy');setSub()}}
     $('ffill').style.transform=`scaleX(${frenzyT>0?frenzyT/FRENZY:fever})`;
     if(cur){
-      timeLeft-=dt;
+      if(!(tutOn&&tutStep<3))timeLeft-=dt;
       const fr=Math.max(0,timeLeft/timeMax),bar=$('tfill');
       bar.style.transform=`scaleX(${fr})`;
       const lo=fr<.3;if(lo!==wasLow){wasLow=lo;bar.style.background=lo?'linear-gradient(#ff8a6a,#d93a2c)':'';$('tbar').classList.toggle('low',lo)}
@@ -1069,17 +1100,17 @@ $('revYes').onclick=()=>{
 };
 $('revNo').onclick=()=>{clearTimeout(revT);$('revive').hidden=true;endGame()};
 function startGame(){
-  score=shown=0;lives=3;streak=topStreak=n=0;fever=frenzyT=0;caught={};gameDone=[];milestone=false;revived=bestBeat=false;clearTimeout(revT);
+  score=shown=0;lives=3;streak=topStreak=n=0;fever=frenzyT=0;caught={};gameDone=[];milestone=false;tutOn=!S.tut&&!cheat&&!self.__corn;tutStep=tutMade=0;revived=bestBeat=false;clearTimeout(revT);
   const hs=S.hist||[];avg=hs.length?Math.min(60,Math.max(15,hs.reduce((a,b)=>a+b,0)/hs.length)):25;frenzies=0;mercy=hs.length>=2&&hs.slice(-2).every(x=>x<12);
   $('score').textContent=0;$('best').textContent=fmt(S.best);drawLives();setSub();
   deck.innerHTML='';next=null;cur=null;$('hint').style.opacity=1;app.classList.remove('frenzy');
   for(const id of ['end','shop','missions','help','revive','board','dex'])$(id).hidden=true;
   show('game');fit();
-  playing=true;deal();jingle([523,659,784],.1);
+  playing=true;deal();coach();jingle([523,659,784],.1);
   cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(loop);
 }
 function endGame(){
-  playing=false;clearTimeout(nt);frenzyT=0;app.classList.remove('frenzy');$('tbar').classList.remove('low');
+  playing=false;tutOn=false;coach();clearTimeout(nt);frenzyT=0;app.classList.remove('frenzy');$('tbar').classList.remove('low');
   const old=S.best,isBest=score>old;
   S.hist=(S.hist||[]).concat(n).slice(-8);
   const earned=score;S.t.games++;track('game',1);S.k+=earned;if(isBest)S.best=score;
@@ -1118,6 +1149,7 @@ $('endShop').onclick=()=>{goHome();tab='bg';drawShop();open('shop')};
 $('shopBtn').onclick=()=>{drawShop();open('shop')};
 $('misBtn').onclick=()=>{drawMissions();open('missions')};
 $('helpBtn').onclick=()=>open('help');
+$('tutBtn').onclick=()=>{S.tut=false;S.seen=true;save();$('help').hidden=true;if(!S.name)S.name='Player';startGame()};
 $('dexBtn').onclick=()=>{drawDex();open('dex')};
 $('lbBtn').onclick=()=>{drawBoard();open('board')};
 $('muteBtn').onclick=()=>{S.mute=!S.mute;save();drawMute();tone(660,0,.1,'triangle');updateMusic()};
