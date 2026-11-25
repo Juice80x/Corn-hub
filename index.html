@@ -68,6 +68,7 @@ background:repeating-linear-gradient(92deg,#b9793a 0 22px,#a96a2e 22px 25px,#c28
 .logo .lf{position:absolute;top:-6%;width:30%;height:70%;z-index:-1}
 .logo .lf.a{left:-9%}.logo .lf.b{right:-9%;transform:scaleX(-1)}
 @keyframes wig{50%{transform:rotate(-1.5deg) scale(1.03)}}
+.ver{position:absolute;left:8px;bottom:calc(env(safe-area-inset-bottom) + 2px);font-size:11px;opacity:.6;z-index:2;pointer-events:none}
 .hero{position:relative;display:grid;place-items:center;padding-bottom:34px;min-height:0}
 .hero canvas{display:block;width:140px;height:190px}
 #heroCob{animation:bob 2.2s ease-in-out infinite;will-change:transform}
@@ -249,6 +250,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <div class="l1"><span>C</span><span class="o"><svg viewBox="-50 -50 100 100" id="logoO"></svg></span><span>RN</span></div>
       <div class="l2 ol2">HUB</div>
     </div>
+    <div class="ver" id="ver"></div>
     <div class="hero"><div id="heroCob"><canvas id="heroCv" width="700" height="950"></canvas></div><div class="bestline ol2" id="bestHome"></div></div>
     <div>
       <button class="go ol" id="playBtn">PLAY</button>
@@ -376,6 +378,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
+const BUILD=25;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1024,7 +1027,7 @@ document.addEventListener('touchmove',e=>{if(e.target.closest('.card'))e.prevent
  for(let i=0;i<10;i++){const a=i*Math.PI/5;o+=`<ellipse cx="${f(Math.cos(a)*31)}" cy="${f(Math.sin(a)*31)}" rx="9.500" ry="12" transform="rotate(${i*36+90} ${f(Math.cos(a)*31)} ${f(Math.sin(a)*31)})" fill="#ffd83a" stroke="#b86a00" stroke-width="2.5"/>`}
  for(let i=0;i<5;i++){const a=i*Math.PI/2.5+.3;o+=`<ellipse cx="${f(Math.cos(a)*12)}" cy="${f(Math.sin(a)*12)}" rx="6.500" ry="8" transform="rotate(${i*72+107} ${f(Math.cos(a)*12)} ${f(Math.sin(a)*12)})" fill="#ffe680" stroke="#b86a00" stroke-width="2.5"/>`}
  $('logoO').innerHTML=o+'<circle r="3.500" fill="#fff2a8"/>'}
-applyTheme();daily();checkSkins();layout();drawHome();
+applyTheme();daily();checkSkins();layout();drawHome();$('ver').textContent='v'+BUILD;
 $('demoGood').innerHTML=cob('good',7)+'<span class="ol2">Good: KEEP</span>';
 $('demoBad').innerHTML=cob('bad',11)+'<span class="ol2">Yuck: TOSS</span>';
 $('demoRare').innerHTML=RARE.map((k,i)=>`<div>${cob(k,21+i)}<span class="ol2">+${T[k].pts}</span></div>`).join('');
@@ -1044,7 +1047,16 @@ if(/\.github\.io$/.test(location.hostname)){
       if([...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('')===HASH){ok();$('gate').hidden=true}}).catch(()=>{});
   }
 }
-try{if('serviceWorker' in navigator&&location.protocol==='https:'&&self===top)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
+// Hosted copy: keep the installed app fresh. Reload when a new service worker takes over, or when version.txt is newer than this build.
+try{if('serviceWorker' in navigator&&location.protocol==='https:'&&self===top){
+  let reloaded=false;const had=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!reloaded&&!playing){reloaded=true;location.reload()}});
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    const check=()=>{try{reg.update().catch(()=>{})}catch(e){}
+      fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{if(+v>BUILD&&!playing&&!reloaded){reloaded=true;location.reload()}}).catch(()=>{})};
+    check();document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+  }).catch(()=>{});
+}}catch(e){}
 }
 </script>
 </body>
