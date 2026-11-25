@@ -57,8 +57,8 @@ button.pill{padding:3px 8px}
 /* ---------- home ---------- */
 #home{grid-template-rows:auto auto 1fr auto;padding:calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + 16px);text-align:center;z-index:1}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.logo{position:relative;width:min(96%,470px);margin:4px auto 0;animation:wig 3s ease-in-out infinite}
-.logo svg{display:block;width:100%;height:auto;overflow:visible}
+.logo{position:relative;width:300px;max-width:100%;margin:6px auto 0;animation:wig 3s ease-in-out infinite}
+.logo svg{display:block;width:100%;height:auto}
 @keyframes wig{50%{transform:rotate(-1.5deg) scale(1.03)}}
 .ver{position:absolute;left:8px;bottom:calc(env(safe-area-inset-bottom) + 2px);font-size:11px;opacity:.6;z-index:2;pointer-events:none}
 .hero{position:relative;display:grid;place-items:center;padding-bottom:78px;min-height:0}
@@ -175,7 +175,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .app.wide #home{grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr auto;column-gap:28px}
 .app.wide #home>.row{grid-column:1/3}
 .app.wide #home>.logo{grid-column:1;grid-row:2/4;align-self:center;margin:0 auto}
-.app.wide #home>.logo{width:min(100%,470px)}
+
 .app.wide #home>.hero{grid-column:2;grid-row:2}
 .app.wide #home>div:last-child{grid-column:2;grid-row:3}
 
@@ -226,7 +226,6 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .item small{font-size:13px;line-height:1.2;display:block}
 .item .pts{color:#ffe14d;font-size:15px}
 .btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-@media (max-height:700px){.logo{width:min(80%,360px)}}
 @media (max-height:640px){.sub{display:none}.score{font-size:34px}.tbtn{height:56px;font-size:24px}.dock{padding-top:8px}.hint{display:none}.deck{margin-top:14px}}
 @media (prefers-reduced-motion:reduce){.rays,.mote,.float,.fx,.float canvas.hue,#heroCob,.card.in,.aura,.badge,.logo,.logo .l1 svg,.go,.sub.hot,.tbar.low,.app.frenzy .fz{animation:none!important}.card[class*=x-],.card.snap{transition:none}.pop,.bit,.px,.ring{animation-duration:.01s}.shake{animation:none}}
 </style>
@@ -374,7 +373,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=32;
+const BUILD=33;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -757,7 +756,7 @@ function paint(cv,svg){
 }
 function fitHero(){
   const box=document.querySelector('.hero'),bh=box.clientHeight;if(bh<=0)return;
-  const h=Math.max(90,Math.min(bh-(S.best?86:52),LH*(app.classList.contains('wide')?.62:.42),400)),cv=$('heroCv');
+  const h=Math.max(56,Math.min(bh-(S.best?86:52),LH*(app.classList.contains('wide')?.62:.42),400)),cv=$('heroCv');
   cv.style.height=h+'px';cv.style.width=(h*700/950)+'px';
 }
 try{new ResizeObserver(fitHero).observe(document.querySelector('.hero'))}catch(e){}
@@ -1031,7 +1030,7 @@ function loop(now){
   }
   raf=requestAnimationFrame(loop);
 }
-let SC=1,LH=innerHeight,TILE='none';
+let SC=1,LH=innerHeight,TILE='none',LOGO_AR=1.75;
 // Size the game for the device: phones 1:1, tablets scaled up, anything on its side gets the two-column layout
 function layout(){
   // True viewport size: installed (Home Screen) apps on iOS can report a short innerHeight
@@ -1045,7 +1044,7 @@ function layout(){
   app.style.setProperty('--s',s);app.style.width=aw+'px';app.style.height=LH+'px';
   app.classList.toggle('framed',W-aw*s>24);
   app.classList.toggle('fit',land||tab);app.classList.toggle('wide',land);app.classList.toggle('tablet',tab&&!land);
-  fit();fitHero();
+  fit();fitLogo();fitHero();
 }
 function fit(){
   const sh=stage.clientHeight,small=LH<=640&&!app.classList.contains('wide'),h=sh-(small?64:112);
@@ -1139,11 +1138,9 @@ function drawLogo(){
   const wC=$('mC').getComputedTextLength(),wR=$('mR').getComputedTextLength(),wU=$('mU').getComputedTextLength();
   const O=146,gap=3,x0=(600-(wC+O+wR+gap*2))/2,y=176,cx=x0+wC+gap+O/2,cy=y-72;
   const word=at=>`<text x="${f(x0)}" y="${y}" ${F} ${at}>C</text><text x="${f(x0+wC+O+gap*2)}" y="${y}" ${F} ${at}>RN</text>`;
-  const leafp=`<path d="M58 118C10 100-4 50 14 4c2 40 20 76 44 114z" fill="#8ad653" stroke="var(--ol)" stroke-width="5" stroke-linejoin="round"/><path d="M58 118C30 90 18 50 14 4" fill="none" stroke="var(--ol)" stroke-width="2" opacity=".5"/>`;
   const pw=wU+96,px=-pw/2;
-  sv.innerHTML=`<defs><linearGradient id="lgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbd0"/><stop offset=".45" stop-color="#ffe14d"/><stop offset="1" stop-color="#ff9a1a"/></linearGradient>
+  sv.innerHTML=`<g id="lgAll"><defs><linearGradient id="lgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbd0"/><stop offset=".45" stop-color="#ffe14d"/><stop offset="1" stop-color="#ff9a1a"/></linearGradient>
   <linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9a05a"/><stop offset="1" stop-color="#a5672a"/></linearGradient></defs>
-  <g transform="translate(${f(x0-58)} 22) scale(1.5)">${leafp}</g><g transform="translate(${f(600-x0+58)} 22) scale(-1.5 1.5)">${leafp}</g>
   ${word('fill="#fff" stroke="#fff" stroke-width="44" stroke-linejoin="round"')}<circle cx="${f(cx)}" cy="${cy}" r="92" fill="#fff"/>
   <g transform="translate(0 13)">${word('fill="var(--ol)" stroke="var(--ol)" stroke-width="24" stroke-linejoin="round"')}<circle cx="${f(cx)}" cy="${cy}" r="80" fill="var(--ol)"/></g>
   ${word('fill="url(#lgG)" stroke="var(--ol)" stroke-width="18" stroke-linejoin="round" paint-order="stroke"')}
@@ -1157,7 +1154,14 @@ function drawLogo(){
     <path d="M${f(px+12)} -22h${f(pw-24)}M${f(px+12)} 20h${f(pw-24)}" stroke="#8a5220" stroke-width="3" opacity=".5"/>
     <circle cx="${f(px+22)}" cy="0" r="6" fill="#efe6d0" stroke="var(--ol)" stroke-width="3"/><circle cx="${f(-px-22)}" cy="0" r="6" fill="#efe6d0" stroke="var(--ol)" stroke-width="3"/>
     <text x="5" y="34" text-anchor="middle" font-family="Titan One" font-size="96" letter-spacing="10" fill="#fff" stroke="var(--ol)" stroke-width="14" stroke-linejoin="round" paint-order="stroke">RUSH</text>
-  </g>`;
+  </g></g>`;
+  try{const bb=$('lgAll').getBBox(),pad=30;sv.setAttribute('viewBox',`${f(bb.x-pad)} ${f(bb.y-pad)} ${f(bb.width+pad*2)} ${f(bb.height+pad*2+14)}`);LOGO_AR=(bb.width+pad*2)/(bb.height+pad*2+14)}catch(e){}
+  fitLogo();
+}
+function fitLogo(){
+  const wide=app.classList.contains('wide'),aw=parseFloat(app.style.width)||app.clientWidth||360;
+  const w=Math.max(140,Math.min(wide?aw/2-56:aw-40,460,(wide?LH*.5:LH*(LH<620?.2:.25))*LOGO_AR));
+  document.querySelector('.logo').style.width=w+'px';
 }
 drawLogo();try{document.fonts.load("200px 'Titan One'").then(drawLogo)}catch(e){}
 
