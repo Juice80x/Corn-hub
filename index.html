@@ -24,14 +24,15 @@
 :root{color-scheme:light;--red:#e24a3b;--grn:#4fb53a}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
-html,body{height:100%;margin:0;overscroll-behavior:none}
+html,body{height:100%;min-height:100vh;margin:0;overscroll-behavior:none}
 body{font:400 16px/1.3 'Titan One','Arial Black',system-ui,sans-serif;color:#fff;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;background:#f3c33a;background-size:150px 204px}
 button{font:inherit;color:#fff;cursor:pointer}
 .ol{text-shadow:0 4px 0 var(--ol),3px 3px 0 var(--ol),-3px 3px 0 var(--ol),3px -2px 0 var(--ol),-3px -2px 0 var(--ol),0 -3px 0 var(--ol),3px 0 0 var(--ol),-3px 0 0 var(--ol)}
 .ol2{text-shadow:0 2px 0 var(--ol),2px 2px 0 var(--ol),-2px 2px 0 var(--ol),2px -1px 0 var(--ol),-2px -1px 0 var(--ol),0 -2px 0 var(--ol)}
 .app{--b1:#e4f3c4;--b2:#b8dc8a;--b3:#86bf5c;--b4:#5f9c43;--ray:255,255,255,.13;--hud2:#2c6a2e;--hud:#1f4d22;--ol:#173a19;--mote:#fff8c8;
 position:fixed;left:50%;top:0;width:100%;max-width:520px;height:100%;overflow:hidden;transform-origin:top center;transform:translateX(-50%) scale(var(--s,1));
-background:radial-gradient(circle at 50% 46%,var(--b1) 0%,var(--b2) 28%,var(--b3) 62%,var(--b4) 100%);box-shadow:0 0 0 6px #fff,0 0 40px rgba(0,0,0,.3)}
+background:transparent}
+.app.framed{box-shadow:0 0 0 6px rgba(255,255,255,.85),0 0 40px rgba(0,0,0,.3)}
 .rays{position:absolute;left:50%;top:46%;width:60vmax;height:60vmax;margin:-30vmax 0 0 -30vmax;pointer-events:none;transform:scale(2.4);will-change:transform;
 background:repeating-conic-gradient(from 0deg,rgba(var(--ray)) 0 9deg,transparent 9deg 18deg);animation:rays 60s linear infinite;
 -webkit-mask:radial-gradient(circle,#000 0,#000 18%,transparent 45%);mask:radial-gradient(circle,#000 0,#000 18%,transparent 45%)}
@@ -379,7 +380,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=27;
+const BUILD=28;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -656,7 +657,9 @@ function applyTheme(){
   b.c.forEach((c,i)=>st.setProperty('--b'+(i+1),c));
   st.setProperty('--ray',b.ray);st.setProperty('--hud2',b.hud[0]);st.setProperty('--hud',b.hud[1]);st.setProperty('--ol',b.ol);st.setProperty('--mote',b.mote);
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=b.hud[1];
-  document.documentElement.style.backgroundColor=document.body.style.backgroundColor=b.hud[1];
+  // The page itself carries the sunburst, so it continues past the game panel on any screen
+  const de=document.documentElement.style;de.backgroundColor=b.c[3];de.backgroundImage=`radial-gradient(circle at 50% 46%,${b.c[0]} 0%,${b.c[1]} 28%,${b.c[2]} 62%,${b.c[3]} 100%)`;de.backgroundRepeat='no-repeat';de.backgroundAttachment='fixed';de.backgroundSize='100% 100%';
+  document.body.style.background='transparent';
 }
 let heroKey='';
 function paint(cv,svg){
@@ -944,7 +947,7 @@ function layout(){
   SC=s;LH=H/s;
   const aw=Math.min(maxW,W/s);
   app.style.setProperty('--s',s);app.style.width=aw+'px';app.style.height=LH+'px';
-  document.body.style.backgroundImage=W-aw*s>24?TILE:'none';
+  app.classList.toggle('framed',W-aw*s>24);
   app.classList.toggle('fit',land||tab);app.classList.toggle('wide',land);app.classList.toggle('tablet',tab&&!land);
   fit();fitHero();
 }
