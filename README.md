@@ -22,7 +22,7 @@ It then opens full screen like an app and works offline.
 - Fill the Frenzy bar for 6 seconds of all-good corn at double points.
 - Every point is a kernel. Spend kernels on backgrounds; hit milestones to unlock cob skins.
 - Three new missions every day, plus a daily streak bonus.
-- On your last life you can revive once for 250 kernels. Your top 10 runs are kept on a leaderboard.
+- On your last life you can revive once for 250 kernels. The leaderboard keeps each player name's single best run on that phone.
 
 Progress is saved on your own device.
 

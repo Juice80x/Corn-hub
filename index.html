@@ -417,6 +417,7 @@ if(!Array.isArray(S.top))S.top=[];
 if(!S.dex||typeof S.dex!=='object')S.dex={};
 S.t.pts=S.t.pts||0;
 if(!S.top.length&&S.best>0)S.top=[{nm:S.name||'Player',s:S.best,n:0,st:0,d:''}];
+{const seen={};S.top=S.top.slice().sort((x,y)=>(+y.s||0)-(+x.s||0)).filter(e=>{const k=(e.nm||'Player').trim().toLowerCase();return seen[k]?false:(seen[k]=1)})}
 const esc=x=>String(x).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
 const save=()=>{try{localStorage.setItem('cornhub',JSON.stringify(S))}catch(e){}};
 const dstr=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
@@ -945,14 +946,20 @@ function endGame(){
   const before=S.t.pts;S.t.pts+=score;
   const newTiers=TIERS.filter(k=>T[k].unlock>before&&T[k].unlock<=S.t.pts);
   let rank=0;lastEntry=null;
-  if(score>0){const d=new Date();lastEntry={nm:S.name||'Player',s:score,n,st:topStreak,d:d.getDate()+'/'+(d.getMonth()+1)};
-    S.top.push(lastEntry);S.top.sort((a,b)=>b.s-a.s);S.top=S.top.slice(0,10);rank=S.top.indexOf(lastEntry)+1}
+  if(score>0){
+    // One entry per player name: only a new personal best replaces it
+    const d=new Date(),nm=S.name||'Player',key=nm.trim().toLowerCase(),mine=S.top.find(e=>(e.nm||'Player').trim().toLowerCase()===key);
+    if(!mine||score>mine.s){
+      lastEntry={nm,s:score,n,st:topStreak,d:d.getDate()+'/'+(d.getMonth()+1)};
+      S.top=S.top.filter(e=>e!==mine);S.top.push(lastEntry);S.top.sort((x,y)=>y.s-x.s);S.top=S.top.slice(0,20);rank=S.top.indexOf(lastEntry)+1;
+    }
+  }
   const fresh=checkSkins();save();
   $('endNote').textContent=isBest?'New best! Golden effort.':old-score<=Math.max(5,old*.15)?`So close! Only ${fmt(old-score+1)} more to beat your best.`:'Best: '+fmt(old);
   $('final').textContent=fmt(score);
   $('endEarn').innerHTML=`+${fmt(earned)} ${KI} <span style="color:#fff;font-size:18px">(${fmt(S.k)} total)</span>`;
   $('haul').innerHTML=ALLRARE.filter(k=>caught[k]).map(k=>`<span class="chip ol2" style="--a:${T[k].aura}">${T[k].name} ×${caught[k]}</span>`).join('')
-    +(rank?`<span class="chip ol2" style="--a:#f29a0c">#${rank} on your leaderboard</span>`:'')
+    +(rank?`<span class="chip ol2" style="--a:#f29a0c">New personal best: #${rank} on the leaderboard</span>`:'')
     +gameDone.map(d=>`<span class="chip ol2" style="--a:#4fb53a">Mission +${d.rw}</span>`).join('')
     +newTiers.map(k=>`<span class="chip ol2" style="--a:${T[k].aura}">${T[k].name} corn can now appear!</span>`).join('')
     +fresh.map(nm=>`<span class="chip ol2" style="--a:#e040b0">New cob: ${nm}!</span>`).join('');
