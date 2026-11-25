@@ -232,6 +232,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 </style>
 </head>
 <body>
+<div id="vpFix" style="position:fixed;inset:0;visibility:hidden;pointer-events:none"></div><div id="vpVh" style="position:fixed;left:0;top:0;width:1px;height:100vh;visibility:hidden;pointer-events:none"></div>
 <div class="app" id="app">
   <div class="rays"></div><div class="fz"></div>
 
@@ -378,7 +379,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=26;
+const BUILD=27;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -655,6 +656,7 @@ function applyTheme(){
   b.c.forEach((c,i)=>st.setProperty('--b'+(i+1),c));
   st.setProperty('--ray',b.ray);st.setProperty('--hud2',b.hud[0]);st.setProperty('--hud',b.hud[1]);st.setProperty('--ol',b.ol);st.setProperty('--mote',b.mote);
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=b.hud[1];
+  document.documentElement.style.backgroundColor=document.body.style.backgroundColor=b.hud[1];
 }
 let heroKey='';
 function paint(cv,svg){
@@ -930,15 +932,19 @@ function loop(now){
   }
   raf=requestAnimationFrame(loop);
 }
-let SC=1,LH=innerHeight;
+let SC=1,LH=innerHeight,TILE='none';
 // Size the game for the device: phones 1:1, tablets scaled up, anything on its side gets the two-column layout
 function layout(){
-  const W=innerWidth,H=innerHeight,land=W>H*1.15,tab=Math.min(W,H)>=600;
+  // True viewport size: installed (Home Screen) apps on iOS can report a short innerHeight
+  const fx=$('vpFix').getBoundingClientRect(),standalone=navigator.standalone===true||(self.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  const W=Math.max(innerWidth,fx.width),H=Math.max(innerHeight,fx.height,standalone?$('vpVh').getBoundingClientRect().height:0),land=W>H*1.15,tab=Math.min(W,H)>=600;
   let s=1,maxW=520;
   if(land){s=Math.max(.55,Math.min(1.8,H/640,W/900));maxW=1000}
-  else if(tab){s=Math.max(1,Math.min(1.8,W/540,H/820));maxW=600}
+  else if(tab){s=Math.max(1,Math.min(1.8,W/540,H/820));maxW=700}
   SC=s;LH=H/s;
-  app.style.setProperty('--s',s);app.style.width=Math.min(maxW,W/s)+'px';app.style.height=LH+'px';
+  const aw=Math.min(maxW,W/s);
+  app.style.setProperty('--s',s);app.style.width=aw+'px';app.style.height=LH+'px';
+  document.body.style.backgroundImage=W-aw*s>24?TILE:'none';
   app.classList.toggle('fit',land||tab);app.classList.toggle('wide',land);app.classList.toggle('tablet',tab&&!land);
   fit();fitHero();
 }
@@ -949,7 +955,7 @@ function fit(){
   deck.style.width=w+'px';deck.style.height=(w*320/220)+'px';
 }
 try{new ResizeObserver(fit).observe(stage)}catch(e){}
-addEventListener('resize',layout);addEventListener('orientationchange',()=>setTimeout(layout,250));
+addEventListener('resize',layout);if(self.visualViewport)visualViewport.addEventListener('resize',layout);addEventListener('pageshow',layout);addEventListener('orientationchange',()=>setTimeout(layout,250));
 function offerRevive(){
   playing=false;$('tbar').classList.remove('low');
   $('revNote').innerHTML=`Keep your ${fmt(score)} points and carry on with 1 life. You have ${fmt(S.k)} ${KI}`;
@@ -1031,7 +1037,8 @@ applyTheme();daily();checkSkins();layout();drawHome();$('ver').textContent='v'+B
 $('demoGood').innerHTML=cob('good',7)+'<span class="ol2">Good: KEEP</span>';
 $('demoBad').innerHTML=cob('bad',11)+'<span class="ol2">Yuck: TOSS</span>';
 $('demoRare').innerHTML=RARE.map((k,i)=>`<div>${cob(k,21+i)}<span class="ol2">+${T[k].pts}</span></div>`).join('');
-try{document.body.style.backgroundImage=`url("data:image/svg+xml,${encodeURIComponent(cob('good',3,true,'classic').replace('class="cob"','xmlns="http://www.w3.org/2000/svg"'))}")`}catch(e){}
+try{TILE=`url("data:image/svg+xml,${encodeURIComponent(cob('good',3,true,'classic').replace('class="cob"','xmlns="http://www.w3.org/2000/svg"'))}")`}catch(e){}
+layout();
 for(let i=0;i<10;i++){const m=document.createElement('i');m.className='mote';const s=4+Math.random()*7;
   m.style.cssText=`left:${Math.random()*100}%;width:${s}px;height:${s}px;animation-duration:${7+Math.random()*8}s;animation-delay:${-Math.random()*12}s;--dx:${(Math.random()*80-40)|0}px`;
   app.insertBefore(m,app.children[2])}
