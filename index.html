@@ -210,6 +210,13 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .earn{font-size:26px;color:#ffe14d}
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 10px}
 .tab{height:46px;font-size:min(13px,3.3vw);padding:0 1px;border:4px solid var(--ol);border-radius:14px;background:rgba(0,0,0,.3)}
+.dvl{display:grid;gap:7px;margin:8px 0 10px;text-align:left}
+.dvr{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:15px;background:rgba(0,0,0,.22);border-radius:12px;padding:5px 6px 5px 12px}
+.dvr .tab{width:74px;height:38px;font-size:15px}
+.dvr select{font:inherit;font-size:15px;height:38px;border:4px solid var(--ol);border-radius:12px;background:#fff8e0;color:#173a19;padding:0 6px;max-width:150px}
+.dvb{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.dvb .tab{font-size:min(12px,3.1vw);height:42px}
+#devBtn{position:absolute;left:6px;top:46%;z-index:5;font:inherit;font-size:13px;color:#fff;padding:5px 9px 6px;border:3px solid var(--ol);border-radius:12px;background:linear-gradient(#ff7ac8,#c23a96);box-shadow:0 3px 0 var(--ol)}
 .tab.on{background:linear-gradient(#ffd84a,#f29a0c);box-shadow:0 4px 0 var(--ol)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:auto;align-content:start;padding:2px 2px 8px}
 .item{background:rgba(0,0,0,.25);border:4px solid var(--ol);border-radius:18px;padding:8px 8px 10px;display:grid;gap:6px}
@@ -264,7 +271,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 <div id="vpFix" style="position:fixed;inset:0;visibility:hidden;pointer-events:none"></div><div id="vpVh" style="position:fixed;left:0;top:0;width:1px;height:100vh;visibility:hidden;pointer-events:none"></div>
 <canvas id="scene"></canvas>
 <div class="app" id="app">
-  <div class="rays"></div><div class="fz"></div>
+  <div class="rays"></div><div class="fz"></div><button class="ol2" id="devBtn" hidden>DEV</button>
 
   <section class="screen on" id="home">
     <div class="row">
@@ -395,6 +402,31 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     </div>
   </div>
 
+  <div class="over" id="devPw" hidden style="z-index:9">
+    <div class="panel">
+      <button class="x" data-close="devPw" aria-label="Close">✕</button>
+      <h2 class="ol">Dev Mode</h2>
+      <p class="ol2">Enter the password.</p>
+      <label class="nm ol2"><input id="devIn" type="password" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Password" style="width:11em;text-align:center"></label>
+      <button class="go ol2" id="devGo">UNLOCK</button>
+    </div>
+  </div>
+  <div class="over" id="dev" hidden style="z-index:9">
+    <div class="panel">
+      <button class="x" id="devX" aria-label="Close">✕</button>
+      <h2 class="ol">Dev Trainer</h2>
+      <p class="ol2" style="font-size:13px;opacity:.9">Sandbox: your real save comes back when you exit.</p>
+      <div class="dvl">
+        <div class="dvr ol2"><span>Unlock everything</span><button class="tab ol2" id="dv_unlock"></button></div>
+        <div class="dvr ol2"><span>Unlimited kernels</span><button class="tab ol2" id="dv_coins"></button></div>
+        <div class="dvr ol2"><span>God mode (no lives lost)</span><button class="tab ol2" id="dv_god"></button></div>
+        <div class="dvr ol2"><span>Freeze timer</span><button class="tab ol2" id="dv_freeze"></button></div>
+        <div class="dvr ol2"><span>Next cobs</span><select id="devForce"></select></div>
+      </div>
+      <div class="dvb"><button class="tab ol2" id="dvFrenzy">FRENZY NOW</button><button class="tab ol2" id="dvScore">+1,000 PTS</button><button class="tab ol2" id="dvTut">TUTORIAL</button></div>
+      <button class="tab ol2" id="dvExit" style="width:100%;margin-top:10px;background:linear-gradient(#ff7a6a,#d93a2c)">EXIT DEV MODE</button>
+    </div>
+  </div>
   <div class="over" id="who" hidden>
     <div class="panel">
       <h2 class="ol">Who's shucking?</h2>
@@ -410,7 +442,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=44;
+const BUILD=45;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -518,10 +550,11 @@ if(!S.top.length&&S.best>0)S.top=[{nm:S.name||'Player',s:S.best,n:0,st:0,d:''}];
 {const seen={};S.top=S.top.slice().sort((x,y)=>(+y.s||0)-(+x.s||0)).filter(e=>{const k=(e.nm||'Player').trim().toLowerCase();return seen[k]?false:(seen[k]=1)})}
 const esc=x=>String(x).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
 let cheat=false,snap='';
+const DEV={unlock:true,coins:true,god:false,freeze:false,force:'',tut:false};
 const save=()=>{if(cheat)return;try{localStorage.setItem('cornhub',JSON.stringify(S))}catch(e){}};
 const OWN={bg:'bg',world:'bg',cob:'cob',husk:'husk'};
-const has=(cat,id)=>cheat||S.own[OWN[cat]].includes(id);
-const kf=()=>cheat?'∞':fmt(S.k);
+const has=(cat,id)=>(cheat&&DEV.unlock)||S.own[OWN[cat]].includes(id);
+const kf=()=>cheat&&DEV.coins?'∞':fmt(S.k);
 const dstr=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 
 /* ---------- comic corn ---------- */
@@ -1056,7 +1089,7 @@ function drawMute(){
   $('muteBtn').innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 9h4l6-5v16l-6-5H3z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>${S.mute?'<path d="M16 9l6 6M22 9l-6 6" stroke="#ff8a7a" stroke-width="3" stroke-linecap="round"/>':'<path d="M16.5 8.5c2 2 2 5 0 7M19 6c3.500 3.500 3.500 8.500 0 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'}</svg>`;
 }
 function drawHome(){
-  $('walletHome').innerHTML=KI+'<span>'+kf()+'</span>'+(cheat?'<span style="color:#ffe14d">&nbsp;CHEAT</span>':'');
+  $('walletHome').innerHTML=KI+'<span>'+kf()+'</span>'+(cheat?'<span style="color:#ffe14d">&nbsp;DEV</span>':'');
   $('dayPill').textContent='Day '+S.day.streak;
   drawMute();
   if(heroKey!==S.cob+'|'+S.husk){heroKey=S.cob+'|'+S.husk;paint($('heroCv'),cob('good',7,true,null,1)[0])}
@@ -1071,15 +1104,37 @@ const open=id=>{$(id).hidden=false;tone(660,0,.08,'triangle',.08)};
 const close=id=>{$(id).hidden=true;if(id==='help'&&!S.seen){S.seen=true;save()}if(id==='help'&&!S.name)$('who').hidden=false};
 $('whoGo').onclick=()=>{S.name=($('whoIn').value||'').trim().slice(0,12)||'Player';save();$('who').hidden=true;tone(784,0,.12,'triangle')};
 
-/* ---------- secret test mode: 10 quick taps on the home cob ---------- */
+/* ---------- dev mode: 10 quick taps on the home cob, then the password. A sandbox: the real save is restored on exit ---------- */
+const hash53=str=>{let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677)}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0)};
+let devOK=false,devPaused=false;
+function devOn(){if(cheat)return;snap=JSON.stringify(S);cheat=true;Object.assign(DEV,{unlock:true,coins:true,god:false,freeze:false,force:'',tut:false});S.k=9e15;devRefresh();toast('Dev Mode ON');jingle([523,659,784,1047,1319,1568]);flash('#ffe14d')}
+function devOff(){if(!cheat)return;cheat=false;S=JSON.parse(snap);heroKey='';devRefresh();toast('Dev Mode off. Back to your real save');jingle([784,523])}
+function devRefresh(){
+  $('devBtn').hidden=!cheat;
+  for(const k of ['unlock','coins','god','freeze']){const b=$('dv_'+k);b.classList.toggle('on',!!DEV[k]);b.textContent=DEV[k]?'ON':'OFF'}
+  $('devForce').value=DEV.force;
+  applyTheme();drawHome();if(!$('shop').hidden)drawShop();if(!$('dex').hidden)drawDex();
+}
+function devOpen(){devPaused=playing;playing=false;devRefresh();$('dev').hidden=false;tone(660,0,.08,'triangle',.08)}
+function devClose(){$('dev').hidden=true;if(devPaused&&cheat&&$('game').classList.contains('on')&&$('end').hidden&&$('revive').hidden){playing=true;last=performance.now()}devPaused=false}
 {let taps=[];
  $('heroCob').addEventListener('pointerdown',()=>{
   const now=performance.now();taps=taps.filter(t=>now-t<3000);taps.push(now);
   if(taps.length<10)return;taps=[];
-  if(!cheat){snap=JSON.stringify(S);cheat=true;S.k=9e15;toast('Cheat mode ON: everything unlocked until you close the app');jingle([523,659,784,1047,1319,1568])}
-  else{cheat=false;S=JSON.parse(snap);heroKey='';toast('Cheat mode off. Back to your real save');jingle([784,523])}
-  flash('#ffe14d');applyTheme();drawHome();
- });}
+  if(cheat||devOK){devOn();devOpen()}else{$('devIn').value='';$('devPw').hidden=false;setTimeout(()=>{try{$('devIn').focus()}catch(e){}},50)}
+ });
+ const tryPw=()=>{if(hash53(($('devIn').value||'').trim().toLowerCase())===6625615877164131){devOK=true;$('devPw').hidden=true;$('devIn').blur();devOn();devOpen()}else{retrigger($('devIn'),'shake');tone(160,0,.2,'sawtooth',.1,.6);toast('Wrong password')}};
+ $('devGo').onclick=tryPw;$('devIn').addEventListener('keydown',e=>{if(e.key==='Enter')tryPw()});
+ $('devBtn').onclick=devOpen;$('devX').onclick=devClose;
+ for(const k of ['unlock','coins','god','freeze'])$('dv_'+k).onclick=()=>{DEV[k]=!DEV[k];if(k==='coins')S.k=DEV.coins?9e15:JSON.parse(snap).k;tone(DEV[k]?784:440,0,.08,'triangle');devRefresh()};
+ $('devForce').innerHTML='<option value="">Normal mix</option>'+['good','bad','sneak','life'].concat(ALLRARE).map(k=>`<option value="${k}">${T[k]&&T[k].name?T[k].name[0]+T[k].name.slice(1).toLowerCase():({good:'Good cob',bad:'Bad cob',sneak:'Sneaky rot',life:'Extra life'})[k]||k}</option>`).join('');
+ $('devForce').onchange=e=>{DEV.force=e.target.value};
+ const inGame=()=>devPaused&&$('game').classList.contains('on');
+ $('dvFrenzy').onclick=()=>{if(!inGame())return toast('Start a run first');devClose();startFrenzy()};
+ $('dvScore').onclick=()=>{if(!inGame())return toast('Start a run first');score+=1000;toast('+1,000 points')};
+ $('dvTut').onclick=()=>{$('dev').hidden=true;devPaused=false;DEV.tut=true;startGame()};
+ $('dvExit').onclick=()=>{const g=$('game').classList.contains('on');$('dev').hidden=true;devPaused=false;devOff();if(g){playing=false;show('home');drawHome()}};
+}
 
 /* ---------- living backgrounds: a few moving details per scene ---------- */
 
@@ -1193,11 +1248,12 @@ function coach(){
   if(!on)return;
   $('coachText').textContent=TUT[tutStep][1];$('coachText').classList.remove('no');$('coachArrow').classList.toggle('left',TUT[tutStep][0]==='bad');
 }
-const life=()=>cheat?1e12:S.t.pts+score;
+const life=()=>cheat&&DEV.unlock?1e12:S.t.pts+score;
 const bestTier=()=>TIERS.find(k=>!T[k].x&&(T[k].unlock||0)<=life())||'diamond';
 function pick(){
   if(tutOn&&tutMade<3)return TUT[tutMade++][0];
   if(self.__corn)return self.__corn;
+  if(cheat&&DEV.force)return DEV.force;
   if(n<1)return 'good';
   if(milestone){milestone=false;return bestTier()}
   if(frenzyT<=0){
@@ -1316,7 +1372,7 @@ function decide(keepIt,timedOut){
   }else if(frenzyT>0){
     popText('Oops!','#ffd0c8');tone(200,0,.15,'square',.07,.6);
   }else{
-    streak=0;lives--;drawLives();fever=Math.max(0,fever-.4);
+    streak=0;if(!(cheat&&DEV.god))lives--;drawLives();fever=Math.max(0,fever-.4);
     popText(timedOut?'Too slow!':(good?'Wasted!':c.type==='sneak'?'Sneaky rot!':'Yuck!'),'#ff9a8a');flash('#e24a3b');buzz([60,40,60]);
     retrigger(deck,'shake');
     if(timedOut)SFX.thud();else if(good){SFX.whoosh();SFX.sad()}else{SFX.buzz();SFX.splat(0)}
@@ -1335,7 +1391,7 @@ function loop(now){
     if(frenzyT>0){frenzyT-=dt;if(frenzyT<=0){frenzyT=0;fever=0;app.classList.remove('frenzy');setSub()}}
     $('ffill').style.transform=`scaleX(${frenzyT>0?frenzyT/FRENZY:fever})`;
     if(cur){
-      if(!(tutOn&&tutStep<3))timeLeft-=dt;
+      if(!(tutOn&&tutStep<3)&&!(cheat&&DEV.freeze))timeLeft-=dt;
       const fr=Math.max(0,timeLeft/timeMax),bar=$('tfill');
       bar.style.transform=`scaleX(${fr})`;
       const lo=fr<.3;if(lo!==wasLow){wasLow=lo;bar.style.background=lo?'linear-gradient(#ff8a6a,#d93a2c)':'';$('tbar').classList.toggle('low',lo)}
@@ -1383,7 +1439,7 @@ $('revYes').onclick=()=>{
 };
 $('revNo').onclick=()=>{clearTimeout(revT);$('revive').hidden=true;endGame()};
 function startGame(){
-  score=shown=0;lives=3;streak=topStreak=n=0;revN=0;endRun++;fever=frenzyT=0;caught={};gameDone=[];milestone=false;tutOn=!S.tut&&!cheat&&!self.__corn;tutStep=tutMade=0;revived=bestBeat=false;clearTimeout(revT);
+  score=shown=0;lives=3;streak=topStreak=n=0;revN=0;endRun++;fever=frenzyT=0;caught={};gameDone=[];milestone=false;tutOn=(DEV.tut||(!S.tut&&!cheat))&&!self.__corn;DEV.tut=false;tutStep=tutMade=0;revived=bestBeat=false;clearTimeout(revT);
   const hs=S.hist||[];avg=hs.length?Math.min(60,Math.max(15,hs.reduce((a,b)=>a+b,0)/hs.length)):25;frenzies=0;mercy=hs.length>=2&&hs.slice(-2).every(x=>x<12);
   $('score').textContent=0;$('best').textContent=fmt(S.best);drawLives();setSub();
   deck.innerHTML='';next=null;cur=null;$('hint').style.opacity=1;app.classList.remove('frenzy');
