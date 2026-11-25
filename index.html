@@ -408,7 +408,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=37;
+const BUILD=38;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1215,13 +1215,14 @@ function drawLogo(){
   const pw=wU+96,px=-pw/2;
   sv.innerHTML=`<g id="lgAll"><defs><linearGradient id="lgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbd0"/><stop offset=".45" stop-color="#ffe14d"/><stop offset="1" stop-color="#ff9a1a"/></linearGradient>
   <linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9a05a"/><stop offset="1" stop-color="#a5672a"/></linearGradient></defs>
-  ${word('fill="#fff" stroke="#fff" stroke-width="44" stroke-linejoin="round"')}<circle cx="${f(cx)}" cy="${cy}" r="92" fill="#fff"/>
+  ${word('fill="#fff" stroke="#fff" stroke-width="40" stroke-linejoin="round"')}<circle cx="${f(cx)}" cy="${cy}" r="91" fill="#fff"/>
+  <g transform="translate(0 13)">${word('fill="#fff" stroke="#fff" stroke-width="46" stroke-linejoin="round"')}<circle cx="${f(cx)}" cy="${cy}" r="91" fill="#fff"/></g>
   <g transform="translate(0 13)">${word('fill="var(--ol)" stroke="var(--ol)" stroke-width="24" stroke-linejoin="round"')}<circle cx="${f(cx)}" cy="${cy}" r="80" fill="var(--ol)"/></g>
   ${word('fill="url(#lgG)" stroke="var(--ol)" stroke-width="18" stroke-linejoin="round" paint-order="stroke"')}
   <g transform="translate(${f(cx)} ${cy}) scale(1.52)"><g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="14s" repeatCount="indefinite"/>${WHEEL}</g></g>
   <g transform="translate(300 276) rotate(-4) skewX(-9)">
     <g stroke="#fff" stroke-width="10" stroke-linecap="round"><path d="M${f(px-92)} -26h56M${f(px-70)} 2h40M${f(px-104)} 30h66"/></g>
-    <rect x="${f(px-10)}" y="-62" width="${f(pw+20)}" height="124" rx="22" fill="#fff"/>
+    <rect x="${f(px-15.5)}" y="-67.5" width="${f(pw+31)}" height="140.500" rx="25" fill="#fff"/>
     <rect x="${f(px)}" y="-42" width="${f(pw)}" height="104" rx="14" fill="var(--ol)"/>
     <rect x="${f(px)}" y="-52" width="${f(pw)}" height="104" rx="14" fill="url(#lgW)" stroke="var(--ol)" stroke-width="9"/>
     <path d="M${f(px+12)} -22h${f(pw-24)}M${f(px+12)} 20h${f(pw-24)}" stroke="#8a5220" stroke-width="3" opacity=".5"/>
