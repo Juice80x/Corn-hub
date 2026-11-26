@@ -486,7 +486,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=51;
+const BUILD=52;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -589,6 +589,7 @@ const TIERS=['angel','void','alien','neon','candy','unicorn','royal','ghost','la
 const DEX=[['good','Good corn','The everyday hero. Keep it.'],['bad','Rotten corn','Mouldy, wormy, loved by flies. Toss it.'],['sneak','Sneaky rot','Looks fine at a glance. Look closer, then toss it.'],['gold','Golden corn','Solid gold kernels. Dentists hate it.'],['rainbow','Rainbow corn','Tastes like every colour at once.'],['galaxy','Galaxy corn','Grown under a meteor shower.'],['diamond','Diamond corn','Too hard to eat. Worth it anyway.'],['life','Life corn','Grown with love. Gives a life back.'],['lava','Lava corn','Pops itself. Handle with tongs.'],['ghost','Ghost corn','It was harvested... years ago.'],['royal','Royal corn','Corn of the crop. Bow before it.'],['unicorn','Uni-corn','A horn and a dream. Yes, really.'],['candy','Candy corn','Three stripes of pure sugar.'],['neon','Neon corn','Glows in the dark. Hums a little.'],['alien','Alien corn','It came from another field.'],['void','Void corn','Stare into the cob. The cob stares back.'],['angel','Angel corn','The rarest of all. Heaven sent.']];
 const dexT=k=>T[k].x||T[k].pts>=100?[1,5,20]:k==='good'||k==='bad'?[1,200,1000]:k==='sneak'||k==='life'?[1,25,100]:[1,10,50],dexRw=k=>T[k].x||T[k].pts>=100?[0,1000,3000]:[0,300,1000];
 const dexLv=(k,c)=>dexT(k).filter(t=>c>=t).length;
+const kfmt=x=>x>=1000?(x/1000).toFixed(x%1000?1:0).replace(/\.0$/,'')+'k':String(x);
 const fmt=x=>String(x).replace(/\B(?=(\d{3})+$)/g,',');
 const MIS=[
  {id:'sort',txt:'Sort 150 cobs',n:150,rw:225,ev:'cob'},
@@ -1290,7 +1291,7 @@ function drawDex(){
     const t=T[k],got=S.dex[k]||0,locked=(t.unlock||0)>S.t.pts;
     return `<div class="item ${got?'eq':''}"><div class="sw" style="background:${got?'rgba(255,255,255,.18)':'rgba(0,0,0,.35)'}">${got?cob(k,41+i,true):'<div class="qm ol">?</div>'}</div>
     <b class="ol2">${got?nm:'?'}</b>
-    ${got?`<span class="pts ol2">${k==='life'?'+1 '+I.life:k==='bad'||k==='sneak'?I.L+I.no:'+'+fmt(t.pts)}</span>${(()=>{const th=dexT(k),lv=dexLv(k,got),nx=th[lv];return `<div class="lv">${[0,1,2].map(j=>`<i class="${lv>j?'on':''}" style="--m:${CHC[j]}"></i>`).join('')}</div>`+(nx?`<div class="prog"><i style="transform:scaleX(${Math.min(1,got/nx)})"></i></div><small class="ol2">${fmt(got)} / ${fmt(nx)} · +${fmt(dexRw(k)[lv])} ${KI}</small>`:`<small class="ol2">×${fmt(got)} ${I.ok}</small>`)})()}`
+    ${got?`<span class="pts ol2">${k==='life'?'+1 '+I.life:k==='bad'||k==='sneak'?I.L+I.no:'+'+fmt(t.pts)}</span>${(()=>{const th=dexT(k),lv=dexLv(k,got),nx=th[lv];return `<div class="lv">${[0,1,2].map(j=>`<i class="${lv>j?'on':''}" style="--m:${CHC[j]}"></i>`).join('')}</div>`+(nx?`<div class="prog"><i style="transform:scaleX(${Math.min(1,got/nx)})"></i></div><small class="ol2" style="font-size:15px;white-space:nowrap">${kfmt(got)} / ${kfmt(nx)}</small>`:`<small class="ol2" style="font-size:15px">×${kfmt(got)} ${I.ok}</small>`)})()}`
       :locked?`<small class="ol2">${I.lock} ${I.star} ${fmt(t.unlock)}</small><div class="prog"><i style="transform:scaleX(${Math.min(1,S.t.pts/t.unlock)})"></i></div>`
       :''}</div>`}).join('');
 }
