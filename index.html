@@ -235,6 +235,20 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .prog{position:relative;height:16px;background:rgba(0,0,0,.5);border:3px solid var(--ol);border-radius:9px;overflow:hidden}
 .prog i{position:absolute;inset:0;background:linear-gradient(#8fe060,#3f9e2c);transform-origin:left}
 .mis{display:grid;gap:10px;margin-top:8px}
+.medals{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.medal{font-size:12px;line-height:1.25;text-align:center;border:3px solid var(--ol);border-radius:12px;padding:4px 2px 5px;background:rgba(0,0,0,.28);opacity:.85}
+.medal b{display:block;font-size:14px;color:var(--m)}
+.medal.won{background:var(--m);opacity:1}.medal.won b{color:#fff}
+.cal{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}
+.cal .cd{border:3px solid var(--ol);border-radius:14px;padding:6px 2px 7px;background:rgba(0,0,0,.28);font-size:13px;line-height:1.3}
+.cal .cd b{display:block;font-size:15px}
+.cal .cd.got{background:rgba(143,224,96,.45)}
+.cal .cd.now{background:linear-gradient(#ffd23a,#f29a0c);box-shadow:0 4px 0 var(--ol);transform:translateY(-2px)}
+.cal .cd.big{grid-column:span 2}
+.flycob{position:absolute;z-index:4;pointer-events:none;transform-origin:center;will-change:transform}
+.lv{display:flex;justify-content:center;gap:4px}
+.lv i{width:16px;height:16px;border-radius:50%;border:2.500px solid var(--ol);background:rgba(0,0,0,.35)}
+.lv i.on{background:var(--m);box-shadow:inset 0 3px 0 rgba(255,255,255,.5)}
 .mi{background:rgba(0,0,0,.25);border:4px solid var(--ol);border-radius:16px;padding:8px 12px 10px;text-align:left;display:grid;gap:6px}
 .mi.done{background:rgba(143,224,96,.3)}
 .mi .row{font-size:18px}
@@ -279,7 +293,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     <div class="row">
       <div class="pill ol2" id="walletHome"></div>
       <div class="row">
-        <div class="pill ol2" id="dayPill" style="padding-left:10px"></div>
+        <button class="pill ol2" id="dayPill" style="padding-left:10px" aria-label="Daily streak calendar"></button>
         <button class="pill ol2" id="helpBtn" aria-label="How to play" style="padding:3px 12px">?</button>
         <button class="pill ol2" id="muteBtn" aria-label="Sound on or off"></button>
       </div>
@@ -345,6 +359,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <button class="x" data-close="missions" aria-label="Close">✕</button>
       <h2 class="ol">Daily missions</h2>
       <p class="ol2" id="dayNote"></p>
+      <div class="mi" id="chalBox" style="margin-top:8px"></div>
       <div class="mis" id="misList"></div>
       <p class="ol2">New missions every day.</p>
     </div>
@@ -404,6 +419,15 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     </div>
   </div>
 
+  <div class="over" id="cal" hidden>
+    <div class="panel">
+      <button class="x" data-close="cal" aria-label="Close">✕</button>
+      <h2 class="ol">Daily streak</h2>
+      <p class="ol2" id="calNote"></p>
+      <div class="cal" id="calGrid"></div>
+      <p class="ol2" style="font-size:14px">Play every day to climb. Miss a day and it starts again from day 1.</p>
+    </div>
+  </div>
   <div class="over" id="devPw" hidden style="z-index:9">
     <div class="panel">
       <button class="x" data-close="devPw" aria-label="Close">✕</button>
@@ -445,7 +469,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=48;
+const BUILD=49;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -518,6 +542,8 @@ const RARE=['gold','rainbow','galaxy','diamond'];
 T.gold.p=.08;T.rainbow.p=.05;T.galaxy.p=.035;T.diamond.p=.025;
 const TIERS=['angel','void','alien','neon','candy','unicorn','royal','ghost','lava','diamond','galaxy','rainbow','gold'],ALLRARE=TIERS.slice().reverse();
 const DEX=[['good','Good corn','The everyday hero. Keep it.'],['bad','Rotten corn','Mouldy, wormy, loved by flies. Toss it.'],['sneak','Sneaky rot','Looks fine at a glance. Look closer, then toss it.'],['gold','Golden corn','Solid gold kernels. Dentists hate it.'],['rainbow','Rainbow corn','Tastes like every colour at once.'],['galaxy','Galaxy corn','Grown under a meteor shower.'],['diamond','Diamond corn','Too hard to eat. Worth it anyway.'],['life','Life corn','Grown with love. Gives a life back.'],['lava','Lava corn','Pops itself. Handle with tongs.'],['ghost','Ghost corn','It was harvested... years ago.'],['royal','Royal corn','Corn of the crop. Bow before it.'],['unicorn','Uni-corn','A horn and a dream. Yes, really.'],['candy','Candy corn','Three stripes of pure sugar.'],['neon','Neon corn','Glows in the dark. Hums a little.'],['alien','Alien corn','It came from another field.'],['void','Void corn','Stare into the cob. The cob stares back.'],['angel','Angel corn','The rarest of all. Heaven sent.']];
+const dexT=k=>T[k].x||T[k].pts>=100?[1,5,20]:k==='good'||k==='bad'?[1,200,1000]:k==='sneak'||k==='life'?[1,25,100]:[1,10,50],dexRw=k=>T[k].x||T[k].pts>=100?[0,1000,3000]:[0,300,1000];
+const dexLv=(k,c)=>dexT(k).filter(t=>c>=t).length;
 const fmt=x=>String(x).replace(/\B(?=(\d{3})+$)/g,',');
 const MIS=[
  {id:'sort',txt:'Sort 150 cobs',n:150,rw:225,ev:'cob'},
@@ -558,6 +584,8 @@ const save=()=>{if(cheat)return;try{localStorage.setItem('cornhub',JSON.stringif
 const OWN={bg:'bg',world:'bg',cob:'cob',husk:'husk'};
 const has=(cat,id)=>(cheat&&DEV.unlock)||S.own[OWN[cat]].includes(id);
 const kf=()=>cheat&&DEV.coins?'∞':fmt(S.k);
+const DAYR=[40,60,80,120,160,220,500],dayRw=st=>DAYR[(Math.max(1,st)-1)%7];
+const CHT=[150,400,800],CHR=[100,250,600],CHN=['Bronze','Silver','Gold'],CHC=['#c98a4a','#d8dde6','#ffc21a'];
 const dstr=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 
 /* ---------- comic corn ---------- */
@@ -1128,7 +1156,7 @@ function drawHome(){
   if(heroKey!==S.cob+'|'+S.husk){heroKey=S.cob+'|'+S.husk;paint($('heroCv'),cob('good',7,true,null,1)[0])}
   fitHero();
   $('bestHome').innerHTML=S.best?`<span class="bestbadge ol2"><svg viewBox="0 0 24 24"><path d="M5 4h14v4a7 7 0 0 1-14 0zM9 15h6v3H9zM7 18h10v3H7z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M5 6H2c0 4 2 5 4 5M19 6h3c0 4-2 5-4 5" fill="none" stroke="var(--ol)" stroke-width="2"/></svg>BEST ${fmt(S.best)}</span>`:'';
-  const left=S.mis.list.filter(m=>!m.done).length;
+  const left=S.mis.list.filter(m=>!m.done).length+(S.tut&&!(S.ch&&S.ch.date===dstr(new Date()))?1:0);
   $('misDot').textContent=left;$('misDot').hidden=!left;
   $('dexDot').textContent=DEX.filter(d=>S.dex[d[0]]).length+'/'+DEX.length;
 }
@@ -1177,7 +1205,7 @@ function daily(){
   if(S.day.date!==td){
     const y=new Date();y.setDate(y.getDate()-1);
     S.day.streak=S.day.date===dstr(y)?S.day.streak+1:1;S.day.date=td;
-    const bonus=Math.min(S.day.streak,7)*40;S.k+=bonus;
+    const bonus=dayRw(S.day.streak);S.k+=bonus;
     setTimeout(()=>{toast(`Day ${S.day.streak} streak! +${bonus} ${KI}`);jingle([523,659,784,1047])},600);
   }
   if(S.mis.date!==td){
@@ -1197,8 +1225,13 @@ function track(ev,val,isMax){
   }
 }
 function drawMissions(){
-  const nb=Math.min(S.day.streak+1,7)*40;
+  const nb=dayRw(S.day.streak+1),td=dstr(new Date()),ch=S.ch&&S.ch.date===td?S.ch:null;
   $('dayNote').innerHTML=`Day ${S.day.streak} streak. Come back tomorrow for +${nb} ${KI}`;
+  $('chalBox').innerHTML=`<div class="row ol2" style="white-space:nowrap"><span>Daily Challenge</span><span style="font-size:13px">${ch?'PLAYED':'1 TRY A DAY'}</span></div>
+    <div class="medals">${CHT.map((t,i)=>`<span class="medal ol2 ${ch&&ch.tier>i?'won':''}" style="--m:${CHC[i]}"><b>${CHN[i]}</b>${fmt(t)} pts<br>+${CHR[i]} ${KI}</span>`).join('')}</div>
+    ${ch?`<div class="ol2" style="font-size:15px;text-align:center">Today: ${fmt(ch.score)} points${ch.tier?' · '+CHN[ch.tier-1]+' medal':' · no medal'}. New challenge tomorrow.</div>`:'<button class="tab on ol2" id="chalGo" style="width:100%;height:46px;font-size:17px">PLAY CHALLENGE</button>'}`;
+  $('chalBox').classList.toggle('done',!!ch);
+  if(!ch)$('chalGo').onclick=()=>{chalNext=true;startGame()};
   $('misList').innerHTML=S.mis.list.map(m=>{const d=MIS.find(x=>x.id===m.id);
     return `<div class="mi ${m.done?'done':''}"><div class="row ol2"><span>${d.txt}</span><span>${m.done?'DONE':'+'+d.rw+' '+KI}</span></div><div class="prog"><i style="transform:scaleX(${m.p/d.n})"></i></div><div class="ol2" style="font-size:14px">${fmt(m.p)} / ${fmt(d.n)}</div></div>`}).join('');
 }
@@ -1213,7 +1246,7 @@ function drawDex(){
     const t=T[k],got=S.dex[k]||0,locked=(t.unlock||0)>S.t.pts;
     return `<div class="item ${got?'eq':''}"><div class="sw" style="background:${got?'rgba(255,255,255,.18)':'rgba(0,0,0,.35)'}">${got?cob(k,41+i,true):'<div class="qm ol">?</div>'}</div>
     <b class="ol2">${got?nm:'???'}</b>
-    ${got?`<span class="pts ol2">${k==='life'?'+1 life':k==='bad'||k==='sneak'?'Toss it':'+'+fmt(t.pts)+' points'}</span><small class="ol2">${txt}</small><small class="ol2">Caught ×${fmt(got)}</small>`
+    ${got?`<span class="pts ol2">${k==='life'?'+1 life':k==='bad'||k==='sneak'?'Toss it':'+'+fmt(t.pts)+' points'}</span><small class="ol2">${txt}</small>${(()=>{const th=dexT(k),lv=dexLv(k,got),nx=th[lv];return `<div class="lv">${[0,1,2].map(j=>`<i class="${lv>j?'on':''}" style="--m:${CHC[j]}"></i>`).join('')}</div>`+(nx?`<div class="prog"><i style="transform:scaleX(${Math.min(1,got/nx)})"></i></div><small class="ol2">${fmt(got)} / ${fmt(nx)} to ${CHN[lv]} (+${fmt(dexRw(k)[lv])})</small>`:`<small class="ol2">Caught ×${fmt(got)} · maxed</small>`)})()}`
       :locked?`<small class="ol2">Unlocks at ${fmt(t.unlock)} lifetime points</small><div class="prog"><i style="transform:scaleX(${Math.min(1,S.t.pts/t.unlock)})"></i></div>`
       :`<small class="ol2">${t.minN?'Shows up deep into a long run':'Not found yet'}</small>`}</div>`}).join('');
 }
@@ -1283,6 +1316,7 @@ function coach(){
 }
 const life=()=>cheat&&DEV.unlock?1e12:S.t.pts+score;
 const bestTier=()=>TIERS.find(k=>!T[k].x&&(T[k].unlock||0)<=life())||'diamond';
+let rng=Math.random,chal=false,chalNext=false;
 function pick(){
   if(tutOn&&tutMade<3)return TUT[tutMade++][0];
   if(self.__corn)return self.__corn;
@@ -1290,11 +1324,11 @@ function pick(){
   if(n<1)return 'good';
   if(milestone){milestone=false;return bestTier()}
   if(frenzyT<=0){
-    if(Math.random()<.26+Math.min(eff(),70)*.003-(ease()?.04:0))return n>=30&&Math.random()<Math.min(.4,(n-30)*.008)?'sneak':'bad';
-    if(lives<3&&Math.random()<.08)return 'life';
+    if(rng()<.26+Math.min(eff(),70)*.003-(ease()?.04:0))return n>=30&&rng()<Math.min(.4,(n-30)*.008)?'sneak':'bad';
+    if(lives<3&&rng()<.08)return 'life';
   }
   // Rare odds improve the deeper the run goes; top tiers also need lifetime points and some run depth
-  let q=Math.random()/((1+Math.min(n,100)/200)*(frenzyT>0?1.3:1));
+  let q=rng()/((1+Math.min(n,100)/200)*(frenzyT>0?1.3:1));
   for(const k of TIERS){const t=T[k];if((t.unlock||0)>life()||n<(t.minN||0))continue;if(q<t.p)return k;q-=t.p}
   return 'good';
 }
@@ -1386,7 +1420,8 @@ function decide(keepIt,timedOut){
     streak++;topStreak=Math.max(topStreak,streak);track('streak',streak,true);
     const fz=frenzyT>0,pts=t.pts*mult()*(fz?2:1)+(fast?1:0);score+=pts;retrigger($('scoreWrap'),'bump');
     S.t.cobs++;track('cob',1);if(!good)track('toss',1);
-    const first=!S.dex[c.type];S.dex[c.type]=(S.dex[c.type]||0)+1;
+    const first=!S.dex[c.type],lv0=dexLv(c.type,S.dex[c.type]||0);S.dex[c.type]=(S.dex[c.type]||0)+1;
+    {const lv=dexLv(c.type,S.dex[c.type]);if(lv>lv0&&lv>1){const rw=dexRw(c.type)[lv-1],nm=(DEX.find(d=>d[0]===c.type)||[])[1]||'Cob';S.k+=rw;toast(`${nm}: ${CHN[lv-1]} badge! +${fmt(rw)} ${KI}`);jingle([659,784,1047,1319])}}
     if(first&&t.name){const bn=t.x?500:150;S.k+=bn;toast(`New Corndex entry! +${bn} ${KI}`)}
     const lp=S.t.pts+score; // real lifetime points, so Dev Mode gets the same milestones as a normal run
     if(Math.floor(lp/MILE)>Math.floor((lp-pts)/MILE)){milestone=true;if(next){next.el.remove();next=null}toast(fmt(Math.floor(lp/MILE)*MILE)+' points! Special cob incoming');jingle([784,988,1175,1568])}
@@ -1428,7 +1463,7 @@ function decide(keepIt,timedOut){
   track('score',score,true);
   if(!bestBeat&&S.best>=10&&score>S.best){bestBeat=true;toast('NEW BEST!');flash('#ffe14d');bits('s',14,['#fff','#ffe14d'],220);jingle([523,659,784,1047,1319],.12)}
   setSub();
-  if(lives<=0){if(!revived&&S.k>=REV)offerRevive();else endGame();return}
+  if(lives<=0){if(!revived&&S.k>=REV&&!chal)offerRevive();else endGame();return}
   deal();
 }
 let wasLow=false,endRun=0;
@@ -1487,12 +1522,16 @@ $('revYes').onclick=()=>{
 };
 $('revNo').onclick=()=>{clearTimeout(revT);$('revive').hidden=true;endGame()};
 function startGame(){
-  score=shown=0;lives=3;streak=topStreak=n=0;revN=0;endRun++;fever=frenzyT=0;caught={};gameDone=[];milestone=false;tutOn=(DEV.tut||(!S.tut&&!cheat))&&!self.__corn;DEV.tut=false;tutStep=tutMade=0;revived=bestBeat=false;clearTimeout(revT);
+  score=shown=0;lives=3;streak=topStreak=n=0;revN=0;endRun++;fever=frenzyT=0;caught={};gameDone=[];milestone=false;chal=chalNext;chalNext=false;tutOn=(DEV.tut||(!S.tut&&!cheat))&&!self.__corn&&!chal;DEV.tut=false;tutStep=tutMade=0;revived=bestBeat=false;clearTimeout(revT);
   const hs=S.hist||[];avg=hs.length?Math.min(60,Math.max(15,hs.reduce((a,b)=>a+b,0)/hs.length)):25;frenzies=0;mercy=hs.length>=2&&hs.slice(-2).every(x=>x<12);
   $('score').textContent=0;$('best').textContent=fmt(S.best);drawLives();setSub();
   deck.innerHTML='';next=null;cur=null;$('hint').style.opacity=1;app.classList.remove('frenzy');
   for(const id of ['end','shop','missions','help','revive','board','dex'])$(id).hidden=true;
   show('game');fit();
+  if(chal){ // same cob order for everyone today; the attempt is spent the moment it starts
+    const td=dstr(new Date());let h=7;for(const ch of td)h=(h*31+ch.charCodeAt(0))%1000003;rng=srand(h);
+    S.ch={date:td,score:0,tier:0};save();toast(`Daily Challenge! Gold at ${fmt(CHT[2])} points`);
+  }else rng=Math.random;
   playing=true;deal();coach();jingle([523,659,784],.1);
   cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(loop);
 }
@@ -1502,6 +1541,8 @@ function endGame(){
   S.hist=(S.hist||[]).concat(n).slice(-8);
   const earned=score;S.t.games++;track('game',1);S.k+=earned;if(isBest)S.best=score;
   const before=S.t.pts;S.t.pts+=score;
+  const wasChal=chal;let chTier=0;chal=false;rng=Math.random;
+  if(wasChal){chTier=CHT.filter(t=>score>=t).length;S.ch={date:dstr(new Date()),score,tier:chTier};if(chTier)S.k+=CHR[chTier-1]}
   const newTiers=TIERS.filter(k=>T[k].unlock>before&&T[k].unlock<=S.t.pts);
   let rank=0;lastEntry=null;
   if(score>0){
@@ -1515,7 +1556,7 @@ function endGame(){
   const fresh=checkSkins();save();
   const ratio=old>0?score/old:1,gr=isBest||old===0?'S':ratio>=.75?'A':ratio>=.5?'B':ratio>=.25?'C':'D';
   const rares=Object.values(caught).reduce((x,y)=>x+y,0);
-  $('endTitle').textContent=isBest&&score>0?'New best!':'Harvest over!';$('endTitle').classList.toggle('best',isBest&&score>0);
+  $('endTitle').textContent=wasChal?(chTier?CHN[chTier-1]+' medal!':'Daily Challenge'):isBest&&score>0?'New best!':'Harvest over!';$('endTitle').classList.toggle('best',isBest&&score>0);
   $('endNote').textContent=isBest?(old?'You beat '+fmt(old)+'!':'First score on the board!'):old-score<=Math.max(5,old*.15)?`So close! Only ${fmt(old-score+1)} more to beat your best.`:'Best: '+fmt(old);
   $('final').textContent='0';$('final').classList.remove('land');
   const g=$('grade');g.textContent=gr;g.classList.remove('in');g.style.setProperty('--g',{S:'#ffc21a',A:'#4fb53a',B:'#3a9ae8',C:'#f2892a',D:'#8a8f98'}[gr]);
@@ -1524,6 +1565,7 @@ function endGame(){
   $('endEarn').innerHTML=`+<span id="earnN">0</span> ${KI} <span style="color:#fff;font-size:18px">(${kf()} total)</span>`;
   $('haul').innerHTML=ALLRARE.filter(k=>caught[k]).map(k=>`<span class="chip ol2" style="--a:${T[k].aura}">${T[k].name} ×${caught[k]}</span>`).join('')
     +(rank?`<span class="chip ol2" style="--a:#f29a0c">#${rank} on the leaderboard</span>`:'')
+    +(wasChal?`<span class="chip ol2" style="--a:${chTier?CHC[chTier-1]:'#8a8f98'}">${chTier?'Challenge '+CHN[chTier-1]+' +'+CHR[chTier-1]:'Challenge: Bronze needs '+CHT[0]}</span>`:'')
     +gameDone.map(d=>`<span class="chip ol2" style="--a:#4fb53a">Mission +${d.rw}</span>`).join('')
     +newTiers.map(k=>`<span class="chip ol2" style="--a:${T[k].aura}">${T[k].name} corn can now appear!</span>`).join('')
     +fresh.map(nm=>`<span class="chip ol2" style="--a:#e040b0">New cob: ${nm}!</span>`).join('');
@@ -1549,11 +1591,35 @@ function endGame(){
 function goHome(){for(const id of ['end','shop','missions','help','board','dex'])$(id).hidden=true;show('home');drawHome()}
 
 /* ---------- wiring ---------- */
-$('playBtn').onclick=startGame;$('againBtn').onclick=startGame;
+// Play from the home screen: the hero cob glides and scales into the first card's place
+function playFromHome(){
+  const hv=$('heroCv'),r0=hv.getBoundingClientRect();
+  startGame();
+  const cv=cur&&cur.el.querySelector('canvas');
+  if(calm||!cv||!r0.width)return;
+  const el=cur.el;el.classList.remove('in');
+  const r1=cv.getBoundingClientRect(),ar=app.getBoundingClientRect();
+  if(!r1.width)return;
+  const fl=document.createElement('canvas');fl.width=hv.width;fl.height=hv.height;try{fl.getContext('2d').drawImage(hv,0,0)}catch(e){return}
+  fl.className='flycob';
+  Object.assign(fl.style,{left:(r1.left-ar.left)/SC+'px',top:(r1.top-ar.top)/SC+'px',width:r1.width/SC+'px',height:r1.height/SC+'px'});
+  fl.style.transform=`translate(${((r0.left+r0.width/2-r1.left-r1.width/2)/SC).toFixed(1)}px,${((r0.top+r0.height/2-r1.top-r1.height/2)/SC).toFixed(1)}px) scale(${(r0.width/r1.width).toFixed(3)})`;
+  app.appendChild(fl);el.style.visibility='hidden';playing=false; // the timer waits for the landing
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{fl.style.transition='transform .46s cubic-bezier(.25,1.2,.4,1)';fl.style.transform='none'}));
+  const run=endRun;
+  setTimeout(()=>{el.style.visibility='';fl.style.transition='opacity .14s';fl.style.opacity=0;setTimeout(()=>fl.remove(),160);if(run===endRun&&$('game').classList.contains('on')&&$('end').hidden&&$('revive').hidden&&$('dev').hidden){playing=true;last=performance.now()}},480);
+}
+$('playBtn').onclick=playFromHome;$('againBtn').onclick=startGame;
 $('endHome').onclick=goHome;
 $('endShop').onclick=()=>{goHome();tab='bg';drawShop();open('shop')};
 $('shopBtn').onclick=()=>{drawShop();open('shop')};
 $('misBtn').onclick=()=>{drawMissions();open('missions')};
+$('dayPill').onclick=()=>{
+  const st=Math.max(1,S.day.streak),pos=(st-1)%7,hasSun=S.own.cob.includes('sunset');
+  $('calNote').innerHTML=`You're on day ${st}. Tomorrow: +${dayRw(st+1)} ${KI}`;
+  $('calGrid').innerHTML=DAYR.map((r,i)=>`<div class="cd ol2 ${i<pos?'got':i===pos?'now':''} ${i===6?'big':''}"><b>Day ${st-pos+i}</b>+${r} ${KI}${i===6&&!hasSun?'<br>+ Sunset cob':''}${i<pos?'<br>✓':i===pos?'<br>TODAY':''}</div>`).join('');
+  open('cal');
+};
 $('helpBtn').onclick=()=>open('help');
 $('tutBtn').onclick=()=>{S.tut=false;S.seen=true;save();$('help').hidden=true;if(!S.name)S.name='Player';startGame()};
 $('dexBtn').onclick=()=>{drawDex();open('dex')};
