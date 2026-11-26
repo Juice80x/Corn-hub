@@ -245,7 +245,13 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .cal .cd.got{background:rgba(143,224,96,.45)}
 .cal .cd.now{background:linear-gradient(#ffd23a,#f29a0c);box-shadow:0 4px 0 var(--ol);transform:translateY(-2px)}
 .cal .cd.big{grid-column:span 2}
-.flycob{position:absolute;z-index:4;pointer-events:none;transform-origin:center;will-change:transform}
+.screen.leaving{display:grid;pointer-events:none;animation:scrOut .26s ease-out forwards}
+.screen.leaving #heroCob{visibility:hidden}
+@keyframes scrOut{to{opacity:0;transform:scale(1.04)}}
+#game.entering .hud{animation:hudIn .46s cubic-bezier(.22,1,.36,1)}
+#game.entering .dock{animation:dockIn .46s cubic-bezier(.22,1,.36,1)}
+#game.entering .hint{animation:fadeIn .5s ease-out}
+@keyframes hudIn{from{transform:translateY(-105%)}}@keyframes dockIn{from{transform:translateY(105%)}}@keyframes fadeIn{from{opacity:0}}
 .lv{display:flex;justify-content:center;gap:4px}
 .lv i{width:16px;height:16px;border-radius:50%;border:2.500px solid var(--ol);background:rgba(0,0,0,.35)}
 .lv i.on{background:var(--m);box-shadow:inset 0 3px 0 rgba(255,255,255,.5)}
@@ -469,7 +475,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=49;
+const BUILD=50;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1346,8 +1352,10 @@ function makeCard(){
     +(t.name?`<div class="badge ol2" style="--a:${t.aura}">${t.badge||t.name+' +'+fmt(t.pts)}</div>`:'')
     +'<div class="stamp keep ol2">KEEP</div><div class="stamp toss ol2">TOSS</div>';
   const fl=el.querySelector('.float');
-  cob(type,Math.floor(Math.random()*99999),true,null,type==='rainbow'?3:1).forEach((svg,i,all)=>{
+  const twin=heroFirst&&type==='good'; // first card of a run started from home: identical to the home cob
+  cob(type,twin?7:Math.floor(Math.random()*99999),true,null,type==='rainbow'?3:1).forEach((svg,i,all)=>{
     const cv=document.createElement('canvas');cv.width=700;cv.height=950;
+    if(twin)try{cv.getContext('2d').drawImage($('heroCv'),0,0)}catch(e){}
     if(all.length===3&&i===1)cv.className='hue';
     paint(cv,svg);
     fl.insertBefore(cv,fl.querySelector('.fx'));
@@ -1591,23 +1599,25 @@ function endGame(){
 function goHome(){for(const id of ['end','shop','missions','help','board','dex'])$(id).hidden=true;show('home');drawHome()}
 
 /* ---------- wiring ---------- */
-// Play from the home screen: the hero cob glides and scales into the first card's place
+// Play from the home screen: the very first card IS the home cob (same kernels, same bitmap), and the real card
+// flies from the hero's spot to its own. Nothing is swapped at the end, so there is no seam.
+let heroFirst=false;
 function playFromHome(){
-  const hv=$('heroCv'),r0=hv.getBoundingClientRect();
-  startGame();
-  const cv=cur&&cur.el.querySelector('canvas');
-  if(calm||!cv||!r0.width)return;
-  const el=cur.el;el.classList.remove('in');
-  const r1=cv.getBoundingClientRect(),ar=app.getBoundingClientRect();
-  if(!r1.width)return;
-  const fl=document.createElement('canvas');fl.width=hv.width;fl.height=hv.height;try{fl.getContext('2d').drawImage(hv,0,0)}catch(e){return}
-  fl.className='flycob';
-  Object.assign(fl.style,{left:(r1.left-ar.left)/SC+'px',top:(r1.top-ar.top)/SC+'px',width:r1.width/SC+'px',height:r1.height/SC+'px'});
-  fl.style.transform=`translate(${((r0.left+r0.width/2-r1.left-r1.width/2)/SC).toFixed(1)}px,${((r0.top+r0.height/2-r1.top-r1.height/2)/SC).toFixed(1)}px) scale(${(r0.width/r1.width).toFixed(3)})`;
-  app.appendChild(fl);el.style.visibility='hidden';playing=false; // the timer waits for the landing
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{fl.style.transition='transform .46s cubic-bezier(.25,1.2,.4,1)';fl.style.transform='none'}));
+  const hv=$('heroCv'),r0=hv.getBoundingClientRect(),hm=$('home'),gm=$('game');
+  if(calm||!r0.width)return startGame();
+  heroFirst=true;startGame();heroFirst=false;
+  const el=cur&&cur.el,cv=el&&el.querySelector('canvas');if(!cv)return;
+  el.classList.remove('in');el.style.transition='none';
+  const r1=cv.getBoundingClientRect(),rc=el.getBoundingClientRect();if(!r1.width)return;
+  const sc=r0.width/r1.width,cx=rc.left+rc.width/2,cy=rc.top+rc.height/2;
+  const tx=(r0.left+r0.width/2-cx-(r1.left+r1.width/2-cx)*sc)/SC,ty=(r0.top+r0.height/2-cy-(r1.top+r1.height/2-cy)*sc)/SC;
+  el.style.transform=`translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) scale(${sc.toFixed(4)})`;
+  hm.classList.add('leaving');gm.classList.add('entering');playing=false; // the timer waits for the landing
+  void el.offsetWidth;
+  el.style.transition='transform .52s cubic-bezier(.22,1,.36,1)';el.style.transform='none';
   const run=endRun;
-  setTimeout(()=>{el.style.visibility='';fl.style.transition='opacity .14s';fl.style.opacity=0;setTimeout(()=>fl.remove(),160);if(run===endRun&&$('game').classList.contains('on')&&$('end').hidden&&$('revive').hidden&&$('dev').hidden){playing=true;last=performance.now()}},480);
+  setTimeout(()=>{el.style.transition='';el.style.transform='';hm.classList.remove('leaving');gm.classList.remove('entering');
+    if(run===endRun&&gm.classList.contains('on')&&$('end').hidden&&$('revive').hidden&&$('dev').hidden){playing=true;last=performance.now()}},540);
 }
 $('playBtn').onclick=playFromHome;$('againBtn').onclick=startGame;
 $('endHome').onclick=goHome;
