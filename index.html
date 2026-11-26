@@ -222,7 +222,9 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .panel{position:relative;background:linear-gradient(var(--hud2),var(--hud));border:5px solid var(--ol);border-radius:28px;box-shadow:0 8px 0 var(--ol),inset 0 4px 0 rgba(255,255,255,.25);padding:16px 14px 20px;max-width:380px;width:100%;max-height:100%;overflow:auto;text-align:center;animation:popin .4s cubic-bezier(.3,1.5,.5,1)}
 .panel.full{height:100%;display:grid;grid-template-rows:auto auto 1fr;padding-bottom:12px}
 .panel h2{font-size:29px;line-height:1;margin:4px 46px 6px;color:#ffe14d}
-.panel p{margin:6px 0;font-size:16px;line-height:1.25}
+.panel p{margin:6px 0;font-size:16px;line-height:1.25;text-wrap:balance}
+.item b,.item small,.chip,.pop{text-wrap:balance}
+.toast{white-space:nowrap;font-size:min(19px,4.6vw)}.pop{white-space:nowrap}.mi .row>span{flex:none}.medal b{font-size:1.16em!important}.ctext{white-space:nowrap}
 .panel .big{font-size:76px;line-height:1}
 .x{position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:14px;border:4px solid var(--ol);background:var(--red);font-size:22px;box-shadow:0 4px 0 var(--ol);z-index:2}
 .demo{display:flex;justify-content:center;gap:6px;margin:8px 0;background:rgba(0,0,0,.2);border:3px solid var(--ol);border-radius:18px;padding:10px 4px 8px}
@@ -428,7 +430,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
   <div class="over" id="revive" hidden>
     <div class="panel">
       <h2 class="ol" id="revH" aria-label="Second chance"></h2>
-      <p class="ol2" id="revNote"></p>
+      <p class="ol2" id="revNote"></p><p class="ol2" id="revHave" style="margin-top:0"></p>
       <div class="tbar" style="margin:10px 4px 14px"><i id="revBar"></i></div>
       <button class="go ol2" id="revYes"></button>
       <div class="btnrow" style="grid-template-columns:1fr"><button class="mbtn ol2" id="revNo" aria-label="No thanks"></button></div>
@@ -438,7 +440,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
   <div class="over" id="gate" hidden style="z-index:20;background:var(--hud)">
     <div class="panel">
       <h2 class="ol">Invite only</h2>
-      <p class="ol2">Corn Rush is in private testing. Ask for an invite link to play.</p>
+      <p class="ol2" style="text-wrap:balance">Corn Rush is in private testing. Ask for an invite link to play.</p>
     </div>
   </div>
 
@@ -447,7 +449,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <button class="x" data-close="cal" aria-label="Close">✕</button>
       <h2 class="ol" id="calH" aria-label="Daily streak"></h2>
       <div class="cal" id="calGrid"></div>
-      <p class="ol2" style="font-size:14px">Play every day. Miss one and it restarts.</p>
+      <p class="ol2" style="font-size:14px">Miss a day and it restarts.</p>
     </div>
   </div>
   <div class="over" id="devPw" hidden style="z-index:9">
@@ -490,7 +492,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=53;
+const BUILD=54;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1211,7 +1213,23 @@ function drawHome(){
   $('dexDot').textContent=DEX.filter(d=>S.dex[d[0]]).length+'/'+DEX.length;
 }
 function show(id){for(const s of document.querySelectorAll('.screen'))s.classList.toggle('on',s.id===id);updateMusic()}
-const open=id=>{$(id).hidden=false;tone(660,0,.08,'triangle',.08)};
+// One-line text: every label, title and note is kept on a single line. If it is too wide the letters are
+// tightened and then scaled down a little (never up). Only as a last resort does it wrap, split evenly.
+const FITSEL='h2,p.ol2,.item b,.item small,.item div.ol2,.item .pts,.mi .row,.mi>div.ol2,.bestbar div.ol2,.goal div.ol2,.lr small,.nm,.earn,.tile small,.cd b,.medal,.rules div,.demo span,.ibtn,.go,.mbtn,.tab em,#lbStats';
+function fit1(root){
+  if(!root||root.hidden)return;
+  root.querySelectorAll(FITSEL).forEach(el=>{
+    if(!el.offsetParent||el.closest('#dev'))return;
+    el.style.fontSize='';el.style.letterSpacing='';el.style.textWrap='';el.style.whiteSpace='nowrap';
+    const over=()=>el.scrollWidth>el.clientWidth+1;
+    if(!over())return;
+    el.style.letterSpacing='-.03em';
+    let fs=parseFloat(getComputedStyle(el).fontSize);const min=Math.max(9.5,fs*.7);
+    while(over()&&fs>min){fs-=.5;el.style.fontSize=fs+'px'}
+    if(over()){el.style.whiteSpace='normal';el.style.textWrap='balance'}
+  });
+}
+const open=id=>{$(id).hidden=false;fit1($(id));tone(660,0,.08,'triangle',.08)};
 const close=id=>{$(id).hidden=true;if(id==='help'&&!S.seen){S.seen=true;save()}if(id==='help'&&!S.name)$('who').hidden=false};
 $('whoGo').onclick=()=>{S.name=($('whoIn').value||'').trim().slice(0,12)||'Player';save();$('who').hidden=true;tone(784,0,.12,'triangle')};
 
@@ -1283,6 +1301,7 @@ function drawMissions(){
   if(!ch)$('chalGo').onclick=()=>{chalNext=true;startGame()};
   $('misList').innerHTML=S.mis.list.map(m=>{const d=MIS.find(x=>x.id===m.id);
     return `<div class="mi ${m.done?'done':''}" aria-label="${d.txt}"><div class="row ol2"><span>${MI[d.ev]||''} ${d.txt}</span><span>${m.done?I.ok+' DONE':'+'+d.rw+' '+KI}</span></div><div class="prog"><i style="transform:scaleX(${m.p/d.n})"></i></div><div class="ol2" style="font-size:14px">${fmt(m.p)} / ${fmt(d.n)}</div></div>`}).join('');
+  fit1($('missions'));
 }
 
 /* ---------- corndex ---------- */
@@ -1296,8 +1315,9 @@ function drawDex(){
     return `<div class="item ${got?'eq':''}"><div class="sw" style="background:${got?'rgba(255,255,255,.18)':'rgba(0,0,0,.35)'}">${got?cob(k,41+i,true):'<div class="qm ol">?</div>'}</div>
     <b class="ol2">${got?nm:'?'}</b>
     ${got?`<span class="pts ol2">${k==='life'?'+1 life':k==='bad'||k==='sneak'?I.no+' Toss it':'+'+fmt(t.pts)+' points'}</span>${(()=>{const th=dexT(k),lv=dexLv(k,got),nx=th[lv];return `<div class="lv">${[0,1,2].map(j=>`<i class="${lv>j?'on':''}" style="--m:${CHC[j]}"></i>`).join('')}</div>`+(nx?`<div class="prog"><i style="transform:scaleX(${Math.min(1,got/nx)})"></i></div><small class="ol2" style="font-size:15px;white-space:nowrap">${kfmt(got)} / ${kfmt(nx)}</small>`:`<small class="ol2" style="font-size:15px">×${kfmt(got)} ${I.ok}</small>`)})()}`
-      :locked?`<small class="ol2">${I.lock} Unlocks at ${kfmt(t.unlock)} pts</small><div class="prog"><i style="transform:scaleX(${Math.min(1,S.t.pts/t.unlock)})"></i></div>`
+      :locked?`<small class="ol2">${I.lock} ${kfmt(t.unlock)} points</small><div class="prog"><i style="transform:scaleX(${Math.min(1,S.t.pts/t.unlock)})"></i></div>`
       :''}</div>`}).join('');
+  fit1($('dex'));
 }
 
 /* ---------- leaderboard ---------- */
@@ -1306,7 +1326,8 @@ function drawBoard(){
   $('nameIn').value=S.name||'';
   $('lbStats').innerHTML=`${fmt(S.t.games)} games · ${I.cob} ${fmt(S.t.cobs)} cobs · ${I.star} ${fmt(S.t.rare)} rare`;
   $('lbList').innerHTML=S.top.length?S.top.map((e,i)=>`<div class="lr ${e===lastEntry?'me':''}"><div class="rk ol2">${i+1}</div><div class="who ol2">${esc(e.nm||'Player')}<small>${e.n?e.n+' cobs · '+I.fire+e.st+(e.d?' · '+esc(e.d):''):'earlier best'}</small></div><div class="sc ol">${fmt(+e.s||0)}</div></div>`).join('')
-    :'<p class="ol2">No scores yet. Play a run to get on the board!</p>';
+    :'<p class="ol2">No scores yet. Play a run!</p>';
+  fit1($('board'));
 }
 $('nameIn').oninput=e=>{S.name=e.target.value.slice(0,12);save()};
 
@@ -1329,8 +1350,9 @@ function drawShop(){
     const pic=tab==='bg'||tab==='world'?`<div class="sw" ${it.art?`data-th="${it.art}" data-g="${gr}"`:''} style="--ray:${it.ray};background:${th?th+' center/cover,':''}${gr}">${it.art?'':'<i></i>'}</div>`
       :`<div class="sw" style="background:rgba(255,255,255,.18)">${tab==='cob'?cob('good',31+i,true,it.id):cob('good',51+i,true,null,null,it.id)}</div>`;
     const act=own||!it.req?`<button class="ibtn ol2 ${eq?'cur':own?'':S.k>=it.cost?'buy':'no'}" data-id="${it.id}">${eq?I.ok+' ON':own?'USE':KI+' '+fmt(it.cost)}</button>`
-      :`<div class="ol2" style="font-size:15px" aria-label="${it.req.txt}">${({cobs:I.cob,best:I.cup,rare:I.star,day:I.cal,dex:I.book,frenzy:I.bolt})[it.req.k]||''} ${it.req.txt}</div><div class="prog"><i style="transform:scaleX(${p/it.req.n})"></i></div><div class="ol2" style="font-size:13px">${fmt(p)} / ${fmt(it.req.n)}</div>`;
+      :`<div class="ol2" style="font-size:15px" aria-label="${it.req.txt}">${({cobs:I.cob,best:I.cup,rare:I.star,day:I.cal,dex:I.book,frenzy:I.bolt})[it.req.k]||''} ${({cobs:'N cobs',best:'Score N',rare:'N rare cobs',day:'N day streak',dex:'N in Corndex',frenzy:'N Frenzies'})[it.req.k].replace('N',fmt(it.req.n))}</div><div class="prog"><i style="transform:scaleX(${p/it.req.n})"></i></div><div class="ol2" style="font-size:13px">${fmt(p)} / ${fmt(it.req.n)}</div>`;
     return `<div class="item ${eq?'eq':''}">${pic}<b class="ol2">${it.name}</b>${act}</div>`}).join('');
+  fit1($('shop'));
 }
 $('shopGrid').onclick=e=>{
   const b=e.target.closest('button');if(!b)return;
@@ -1562,9 +1584,9 @@ try{new ResizeObserver(fit).observe(stage)}catch(e){}
 addEventListener('resize',layout);if(self.visualViewport)visualViewport.addEventListener('resize',layout);addEventListener('pageshow',layout);addEventListener('orientationchange',()=>setTimeout(layout,250));
 function offerRevive(){
   playing=false;$('tbar').classList.remove('low');
-  $('revNote').innerHTML=`Keep your ${fmt(score)} points and play on with 1 life.<br>You have ${KI} ${kf()}`;
+  $('revNote').innerHTML=`Keep your ${fmt(score)} points and 1 life`;$('revHave').innerHTML=`You have ${KI} ${kf()}`;
   $('revYes').innerHTML=`REVIVE ${KI} ${REV}`;
-  $('revive').hidden=false;retrigger($('revBar'),'run');
+  $('revive').hidden=false;fit1($('revive'));retrigger($('revBar'),'run');
   clearTimeout(revT);revT=setTimeout(()=>{$('revive').hidden=true;endGame()},5000);
 }
 $('revYes').onclick=()=>{
@@ -1610,7 +1632,7 @@ function endGame(){
   const ratio=old>0?score/old:1,gr=isBest||old===0?'S':ratio>=.75?'A':ratio>=.5?'B':ratio>=.25?'C':'D';
   const rares=Object.values(caught).reduce((x,y)=>x+y,0);
   $('endTitle').innerHTML=wasChal?(chTier?MEDAL(chTier-1)+' '+CHN[chTier-1]+' medal!':'Daily Challenge'):isBest&&score>0?I.cup+' New best!':'Harvest over!';$('endTitle').classList.toggle('best',isBest&&score>0);
-  $('endNote').innerHTML=isBest?(old?'You beat '+fmt(old)+'!':'First score on the board!'):old-score<=Math.max(5,old*.15)?`So close! ${fmt(old-score+1)} more to beat your best`:I.cup+' Best '+fmt(old);
+  $('endNote').innerHTML=isBest?(old?'You beat '+fmt(old)+'!':'First score on the board!'):old-score<=Math.max(5,old*.15)?`So close! ${fmt(old-score+1)} off your best`:I.cup+' Best '+fmt(old);
   $('final').textContent='0';$('final').classList.remove('land');
   const g=$('grade');g.textContent=gr;g.classList.remove('in');g.style.setProperty('--g',{S:'#ffc21a',A:'#4fb53a',B:'#3a9ae8',C:'#f2892a',D:'#8a8f98'}[gr]);
   $('bestFill').style.transition='none';$('bestFill').style.transform='scaleX(0)';$('goalFill').style.transition='none';$('goalFill').style.transform='scaleX(0)';
@@ -1632,7 +1654,7 @@ function endGame(){
       if(now-lastTick>70&&p<1){lastTick=now;tone(500+p*700,0,.04,'square',.03)}
       if(p<1)requestAnimationFrame(step);else if(done)done()};requestAnimationFrame(step)};
   setTimeout(()=>{
-    if(run!==endRun)return;$('end').hidden=false;
+    if(run!==endRun)return;$('end').hidden=false;fit1($('end'));
     count($('final'),score,score>0?900:1,()=>{retrigger($('final'),'land');tone(880,0,.18,'triangle',.12)});
     later(950,()=>{$('bestFill').style.transition='';$('bestFill').style.transform=`scaleX(${Math.min(1,score/Math.max(old,score,1))})`});
     [['tCobs',n],['tStreak',topStreak],['tRare',rares]].forEach(([id,v],i)=>later(1050+i*140,()=>{$(id).parentNode.classList.add('in');$(id).textContent=fmt(v);tone(600+i*120,0,.07,'triangle',.08)}));
