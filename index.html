@@ -56,13 +56,14 @@ background:repeating-conic-gradient(from 0deg,rgba(var(--ray)) 0 9deg,transparen
 button.pill{padding:3px 8px}
 
 /* ---------- home ---------- */
-#home{grid-template-rows:auto auto 1fr auto;padding:calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + 44px);text-align:center;z-index:1}
+#home{grid-template-rows:auto auto 1fr auto;padding:calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + min(86px,10vh));text-align:center;z-index:1}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .logo{position:relative;width:300px;max-width:100%;margin:6px auto 0;animation:wig 3s ease-in-out infinite}
 .logo svg{display:block;width:100%;height:auto}
 @keyframes wig{50%{transform:rotate(-1.5deg) scale(1.03)}}
 .ver{position:absolute;left:8px;bottom:calc(env(safe-area-inset-bottom) + 2px);font-size:11px;opacity:.6;z-index:2;pointer-events:none}
-.hero{position:relative;display:grid;place-items:center;padding-bottom:78px;min-height:0}
+.hero{position:relative;display:grid;place-items:center;padding-bottom:14px;min-height:0}
+#home>.row{gap:6px}#home .hl,#home .hr{gap:6px;min-width:0}#home>.row .pill{font-size:min(18px,3.85vw);padding:3px min(8px,1.8vw) 3px min(6px,1.4vw);gap:min(6px,1.4vw);white-space:nowrap;flex:none}#home>.row .pill span{flex:none}#home>.row .pill svg{width:1.2em;height:1.4em}#home>.row{gap:4px}#bestPill .ic{width:22px;height:24px}
 .hero canvas{display:block;width:140px;height:190px}
 #heroCob{animation:bob 2.2s ease-in-out infinite;will-change:transform}
 .hinfo{position:absolute;bottom:6px;left:0;right:0;display:grid;justify-items:center;gap:6px}
@@ -320,8 +321,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
   <section class="screen on" id="home">
     <div class="row">
-      <div class="pill ol2" id="walletHome"></div>
-      <div class="row">
+      <div class="row hl"><div class="pill ol2" id="walletHome"></div><div class="pill ol2" id="bestPill" aria-label="Best score" hidden></div></div>
+      <div class="row hr">
         <button class="pill ol2" id="dayPill" style="padding-left:10px" aria-label="Daily streak calendar"></button>
         <button class="pill ol2" id="helpBtn" aria-label="How to play" style="padding:3px 12px">?</button>
         <button class="pill ol2" id="muteBtn" aria-label="Sound on or off"></button>
@@ -329,7 +330,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     </div>
     <div class="logo" aria-label="Corn Rush"><svg id="logoSvg" viewBox="0 0 600 350"></svg></div>
     <div class="ver" id="ver"></div>
-    <div class="hero"><div id="heroCob"><canvas id="heroCv" width="700" height="950"></canvas></div><div class="hinfo"><div id="bestHome"></div><div class="tag ol2" id="homeTag" aria-label="Swipe right to keep, left to toss"></div></div></div>
+    <div class="hero"><div id="heroCob"><canvas id="heroCv" width="700" height="950"></canvas></div></div>
     <div>
       <button class="go ol" id="playBtn"><svg viewBox="0 0 24 24"><path d="M6 3.500v17l15-8.500z" fill="#fff" stroke="var(--ol)" stroke-width="3" stroke-linejoin="round"/></svg>PLAY</button>
       <div class="menu">
@@ -492,7 +493,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=54;
+const BUILD=55;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1194,7 +1195,7 @@ function paint(cv,svg){
 }
 function fitHero(){
   const box=document.querySelector('.hero'),bh=box.clientHeight;if(bh<=0)return;
-  const h=Math.max(56,Math.min(bh-(S.best?86:52),LH*(app.classList.contains('wide')?.62:.42),400)),cv=$('heroCv');
+  const h=Math.max(56,Math.min(bh-16,LH*(app.classList.contains('wide')?.62:.42),400)),cv=$('heroCv');
   cv.style.height=h+'px';cv.style.width=(h*700/950)+'px';
 }
 try{new ResizeObserver(fitHero).observe(document.querySelector('.hero'))}catch(e){}
@@ -1202,12 +1203,12 @@ function drawMute(){
   $('muteBtn').innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 9h4l6-5v16l-6-5H3z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>${S.mute?'<path d="M16 9l6 6M22 9l-6 6" stroke="#ff8a7a" stroke-width="3" stroke-linecap="round"/>':'<path d="M16.5 8.5c2 2 2 5 0 7M19 6c3.500 3.500 3.500 8.500 0 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'}</svg>`;
 }
 function drawHome(){
-  $('walletHome').innerHTML=KI+'<span>'+kf()+'</span>'+(cheat?'<span style="color:#ffe14d">&nbsp;DEV</span>':'');
+  $('walletHome').innerHTML=KI+'<span>'+(cheat&&DEV.coins?'∞':S.k>=100000?kfmt(S.k):fmt(S.k))+'</span>'+(cheat?'<span style="color:#ffe14d">&nbsp;DEV</span>':'');
   $('dayPill').innerHTML=I.cal+' '+S.day.streak;
   drawMute();
   if(heroKey!==S.cob+'|'+S.husk){heroKey=S.cob+'|'+S.husk;paint($('heroCv'),cob('good',7,true,null,1)[0])}
   fitHero();
-  $('bestHome').innerHTML=S.best?`<span class="bestbadge ol2"><svg viewBox="0 0 24 24"><path d="M5 4h14v4a7 7 0 0 1-14 0zM9 15h6v3H9zM7 18h10v3H7z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M5 6H2c0 4 2 5 4 5M19 6h3c0 4-2 5-4 5" fill="none" stroke="var(--ol)" stroke-width="2"/></svg>${fmt(S.best)}</span>`:'';
+  $('bestPill').innerHTML=I.cup+'<span>'+fmt(S.best)+'</span>';$('bestPill').hidden=!S.best;
   const left=S.mis.list.filter(m=>!m.done).length+(S.tut&&!(S.ch&&S.ch.date===dstr(new Date()))?1:0);
   $('misDot').textContent=left;$('misDot').hidden=!left;
   $('dexDot').textContent=DEX.filter(d=>S.dex[d[0]]).length+'/'+DEX.length;
@@ -1750,7 +1751,7 @@ applyTheme();daily();if(checkSkins().length)save();layout();drawHome();$('ver').
 $('demoGood').innerHTML=cob('good',7)+`<span class="ol2">KEEP ${I.ok}${I.R}</span>`;
 $('demoBad').innerHTML=cob('bad',11)+`<span class="ol2">${I.L}${I.no} TOSS</span>`;
 $('rules').innerHTML=[I.fire+'5 = ×2',I.fire+'10 = ×3',I.fast+' fast = +1',I.bolt+' frenzy ×2','3 lives','1 pt = '+KI].map(x=>`<div>${x}</div>`).join('');
-$('homeTag').innerHTML=$('hint').innerHTML=SWIPE;$('frLab').innerHTML=I.bolt;$('helpOk').innerHTML='GOT IT';$('tutBtn').innerHTML=I.play+' TUTORIAL';
+$('hint').innerHTML=SWIPE;$('frLab').innerHTML=I.bolt;$('helpOk').innerHTML='GOT IT';$('tutBtn').innerHTML=I.play+' TUTORIAL';
 $('shopH').innerHTML=I.pal+' Skins';$('tabBg').innerHTML=I.swatch+'<em>COLOURS</em>';$('tabWorld').innerHTML=I.world+'<em>WORLDS</em>';$('tabCob').innerHTML=I.cob+'<em>COBS</em>';$('tabHusk').innerHTML=I.leaf+'<em>HUSKS</em>';
 $('misH').innerHTML=I.target+' Missions';$('lbH').innerHTML=I.cup+' Leaderboard';$('nmIc').innerHTML=I.user+' Name';$('tl1').innerHTML=I.cob+' cobs';$('tl2').innerHTML=I.fire+' streak';$('tl3').innerHTML=I.star+' rare';
 $('againBtn').innerHTML=I.play+'PLAY AGAIN';$('endShop').innerHTML=I.pal+' SKINS';$('endHome').innerHTML=I.home+' HOME';$('revH').innerHTML='Second chance?';$('revNo').innerHTML='NO THANKS';$('whoH').innerHTML=I.user+' Your name';$('whoGo').innerHTML="LET'S GO";
