@@ -76,7 +76,25 @@ button.pill{padding:3px 8px}
 #home .go::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-30%;width:22%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);transform:skewX(-20deg);animation:shine 2.8s ease-in-out infinite}
 @keyframes shine{0%,55%{left:-30%}100%{left:130%}}
 .mbtn svg{width:20px;height:20px;vertical-align:-4px;margin-right:5px}
-.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.menu{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.menu .mbtn{height:58px}.menu .mbtn svg{width:32px;height:32px;margin:0;vertical-align:middle}
+.ic{width:1.2em;height:1.2em;vertical-align:-.26em;display:inline-block;flex:none}
+.tag,.hint{display:flex;justify-content:center;gap:1.6em}.tag span,.hint span{display:inline-flex;align-items:center;gap:.1em}
+.tag .ic,.hint .ic{width:1.6em;height:1.6em}
+.md{display:inline-block;width:.95em;height:.95em;border-radius:50%;border:2.500px solid var(--ol);background:var(--m);box-shadow:inset 0 3px 0 rgba(255,255,255,.5);vertical-align:-.12em}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.rules div{background:rgba(0,0,0,.22);border:3px solid var(--ol);border-radius:13px;padding:5px 2px 6px;font-size:17px;white-space:nowrap}
+.tab .ic{width:26px;height:26px;vertical-align:middle}.stamp .ic{display:block}
+.tbtn .ic{width:46px;height:46px}
+.demo .ic{width:34px;height:34px;display:inline-block;margin:0}.demo span{white-space:nowrap}
+h2 .ic{width:1.35em;height:1.35em}
+.mi .row .ic,.lb .ic,#lbStats .ic{width:1.5em;height:1.5em}
+.mbtn .ic{width:30px;height:30px;vertical-align:middle;margin:0}
+.tile small .ic{width:22px;height:22px}
+.item .ic{width:1.35em;height:1.35em}.ibtn .ic{width:26px;height:26px;vertical-align:middle}
+.toast .ic,.chip .ic,.goal .ic,.bestbar .ic{width:1.35em;height:1.35em}
+.sub .ic{width:1.25em;height:1.25em}.frow .ic{width:20px;height:20px}
+.cal .ic{width:1.1em;height:1.1em}.ctext .ic{width:1.7em;height:1.7em}.go .ic{width:1.1em;height:1.1em;margin-right:.2em}
 .mbtn{position:relative;height:52px;font-size:min(16px,3.9vw);white-space:nowrap;border:4px solid var(--ol);border-radius:18px;background:linear-gradient(var(--hud2),var(--hud));box-shadow:0 5px 0 var(--ol),inset 0 5px 0 rgba(255,255,255,.22)}
 .mbtn:active,.tbtn:active{transform:translateY(5px) scale(.97);box-shadow:0 1px 0 var(--ol)}
 .dot{position:absolute;top:-10px;right:-6px;min-width:26px;height:26px;border-radius:13px;background:var(--red);white-space:nowrap;border:3px solid var(--ol);font-size:15px;line-height:20px;padding:0 5px}
@@ -143,7 +161,7 @@ svg.cob{display:block}
 .tbtn{display:flex;align-items:center;justify-content:center;gap:8px;height:72px;border:4px solid var(--ol);border-radius:20px;font-size:28px;box-shadow:0 6px 0 var(--ol),inset 0 -8px 0 rgba(0,0,0,.18),inset 0 6px 0 rgba(255,255,255,.3);transition:transform .08s}
 .tbtn.toss{background:linear-gradient(#ff7a62,#d93a2c)}
 .tbtn.keep{background:linear-gradient(#8fe060,#3f9e2c)}
-.tbtn svg{width:34px;height:34px;filter:drop-shadow(0 3px 0 var(--ol))}
+.tbtn svg{width:46px;height:46px;filter:drop-shadow(0 3px 0 var(--ol))}
 button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .pop{position:absolute;left:50%;top:38%;font-size:44px;pointer-events:none;transform:translateX(-50%);animation:pop .85s ease-out forwards;z-index:3;white-space:nowrap}
 .pop.big{font-size:min(50px,10.5vw);animation-duration:1.2s}
@@ -244,7 +262,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .cal .cd b{display:block;font-size:15px}
 .cal .cd.got{background:rgba(143,224,96,.45)}
 .cal .cd.now{background:linear-gradient(#ffd23a,#f29a0c);box-shadow:0 4px 0 var(--ol);transform:translateY(-2px)}
-.cal .cd.big{grid-column:span 2}
+.cal .cd.big{grid-column:span 2}.cal .cd b{font-size:19px}.cdc{display:inline-flex;align-items:center;margin-left:4px}.cdc svg{width:30px;height:38px}
 .screen.leaving{display:grid;pointer-events:none;animation:scrOut .26s ease-out forwards}
 .screen.leaving #heroCob{visibility:hidden}
 @keyframes scrOut{to{opacity:0;transform:scale(1.04)}}
@@ -306,14 +324,14 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     </div>
     <div class="logo" aria-label="Corn Rush"><svg id="logoSvg" viewBox="0 0 600 350"></svg></div>
     <div class="ver" id="ver"></div>
-    <div class="hero"><div id="heroCob"><canvas id="heroCv" width="700" height="950"></canvas></div><div class="hinfo"><div id="bestHome"></div><div class="tag ol2">Swipe right to keep · left to toss</div></div></div>
+    <div class="hero"><div id="heroCob"><canvas id="heroCv" width="700" height="950"></canvas></div><div class="hinfo"><div id="bestHome"></div><div class="tag ol2" id="homeTag" aria-label="Swipe right to keep, left to toss"></div></div></div>
     <div>
       <button class="go ol" id="playBtn"><svg viewBox="0 0 24 24"><path d="M6 3.500v17l15-8.500z" fill="#fff" stroke="var(--ol)" stroke-width="3" stroke-linejoin="round"/></svg>PLAY</button>
       <div class="menu">
-        <button class="mbtn ol2" id="shopBtn"><svg viewBox="0 0 24 24"><path d="M12 2.500c5.500 0 9.500 3.500 9.500 8 0 3-2.500 4.500-5 4.500h-2c-1.500 0-2 1.500-1 2.500.8.800.5 2.500-1.500 2.500-5.500 0-9.500-4-9.500-9s4-8.500 9.500-8.500z" fill="#fff" stroke="var(--ol)" stroke-width="2"/><circle cx="7.500" cy="11" r="1.600" fill="#e24a3b"/><circle cx="11" cy="7" r="1.600" fill="#ffc21a"/><circle cx="16" cy="8" r="1.600" fill="#4fb53a"/></svg>SKINS</button>
-        <button class="mbtn ol2" id="misBtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.500" fill="#fff" stroke="var(--ol)" stroke-width="2"/><circle cx="12" cy="12" r="5.500" fill="#e24a3b" stroke="var(--ol)" stroke-width="1.500"/><circle cx="12" cy="12" r="1.800" fill="#fff"/></svg>MISSIONS<span class="dot" id="misDot"></span></button>
-        <button class="mbtn ol2" id="dexBtn"><svg viewBox="0 0 24 24"><path d="M12 6C9 3.500 5 3.500 2 5v14c3-1.500 7-1.500 10 1 3-2.500 7-2.500 10-1V5c-3-1.500-7-1.500-10 1z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M12 6v14" stroke="var(--ol)" stroke-width="2"/></svg>CORNDEX<span class="dot" id="dexDot" style="background:#f29a0c"></span></button>
-        <button class="mbtn ol2" id="lbBtn"><svg viewBox="0 0 24 24"><path d="M5 4h14v4a7 7 0 0 1-14 0zM9 15h6v3H9zM7 18h10v3H7z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/></svg>LEADERBOARD</button>
+        <button class="mbtn ol2" id="shopBtn" aria-label="Skins"><svg viewBox="0 0 24 24"><path d="M12 2.500c5.500 0 9.500 3.500 9.500 8 0 3-2.500 4.500-5 4.500h-2c-1.500 0-2 1.500-1 2.500.8.800.5 2.500-1.500 2.500-5.500 0-9.500-4-9.500-9s4-8.500 9.500-8.500z" fill="#fff" stroke="var(--ol)" stroke-width="2"/><circle cx="7.500" cy="11" r="1.600" fill="#e24a3b"/><circle cx="11" cy="7" r="1.600" fill="#ffc21a"/><circle cx="16" cy="8" r="1.600" fill="#4fb53a"/></svg></button>
+        <button class="mbtn ol2" id="misBtn" aria-label="Missions"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.500" fill="#fff" stroke="var(--ol)" stroke-width="2"/><circle cx="12" cy="12" r="5.500" fill="#e24a3b" stroke="var(--ol)" stroke-width="1.500"/><circle cx="12" cy="12" r="1.800" fill="#fff"/></svg><span class="dot" id="misDot"></span></button>
+        <button class="mbtn ol2" id="dexBtn" aria-label="Corndex"><svg viewBox="0 0 24 24"><path d="M12 6C9 3.500 5 3.500 2 5v14c3-1.500 7-1.500 10 1 3-2.500 7-2.500 10-1V5c-3-1.500-7-1.500-10 1z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M12 6v14" stroke="var(--ol)" stroke-width="2"/></svg><span class="dot" id="dexDot" style="background:#f29a0c"></span></button>
+        <button class="mbtn ol2" id="lbBtn" aria-label="Leaderboard"><svg viewBox="0 0 24 24"><path d="M5 4h14v4a7 7 0 0 1-14 0zM9 15h6v3H9zM7 18h10v3H7z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/></svg></button>
       </div>
     </div>
   </section>
@@ -324,38 +342,36 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
         <div class="pill ol2"><svg viewBox="0 0 24 24"><path d="M5 4h14v4a7 7 0 0 1-14 0zM9 15h6v3H9zM7 18h10v3H7z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M5 6H2c0 4 2 5 4 5M19 6h3c0 4-2 5-4 5" fill="none" stroke="var(--ol)" stroke-width="2"/></svg><span id="best">0</span></div>
         <div class="pill lives" id="lives"></div>
       </div>
-      <div class="score ol" id="scoreWrap"><span id="score">0</span> <small>pts</small></div>
-      <div class="sub ol2" id="sub">Sort the harvest!</div>
+      <div class="score ol" id="scoreWrap"><span id="score">0</span></div>
+      <div class="sub ol2" id="sub"></div>
       <div class="tbar" id="tbar"><i id="tfill"></i></div>
-      <div class="frow ol2"><span>FRENZY</span><div class="tbar"><i id="ffill"></i></div></div>
+      <div class="frow ol2"><span id="frLab" aria-label="Frenzy"></span><div class="tbar"><i id="ffill"></i></div></div>
     </header>
-    <main class="stage" id="stage"><div class="deck" id="deck"></div><div class="hint ol2" id="hint">Swipe right to keep · left to toss</div>
+    <main class="stage" id="stage"><div class="deck" id="deck"></div><div class="hint ol2" id="hint" aria-label="Swipe right to keep, left to toss"></div>
       <div class="coach" id="coach" hidden><div class="ctext ol2" id="coachText"></div><div class="carrow" id="coachArrow"><svg viewBox="0 0 120 44"><path d="M6 22h78M66 6l22 16-22 16" fill="none" stroke="var(--ol)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22h78M66 6l22 16-22 16" fill="none" stroke="#ffe14d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></main>
     <footer class="dock">
-      <button class="tbtn toss ol2" id="tossBtn" aria-label="Toss bad corn"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/></svg>Toss</button>
-      <button class="tbtn keep ol2" id="keepBtn" aria-label="Keep good corn"><svg viewBox="0 0 24 24"><path d="M3.5 12.5l5.5 5.5L20.5 6" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Keep</button>
+      <button class="tbtn toss ol2" id="tossBtn" aria-label="Toss bad corn"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/></svg></button>
+      <button class="tbtn keep ol2" id="keepBtn" aria-label="Keep good corn"><svg viewBox="0 0 24 24"><path d="M3.5 12.5l5.5 5.5L20.5 6" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </footer>
   </section>
 
   <div class="over" id="help" hidden>
     <div class="panel">
       <button class="x" data-close="help" aria-label="Close">✕</button>
-      <h2 class="ol">How to play</h2>
-      <p class="ol2">Swipe right to keep good corn. Swipe left to toss the yuck.</p>
+      <h2 class="ol" aria-label="How to play">?</h2>
       <div class="demo"><div id="demoGood"></div><div id="demoBad"></div></div>
-      <p class="ol2">Rare cobs are worth big points. Rarer tiers unlock as you play</p>
       <div class="demo rare" id="demoRare"></div>
-      <p class="ol2">Streaks multiply points: x2 at 5 in a row, x3 at 10. Fast swipes score +1. Fill the FRENZY bar for a x2 all-good-corn rush. Every point becomes a kernel to spend on skins or a second chance.</p>
-      <button class="go ol2" data-close="help">GOT IT</button>
-      <div class="btnrow" style="grid-template-columns:1fr"><button class="mbtn ol2" id="tutBtn">REPLAY TUTORIAL</button></div>
+      <div class="rules ol2" id="rules"></div>
+      <button class="go ol2" data-close="help" id="helpOk" aria-label="Got it"></button>
+      <div class="btnrow" style="grid-template-columns:1fr"><button class="mbtn ol2" id="tutBtn" aria-label="Replay tutorial"></button></div>
     </div>
   </div>
 
   <div class="over" id="shop" hidden>
     <div class="panel full">
       <button class="x" data-close="shop" aria-label="Close">✕</button>
-      <div><h2 class="ol">Skins</h2><div class="earn ol2" id="walletShop"></div></div>
-      <div class="tabs"><button class="tab on ol2" id="tabBg">COLOURS</button><button class="tab ol2" id="tabWorld">WORLDS</button><button class="tab ol2" id="tabCob">COBS</button><button class="tab ol2" id="tabHusk">HUSKS</button></div>
+      <div><h2 class="ol" id="shopH" aria-label="Skins"></h2><div class="earn ol2" id="walletShop"></div></div>
+      <div class="tabs"><button class="tab on ol2" id="tabBg" aria-label="Colours"></button><button class="tab ol2" id="tabWorld" aria-label="Worlds"></button><button class="tab ol2" id="tabCob" aria-label="Cobs"></button><button class="tab ol2" id="tabHusk" aria-label="Husks"></button></div>
       <div class="grid" id="shopGrid"></div>
     </div>
   </div>
@@ -363,11 +379,9 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
   <div class="over" id="missions" hidden>
     <div class="panel">
       <button class="x" data-close="missions" aria-label="Close">✕</button>
-      <h2 class="ol">Daily missions</h2>
-      <p class="ol2" id="dayNote"></p>
+      <h2 class="ol" id="misH" aria-label="Daily missions"></h2>
       <div class="mi" id="chalBox" style="margin-top:8px"></div>
       <div class="mis" id="misList"></div>
-      <p class="ol2">New missions every day.</p>
     </div>
   </div>
 
@@ -383,8 +397,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
   <div class="over" id="board" hidden>
     <div class="panel full">
       <button class="x" data-close="board" aria-label="Close">✕</button>
-      <div><h2 class="ol">Leaderboard</h2>
-        <label class="nm ol2">Name <input id="nameIn" maxlength="12" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Player"></label></div>
+      <div><h2 class="ol" id="lbH" aria-label="Leaderboard"></h2>
+        <label class="nm ol2"><span id="nmIc"></span> <input id="nameIn" maxlength="12" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Player"></label></div>
       <p class="ol2" id="lbStats" style="font-size:15px"></p>
       <div class="lb" id="lbList"></div>
     </div>
@@ -392,29 +406,29 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
   <div class="over" id="end" hidden>
     <div class="panel endp">
-      <h2 class="ol" id="endTitle">Harvest over!</h2>
+      <h2 class="ol" id="endTitle"></h2>
       <div class="endscore"><div class="big ol" id="final">0</div><div class="grade ol" id="grade"></div></div>
       <div class="bestbar"><div class="prog"><i id="bestFill"></i></div><div class="ol2" id="endNote"></div></div>
       <div class="tiles">
-        <div class="tile"><b class="ol2" id="tCobs">0</b><small class="ol2">cobs sorted</small></div>
-        <div class="tile"><b class="ol2" id="tStreak">0</b><small class="ol2">best streak</small></div>
-        <div class="tile"><b class="ol2" id="tRare">0</b><small class="ol2">rare cobs</small></div>
+        <div class="tile"><b class="ol2" id="tCobs">0</b><small class="ol2" id="tl1" aria-label="cobs sorted"></small></div>
+        <div class="tile"><b class="ol2" id="tStreak">0</b><small class="ol2" id="tl2" aria-label="best streak"></small></div>
+        <div class="tile"><b class="ol2" id="tRare">0</b><small class="ol2" id="tl3" aria-label="rare cobs"></small></div>
       </div>
       <div class="earn ol2" id="endEarn"></div>
       <div class="chips" id="haul"></div>
       <div class="goal" id="goalBox"><div class="ol2" id="endGoal"></div><div class="prog"><i id="goalFill"></i></div></div>
-      <button class="go ol2" id="againBtn">PLAY AGAIN</button>
-      <div class="btnrow"><button class="mbtn ol2" id="endShop">SKINS</button><button class="mbtn ol2" id="endHome">HOME</button></div>
+      <button class="go ol2" id="againBtn" aria-label="Play again"></button>
+      <div class="btnrow"><button class="mbtn ol2" id="endShop" aria-label="Skins"></button><button class="mbtn ol2" id="endHome" aria-label="Home"></button></div>
     </div>
   </div>
 
   <div class="over" id="revive" hidden>
     <div class="panel">
-      <h2 class="ol">Second chance?</h2>
+      <h2 class="ol" id="revH" aria-label="Second chance"></h2>
       <p class="ol2" id="revNote"></p>
       <div class="tbar" style="margin:10px 4px 14px"><i id="revBar"></i></div>
       <button class="go ol2" id="revYes"></button>
-      <div class="btnrow" style="grid-template-columns:1fr"><button class="mbtn ol2" id="revNo">NO THANKS</button></div>
+      <div class="btnrow" style="grid-template-columns:1fr"><button class="mbtn ol2" id="revNo" aria-label="No thanks"></button></div>
     </div>
   </div>
 
@@ -428,10 +442,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
   <div class="over" id="cal" hidden>
     <div class="panel">
       <button class="x" data-close="cal" aria-label="Close">✕</button>
-      <h2 class="ol">Daily streak</h2>
-      <p class="ol2" id="calNote"></p>
+      <h2 class="ol" id="calH" aria-label="Daily streak"></h2>
       <div class="cal" id="calGrid"></div>
-      <p class="ol2" style="font-size:14px">Play every day to climb. Miss a day and it starts again from day 1.</p>
     </div>
   </div>
   <div class="over" id="devPw" hidden style="z-index:9">
@@ -461,10 +473,9 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
   </div>
   <div class="over" id="who" hidden>
     <div class="panel">
-      <h2 class="ol">Who's shucking?</h2>
-      <p class="ol2">Pick a name for the leaderboard. You can change it later.</p>
-      <label class="nm ol2"><input id="whoIn" maxlength="12" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Your name" style="width:11em;text-align:center"></label>
-      <button class="go ol2" id="whoGo">LET'S GO</button>
+      <h2 class="ol" aria-label="Your name" id="whoH"></h2>
+      <label class="nm ol2"><input id="whoIn" maxlength="12" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="· · ·" style="width:11em;text-align:center"></label>
+      <button class="go ol2" id="whoGo" aria-label="OK"></button>
     </div>
   </div>
 
@@ -475,10 +486,38 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=50;
+const BUILD=51;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
+// Icon set: menus speak in pictures and numbers so they read the same in any language
+const IC=p=>`<svg class="ic" viewBox="0 0 24 24">${p}</svg>`,ST2=(d,c,w=3.4)=>`<path d="${d}" fill="none" stroke="var(--ol)" stroke-width="${w+3.4}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const I={
+ ok:IC(ST2('M4 12.5l5 5L20 6.5','#8fe060')),no:IC(ST2('M6 6l12 12M18 6L6 18','#ff6a55')),
+ L:IC(ST2('M19 12H6M11 6l-6 6 6 6','#ffffff',3)),R:IC(ST2('M5 12h13M13 6l6 6-6 6','#ffffff',3)),
+ fast:IC(ST2('M5 6l6 6-6 6M13 6l6 6-6 6','#ffe14d',3)),
+ ring:IC('<circle cx="12" cy="12" r="7.5" fill="none" stroke="var(--ol)" stroke-width="6"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#fff" stroke-width="2.6"/>'),
+ fire:IC('<path d="M12 2c1 4 5 5.5 5 11a5.5 5.5 0 0 1-11 0c0-2 1-3.5 2-4.5.5 1.5 1.5 2 2 2C9.5 7 11 4.5 12 2z" fill="#ff8a1e" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M12 12c1 1.5 2.2 2.3 2.2 4a2.2 2.2 0 0 1-4.4 0c0-1.500 1.200-2.500 2.200-4z" fill="#ffe14d"/>'),
+ cup:IC('<path d="M6 4h12v4a6 6 0 0 1-12 0zM10 14h4v3h-4zM8 17h8v3H8z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M6 6H3c0 3.5 1.8 4.5 3.5 4.5M18 6h3c0 3.5-1.8 4.5-3.5 4.5" fill="none" stroke="var(--ol)" stroke-width="2"/>'),
+ star:IC('<path d="M12 2.5l2.9 6 6.6.9-4.800 4.600 1.200 6.500L12 17.400l-5.900 3.100 1.200-6.500L2.500 9.400l6.600-.9z" fill="#ffd83a" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>'),
+ lock:IC('<path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="var(--ol)" stroke-width="2.5"/><rect x="5" y="10.5" width="14" height="10.5" rx="2.5" fill="#d8dde6" stroke="var(--ol)" stroke-width="2"/><circle cx="12" cy="15.5" r="1.800" fill="var(--ol)"/>'),
+ cob:IC('<path d="M5 20c0-5 2-8 4-9M19 20c0-5-2-8-4-9" fill="none" stroke="var(--ol)" stroke-width="5.500" stroke-linecap="round"/><path d="M5 20c0-5 2-8 4-9M19 20c0-5-2-8-4-9" fill="none" stroke="#6ac84a" stroke-width="3" stroke-linecap="round"/><ellipse cx="12" cy="11" rx="5" ry="8.5" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2"/><path d="M9.5 6v10M12 4.5v13M14.5 6v10" stroke="#e8a820" stroke-width="1.200"/>'),
+ bad:IC('<path d="M5 20c0-5 2-8 4-9M19 20c0-5-2-8-4-9" fill="none" stroke="var(--ol)" stroke-width="5.500" stroke-linecap="round"/><path d="M5 20c0-5 2-8 4-9M19 20c0-5-2-8-4-9" fill="none" stroke="#8a7a44" stroke-width="3" stroke-linecap="round"/><ellipse cx="12" cy="11" rx="5" ry="8.5" fill="#6a4a2a" stroke="var(--ol)" stroke-width="2"/><circle cx="10.5" cy="8" r="1.500" fill="#9ac84a"/><circle cx="13.5" cy="13" r="1.800" fill="#9ac84a"/>'),
+ bolt:IC('<path d="M13.5 2L5 13.5h5.5L9.5 22 19 10h-5.5z" fill="#ff7ac8" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>'),
+ play:IC('<path d="M7 4v16l13-8z" fill="#fff" stroke="var(--ol)" stroke-width="2.5" stroke-linejoin="round"/>'),
+ life:IC('<path d="M12 3c-5 0-7 5-7 9.5S7 21 12 22c5-1 7-5 7-9.5S17 3 12 3z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2"/><ellipse cx="9.5" cy="9" rx="2" ry="3" fill="#fff" opacity=".7"/>'),
+ cal:IC('<rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="#fff" stroke="var(--ol)" stroke-width="2"/><rect x="4.5" y="6" width="15" height="4" fill="#e24a3b"/><path d="M3.5 10h17" stroke="var(--ol)" stroke-width="2"/><path d="M8 3v4M16 3v4" stroke="var(--ol)" stroke-width="2.5" stroke-linecap="round"/>'),
+ home:IC('<path d="M3.5 11.5L12 4l8.5 7.5V20H15v-5H9v5H3.5z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>'),
+ pal:IC('<path d="M12 2.5c5.5 0 9.5 3.5 9.5 8 0 3-2.5 4.5-5 4.5h-2c-1.500 0-2 1.500-1 2.500.800.800.500 2.500-1.500 2.500-5.500 0-9.500-4-9.500-9s4-8.500 9.500-8.500z" fill="#fff" stroke="var(--ol)" stroke-width="2"/><circle cx="7.5" cy="11" r="1.600" fill="#e24a3b"/><circle cx="11" cy="7" r="1.600" fill="#ffc21a"/><circle cx="16" cy="8" r="1.600" fill="#4fb53a"/>'),
+ target:IC('<circle cx="12" cy="12" r="9.5" fill="#fff" stroke="var(--ol)" stroke-width="2"/><circle cx="12" cy="12" r="5.5" fill="#e24a3b" stroke="var(--ol)" stroke-width="1.5"/><circle cx="12" cy="12" r="1.800" fill="#fff"/>'),
+ book:IC('<path d="M12 6C9 3.5 5 3.5 2 5v14c3-1.500 7-1.500 10 1 3-2.500 7-2.500 10-1V5c-3-1.500-7-1.500-10 1z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M12 6v14" stroke="var(--ol)" stroke-width="2"/>'),
+ clock:IC('<circle cx="12" cy="12" r="9" fill="#fff" stroke="var(--ol)" stroke-width="2"/><path d="M12 7v5.5l3.5 2" fill="none" stroke="var(--ol)" stroke-width="2.5" stroke-linecap="round"/>'),
+ user:IC('<circle cx="12" cy="8" r="4.5" fill="#fff" stroke="var(--ol)" stroke-width="2"/><path d="M3.5 21c.5-5 4-7 8.5-7s8 2 8.500 7z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>'),
+ swatch:IC('<circle cx="12" cy="12" r="9" fill="#35b8c8"/><path d="M12 3a9 9 0 0 1 0 18z" fill="#ffc21a"/><circle cx="12" cy="12" r="9" fill="none" stroke="var(--ol)" stroke-width="2"/>'),
+ world:IC('<rect x="3" y="4" width="18" height="16" rx="3" fill="#8fd8e8" stroke="var(--ol)" stroke-width="2"/><circle cx="16.5" cy="8.5" r="2" fill="#ffe14d"/><path d="M4 19l5.5-8 4 5.5 2.5-3 4 5.5z" fill="#4fb53a" stroke="var(--ol)" stroke-width="1.5" stroke-linejoin="round"/>'),
+ leaf:IC('<path d="M5 20C4 10 9 4 20 4c0 11-6 16-15 16z" fill="#6ac84a" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M6 19C9 13 13 9 18 6" fill="none" stroke="var(--ol)" stroke-width="1.800" stroke-linecap="round"/>')
+};
+const SWIPE=`<span>${I.L}${I.no}</span><span>${I.ok}${I.R}</span>`,MEDAL=i=>`<i class="md" style="--m:${CHC[i]}"></i>`;
 
 /* ---------- catalogue ---------- */
 const BG=[
@@ -813,7 +852,7 @@ document.addEventListener('visibilitychange',updateMusic);
 
 /* ---------- effects ---------- */
 function popText(txt,color,big,cls){
-  const p=document.createElement('div');p.className='pop ol'+(big?' big':'')+(cls?' '+cls:'');p.textContent=txt;p.style.color=color||'#fff';
+  const p=document.createElement('div');p.className='pop ol'+(big?' big':'')+(cls?' '+cls:'');p.innerHTML=txt;p.style.color=color||'#fff';
   stage.appendChild(p);setTimeout(()=>p.remove(),big?1250:900);
 }
 /* ---------- burst effects: one canvas, particles thrown with real velocity that fade fast ---------- */
@@ -1157,11 +1196,11 @@ function drawMute(){
 }
 function drawHome(){
   $('walletHome').innerHTML=KI+'<span>'+kf()+'</span>'+(cheat?'<span style="color:#ffe14d">&nbsp;DEV</span>':'');
-  $('dayPill').textContent='Day '+S.day.streak;
+  $('dayPill').innerHTML=I.cal+' '+S.day.streak;
   drawMute();
   if(heroKey!==S.cob+'|'+S.husk){heroKey=S.cob+'|'+S.husk;paint($('heroCv'),cob('good',7,true,null,1)[0])}
   fitHero();
-  $('bestHome').innerHTML=S.best?`<span class="bestbadge ol2"><svg viewBox="0 0 24 24"><path d="M5 4h14v4a7 7 0 0 1-14 0zM9 15h6v3H9zM7 18h10v3H7z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M5 6H2c0 4 2 5 4 5M19 6h3c0 4-2 5-4 5" fill="none" stroke="var(--ol)" stroke-width="2"/></svg>BEST ${fmt(S.best)}</span>`:'';
+  $('bestHome').innerHTML=S.best?`<span class="bestbadge ol2"><svg viewBox="0 0 24 24"><path d="M5 4h14v4a7 7 0 0 1-14 0zM9 15h6v3H9zM7 18h10v3H7z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M5 6H2c0 4 2 5 4 5M19 6h3c0 4-2 5-4 5" fill="none" stroke="var(--ol)" stroke-width="2"/></svg>${fmt(S.best)}</span>`:'';
   const left=S.mis.list.filter(m=>!m.done).length+(S.tut&&!(S.ch&&S.ch.date===dstr(new Date()))?1:0);
   $('misDot').textContent=left;$('misDot').hidden=!left;
   $('dexDot').textContent=DEX.filter(d=>S.dex[d[0]]).length+'/'+DEX.length;
@@ -1212,7 +1251,7 @@ function daily(){
     const y=new Date();y.setDate(y.getDate()-1);
     S.day.streak=S.day.date===dstr(y)?S.day.streak+1:1;S.day.date=td;
     const bonus=dayRw(S.day.streak);S.k+=bonus;
-    setTimeout(()=>{toast(`Day ${S.day.streak} streak! +${bonus} ${KI}`);jingle([523,659,784,1047])},600);
+    setTimeout(()=>{toast(`${I.cal} ${S.day.streak} · +${bonus} ${KI}`);jingle([523,659,784,1047])},600);
   }
   if(S.mis.date!==td){
     let h=0;for(const ch of td)h=(h*31+ch.charCodeAt(0))%9973;
@@ -1227,43 +1266,42 @@ function track(ev,val,isMax){
   for(const m of S.mis.list){
     const def=MIS.find(x=>x.id===m.id);if(!def||def.ev!==ev||m.done)continue;
     m.p=isMax?Math.max(m.p,val):m.p+val;
-    if(m.p>=def.n){m.p=def.n;m.done=true;S.k+=def.rw;gameDone.push(def);toast(`Mission done! +${def.rw} ${KI}`);jingle([659,784,1047,1319])}
+    if(m.p>=def.n){m.p=def.n;m.done=true;S.k+=def.rw;gameDone.push(def);toast(`${I.target}${I.ok} +${def.rw} ${KI}`);jingle([659,784,1047,1319])}
   }
 }
 function drawMissions(){
-  const nb=dayRw(S.day.streak+1),td=dstr(new Date()),ch=S.ch&&S.ch.date===td?S.ch:null;
-  $('dayNote').innerHTML=`Day ${S.day.streak} streak. Come back tomorrow for +${nb} ${KI}`;
-  $('chalBox').innerHTML=`<div class="row ol2" style="white-space:nowrap"><span>Daily Challenge</span><span style="font-size:13px">${ch?'PLAYED':'1 TRY A DAY'}</span></div>
-    <div class="medals">${CHT.map((t,i)=>`<span class="medal ol2 ${ch&&ch.tier>i?'won':''}" style="--m:${CHC[i]}"><b>${CHN[i]}</b>${fmt(t)} pts<br>+${CHR[i]} ${KI}</span>`).join('')}</div>
-    ${ch?`<div class="ol2" style="font-size:15px;text-align:center">Today: ${fmt(ch.score)} points${ch.tier?' · '+CHN[ch.tier-1]+' medal':' · no medal'}. New challenge tomorrow.</div>`:'<button class="tab on ol2" id="chalGo" style="width:100%;height:46px;font-size:17px">PLAY CHALLENGE</button>'}`;
+  const td=dstr(new Date()),ch=S.ch&&S.ch.date===td?S.ch:null,MI={cob:I.cob,rare:I.star,streak:I.fire,score:I.cup,frenzy:I.bolt,toss:I.bad+I.no,game:I.play};
+  $('chalBox').innerHTML=`<div class="row ol2" aria-label="Daily Challenge, one try a day"><span>${I.cal}${I.target}</span><span>${ch?fmt(ch.score)+' '+(ch.tier?MEDAL(ch.tier-1):I.no):'× 1'}</span></div>
+    <div class="medals">${CHT.map((t,i)=>`<span class="medal ol2 ${ch&&ch.tier>i?'won':''}" style="--m:${CHC[i]}" aria-label="${CHN[i]}"><b>${MEDAL(i)} ${fmt(t)}</b>+${CHR[i]} ${KI}</span>`).join('')}</div>
+    ${ch?'':`<button class="tab on ol2" id="chalGo" style="width:100%;height:46px;font-size:19px" aria-label="Play challenge">${I.play}</button>`}`;
   $('chalBox').classList.toggle('done',!!ch);
   if(!ch)$('chalGo').onclick=()=>{chalNext=true;startGame()};
   $('misList').innerHTML=S.mis.list.map(m=>{const d=MIS.find(x=>x.id===m.id);
-    return `<div class="mi ${m.done?'done':''}"><div class="row ol2"><span>${d.txt}</span><span>${m.done?'DONE':'+'+d.rw+' '+KI}</span></div><div class="prog"><i style="transform:scaleX(${m.p/d.n})"></i></div><div class="ol2" style="font-size:14px">${fmt(m.p)} / ${fmt(d.n)}</div></div>`}).join('');
+    return `<div class="mi ${m.done?'done':''}" aria-label="${d.txt}"><div class="row ol2"><span>${MI[d.ev]||''} ${fmt(d.n)}</span><span>${m.done?I.ok:'+'+d.rw+' '+KI}</span></div><div class="prog"><i style="transform:scaleX(${m.p/d.n})"></i></div><div class="ol2" style="font-size:14px">${fmt(m.p)} / ${fmt(d.n)}</div></div>`}).join('');
 }
 
 /* ---------- corndex ---------- */
 function drawDex(){
   const found=DEX.filter(d=>S.dex[d[0]]).length;
-  $('dexCount').textContent=found+' / '+DEX.length+' found';
+  $('dexCount').textContent=found+' / '+DEX.length;
   const nx=TIERS.slice().reverse().find(k=>(T[k].unlock||0)>S.t.pts);
-  $('dexNote').textContent=fmt(S.t.pts)+' lifetime points'+(nx?' · '+T[nx].name+' unlocks at '+fmt(T[nx].unlock):' · every tier unlocked');
+  $('dexNote').innerHTML=I.star+' '+fmt(S.t.pts)+(nx?' / '+I.lock+' '+fmt(T[nx].unlock):' '+I.ok);
   $('dexGrid').innerHTML=DEX.map(([k,nm,txt],i)=>{
     const t=T[k],got=S.dex[k]||0,locked=(t.unlock||0)>S.t.pts;
     return `<div class="item ${got?'eq':''}"><div class="sw" style="background:${got?'rgba(255,255,255,.18)':'rgba(0,0,0,.35)'}">${got?cob(k,41+i,true):'<div class="qm ol">?</div>'}</div>
-    <b class="ol2">${got?nm:'???'}</b>
-    ${got?`<span class="pts ol2">${k==='life'?'+1 life':k==='bad'||k==='sneak'?'Toss it':'+'+fmt(t.pts)+' points'}</span><small class="ol2">${txt}</small>${(()=>{const th=dexT(k),lv=dexLv(k,got),nx=th[lv];return `<div class="lv">${[0,1,2].map(j=>`<i class="${lv>j?'on':''}" style="--m:${CHC[j]}"></i>`).join('')}</div>`+(nx?`<div class="prog"><i style="transform:scaleX(${Math.min(1,got/nx)})"></i></div><small class="ol2">${fmt(got)} / ${fmt(nx)} to ${CHN[lv]} (+${fmt(dexRw(k)[lv])})</small>`:`<small class="ol2">Caught ×${fmt(got)} · maxed</small>`)})()}`
-      :locked?`<small class="ol2">Unlocks at ${fmt(t.unlock)} lifetime points</small><div class="prog"><i style="transform:scaleX(${Math.min(1,S.t.pts/t.unlock)})"></i></div>`
-      :`<small class="ol2">${t.minN?'Shows up deep into a long run':'Not found yet'}</small>`}</div>`}).join('');
+    <b class="ol2">${got?nm:'?'}</b>
+    ${got?`<span class="pts ol2">${k==='life'?'+1 '+I.life:k==='bad'||k==='sneak'?I.L+I.no:'+'+fmt(t.pts)}</span>${(()=>{const th=dexT(k),lv=dexLv(k,got),nx=th[lv];return `<div class="lv">${[0,1,2].map(j=>`<i class="${lv>j?'on':''}" style="--m:${CHC[j]}"></i>`).join('')}</div>`+(nx?`<div class="prog"><i style="transform:scaleX(${Math.min(1,got/nx)})"></i></div><small class="ol2">${fmt(got)} / ${fmt(nx)} · +${fmt(dexRw(k)[lv])} ${KI}</small>`:`<small class="ol2">×${fmt(got)} ${I.ok}</small>`)})()}`
+      :locked?`<small class="ol2">${I.lock} ${I.star} ${fmt(t.unlock)}</small><div class="prog"><i style="transform:scaleX(${Math.min(1,S.t.pts/t.unlock)})"></i></div>`
+      :''}</div>`}).join('');
 }
 
 /* ---------- leaderboard ---------- */
 let lastEntry=null;
 function drawBoard(){
   $('nameIn').value=S.name||'';
-  $('lbStats').textContent=`${S.t.games} game${S.t.games===1?'':'s'} · ${S.t.cobs} cobs sorted · ${S.t.rare} rare cobs`;
-  $('lbList').innerHTML=S.top.length?S.top.map((e,i)=>`<div class="lr ${e===lastEntry?'me':''}"><div class="rk ol2">${i+1}</div><div class="who ol2">${esc(e.nm||'Player')}<small>${e.n?e.n+' cobs · streak '+e.st+(e.d?' · '+esc(e.d):''):'earlier best'}</small></div><div class="sc ol">${fmt(+e.s||0)}</div></div>`).join('')
-    :'<p class="ol2">No scores yet. Play a game to get on the board!</p>';
+  $('lbStats').innerHTML=`${I.play} ${fmt(S.t.games)} · ${I.cob} ${fmt(S.t.cobs)} · ${I.star} ${fmt(S.t.rare)}`;
+  $('lbList').innerHTML=S.top.length?S.top.map((e,i)=>`<div class="lr ${e===lastEntry?'me':''}"><div class="rk ol2">${i+1}</div><div class="who ol2">${esc(e.nm||'Player')}<small>${e.n?I.cob+e.n+' '+I.fire+e.st+(e.d?' · '+esc(e.d):''):'—'}</small></div><div class="sc ol">${fmt(+e.s||0)}</div></div>`).join('')
+    :`<p class="ol2" style="font-size:30px;opacity:.7">${I.cup} —</p>`;
 }
 $('nameIn').oninput=e=>{S.name=e.target.value.slice(0,12);save()};
 
@@ -1285,8 +1323,8 @@ function drawShop(){
     const gr=it.c?`radial-gradient(circle,${it.c[0]},${it.c[1]} 30%,${it.c[2]} 65%,${it.c[3]})`:'',th=it.art?thumb(it.art):'';
     const pic=tab==='bg'||tab==='world'?`<div class="sw" ${it.art?`data-th="${it.art}" data-g="${gr}"`:''} style="--ray:${it.ray};background:${th?th+' center/cover,':''}${gr}">${it.art?'':'<i></i>'}</div>`
       :`<div class="sw" style="background:rgba(255,255,255,.18)">${tab==='cob'?cob('good',31+i,true,it.id):cob('good',51+i,true,null,null,it.id)}</div>`;
-    const act=own||!it.req?`<button class="ibtn ol2 ${eq?'cur':own?'':S.k>=it.cost?'buy':'no'}" data-id="${it.id}">${eq?'EQUIPPED':own?'USE':KI+' '+fmt(it.cost)}</button>`
-      :`<div class="ol2" style="font-size:14px">${it.req.txt}</div><div class="prog"><i style="transform:scaleX(${p/it.req.n})"></i></div><div class="ol2" style="font-size:13px">${fmt(p)} / ${fmt(it.req.n)}</div>`;
+    const act=own||!it.req?`<button class="ibtn ol2 ${eq?'cur':own?'':S.k>=it.cost?'buy':'no'}" data-id="${it.id}">${eq?I.ok:own?I.ring:KI+' '+fmt(it.cost)}</button>`
+      :`<div class="ol2" style="font-size:15px" aria-label="${it.req.txt}">${I.lock} ${({cobs:I.cob,best:I.cup,rare:I.star,day:I.cal,dex:I.book,frenzy:I.bolt})[it.req.k]||''} ${fmt(it.req.n)}</div><div class="prog"><i style="transform:scaleX(${p/it.req.n})"></i></div><div class="ol2" style="font-size:13px">${fmt(p)} / ${fmt(it.req.n)}</div>`;
     return `<div class="item ${eq?'eq':''}">${pic}<b class="ol2">${it.name}</b>${act}</div>`}).join('');
 }
 $('shopGrid').onclick=e=>{
@@ -1294,7 +1332,7 @@ $('shopGrid').onclick=e=>{
   const it=CATS[tab].find(x=>x.id===b.dataset.id);if(!it)return;
   if(has(tab,it.id)){S[EQ[tab]]=it.id;tone(784,0,.1,'triangle')}
   else if(!it.req&&S.k>=it.cost){S.k-=it.cost;S.own[OWN[tab]].push(it.id);S[EQ[tab]]=it.id;applyTheme();flash('#fff');bits('s',16,['#fff','#ffe14d','#ff7ac8'],240,app);jingle([523,659,784,1047,1319]);toast('Unlocked '+it.name+'!')}
-  else{retrigger(b,'shake');tone(160,0,.2,'sawtooth',.1,.6);toast(`Need ${fmt(it.cost-S.k)} more ${KI}. Keep shucking!`);return}
+  else{retrigger(b,'shake');tone(160,0,.2,'sawtooth',.1,.6);toast(`${I.lock} −${fmt(it.cost-S.k)} ${KI}`);return}
   applyTheme();save();drawShop();drawHome();
 };
 $('tabWorld').onclick=()=>{tab='world';drawShop()};
@@ -1313,12 +1351,12 @@ function drawLives(){
   $('lives').innerHTML=[0,1,2].map(i=>`<svg viewBox="0 0 20 24" class="${i<lives?'':'gone'}"><path d="M10 2c-5 0-7 5-7 10s2 9 7 10c5-1 7-5 7-10S15 2 10 2z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2"/><path d="M10 22C5 20 2 15 2 9c3 4 5 8 6 11M10 22c5-2 8-7 8-13-3 4-5 8-6 11" fill="#6cc63e" stroke="var(--ol)" stroke-width="1.5"/></svg>`).join('');
 }
 let milestone=false,tutOn=false,tutStep=0,tutMade=0;
-const TUT=[['good','This one is good. Swipe RIGHT to keep it!'],['bad','Yuck, rotten! Swipe LEFT to toss it.'],['gold','A rare cob! Swipe RIGHT for big points.']];
+const TUT=[['good',I.ok+I.R],['bad',I.L+I.no],['gold',I.star+I.ok+I.R]];
 function coach(){
   const on=tutOn&&tutStep<3;$('coach').hidden=!on;app.classList.toggle('coaching',on);$('hint').style.visibility=on?'hidden':'';
   $('keepBtn').classList.toggle('pulse',on&&TUT[tutStep][0]!=='bad');$('tossBtn').classList.toggle('pulse',on&&TUT[tutStep][0]==='bad');
   if(!on)return;
-  $('coachText').textContent=TUT[tutStep][1];$('coachText').classList.remove('no');$('coachArrow').classList.toggle('left',TUT[tutStep][0]==='bad');
+  $('coachText').innerHTML=TUT[tutStep][1];$('coachText').classList.remove('no');$('coachArrow').classList.toggle('left',TUT[tutStep][0]==='bad');
 }
 const life=()=>cheat&&DEV.unlock?1e12:S.t.pts+score;
 const bestTier=()=>TIERS.find(k=>!T[k].x&&(T[k].unlock||0)<=life())||'diamond';
@@ -1350,7 +1388,7 @@ function makeCard(){
   else if(t.name)ov=[[30,52,1.1,0],[192,44,.9,.4],[204,196,1.2,.8],[16,204,.8,.2],[140,4,.8,.6],[146,116,.7,1],[80,170,.6,.5]].map(([x,y,sc,d])=>`<i class="fx sp" style="${P(x,y)};--s:${sc};animation-delay:${d}s"></i>`).join('');
   el.innerHTML=(t.aura?`<div class="aura" style="--a:${t.aura}"></div>`:'')+`<div class="float">${ov}</div>`
     +(t.name?`<div class="badge ol2" style="--a:${t.aura}">${t.badge||t.name+' +'+fmt(t.pts)}</div>`:'')
-    +'<div class="stamp keep ol2">KEEP</div><div class="stamp toss ol2">TOSS</div>';
+    +`<div class="stamp keep ol2">${IC('<path d="M3.5 12.5l5.5 5.5L20.5 6" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>')}</div><div class="stamp toss ol2">${IC('<path d="M5 5l14 14M19 5L5 19" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>')}</div>`;
   const fl=el.querySelector('.float');
   const twin=heroFirst&&type==='good'; // first card of a run started from home: identical to the home cob
   cob(type,twin?7:Math.floor(Math.random()*99999),true,null,type==='rainbow'?3:1).forEach((svg,i,all)=>{
@@ -1391,15 +1429,17 @@ function bindDrag(c){
 const mult=()=>streak>=10?3:streak>=5?2:1;
 function setSub(){
   const s=$('sub'),m=mult();
-  if(frenzyT>0){s.textContent='CORN FRENZY! x2 points';s.className='sub ol2 hot'}
-  else if(!bestBeat&&S.best>=20&&score>=S.best*.75&&score<=S.best){s.textContent=fmt(S.best-score+1)+' to beat your best!';s.className='sub ol2 hot'}
-  else if(m>1){s.textContent='x'+m+' STREAK! ('+streak+')';s.className='sub ol2 hot'}
-  else{s.textContent=streak?streak+' in a row':'Sort the harvest!';s.className='sub ol2'}
+  let h,hot=true;
+  if(frenzyT>0)h=I.bolt+' ×2';
+  else if(!bestBeat&&S.best>=20&&score>=S.best*.75&&score<=S.best)h=I.cup+' −'+fmt(S.best-score+1);
+  else if(m>1)h='×'+m+' '+I.fire+streak;
+  else{h=streak?I.fire+streak:'';hot=false}
+  const key=h+hot;if(s._k!==key){s._k=key;s.innerHTML=h;s.className='sub ol2'+(hot?' hot':'')}
 }
 function startFrenzy(){
   frenzyT=FRENZY;fever=1;frenzies++;app.classList.add('frenzy');S.t.frenzy++;track('frenzy',1);
   if(next&&(next.type==='bad'||next.type==='sneak'||next.type==='life')){next.el.remove();next=makeCard();deck.prepend(next.el)}
-  popText('CORN FRENZY!','#ffe14d',true);flash('#ff7ac8');bits('s',14,['#fff','#ffe14d','#ff7ac8'],220);
+  popText(I.bolt+' ×2','#ffe14d',true);flash('#ff7ac8');bits('s',14,['#fff','#ffe14d','#ff7ac8'],220);
   jingle([523,659,784,1047,784,1047,1319],.12);buzz([30,30,30,30,60]);
 }
 function decide(keepIt,timedOut){
@@ -1408,7 +1448,7 @@ function decide(keepIt,timedOut){
     // Guided first run: the wrong way just bounces back, nothing is lost
     const want=cur.type!=='bad';
     if(timedOut||keepIt!==want){const e=cur.el;e.classList.remove('drag');e.classList.add('snap');e.style.transform='';e.querySelector('.keep').style.opacity=e.querySelector('.toss').style.opacity=0;
-      $('coachText').textContent='Other way! '+(want?'Swipe RIGHT to keep it.':'Swipe LEFT to toss it.');retrigger($('coachText'),'no');tone(200,0,.12,'square',.07,.7);return}
+      $('coachText').innerHTML=want?I.ok+I.R:I.L+I.no;retrigger($('coachText'),'no');tone(200,0,.12,'square',.07,.7);return}
     tutStep++;if(tutStep>=3){tutOn=false;S.tut=true;save();setTimeout(()=>toast('You are ready! Now beat the timer'),500)}
     coach();
   }
@@ -1429,10 +1469,10 @@ function decide(keepIt,timedOut){
     const fz=frenzyT>0,pts=t.pts*mult()*(fz?2:1)+(fast?1:0);score+=pts;retrigger($('scoreWrap'),'bump');
     S.t.cobs++;track('cob',1);if(!good)track('toss',1);
     const first=!S.dex[c.type],lv0=dexLv(c.type,S.dex[c.type]||0);S.dex[c.type]=(S.dex[c.type]||0)+1;
-    {const lv=dexLv(c.type,S.dex[c.type]);if(lv>lv0&&lv>1){const rw=dexRw(c.type)[lv-1],nm=(DEX.find(d=>d[0]===c.type)||[])[1]||'Cob';S.k+=rw;toast(`${nm}: ${CHN[lv-1]} badge! +${fmt(rw)} ${KI}`);jingle([659,784,1047,1319])}}
-    if(first&&t.name){const bn=t.x?500:150;S.k+=bn;toast(`New Corndex entry! +${bn} ${KI}`)}
+    {const lv=dexLv(c.type,S.dex[c.type]);if(lv>lv0&&lv>1){const rw=dexRw(c.type)[lv-1],nm=(DEX.find(d=>d[0]===c.type)||[])[1]||'Cob';S.k+=rw;toast(`${nm} ${MEDAL(lv-1)} +${fmt(rw)} ${KI}`);jingle([659,784,1047,1319])}}
+    if(first&&t.name){const bn=t.x?500:150;S.k+=bn;toast(`${I.book}${I.star} +${bn} ${KI}`)}
     const lp=S.t.pts+score; // real lifetime points, so Dev Mode gets the same milestones as a normal run
-    if(Math.floor(lp/MILE)>Math.floor((lp-pts)/MILE)){milestone=true;if(next){next.el.remove();next=null}toast(fmt(Math.floor(lp/MILE)*MILE)+' points! Special cob incoming');jingle([784,988,1175,1568])}
+    if(Math.floor(lp/MILE)>Math.floor((lp-pts)/MILE)){milestone=true;if(next){next.el.remove();next=null}toast(I.star+' '+fmt(Math.floor(lp/MILE)*MILE));jingle([784,988,1175,1568])}
     const tt=c.type==='good'?SK.find(x=>x.id===S.cob):t;
     const kc=tt.bit||[tt.g[1],tt.g[0],tt.g[2]],hc=t.hus||(HUSK.find(h=>h.id===S.husk)||{}).c||['#8ad653','#4f9e2e'];
     if(good){
@@ -1446,30 +1486,30 @@ function decide(keepIt,timedOut){
       burst(bx,by,{n:6,kind:'c',c:['#b4d455','#9ac84a'],v:260,s:30,g:-240,up:40,life:.5,dr:4,a:.45});
       shock(bx,by,'#b4d455',125,7);
     }
-    if(c.type==='life'){lives=Math.min(3,lives+1);drawLives();popText('+1 LIFE!','#ff9ab0',true);flash(t.aura);SFX.heart();buzz(40)}
+    if(c.type==='life'){lives=Math.min(3,lives+1);drawLives();popText('+1 '+I.life,'#ff9ab0',true);flash(t.aura);SFX.heart();buzz(40)}
     else if(t.rare){
       caught[c.type]=(caught[c.type]||0)+1;S.t.rare++;track('rare',1);
       popText('+'+fmt(pts)+' '+t.name+'!','#ffe14d',true);flash(t.aura);buzz([20,30,20,30,40]);
       if(c.type==='gold'){SFX.coin();SFX.pop(3)}else (SFX[c.type]||SFX.glass)();
       if(c.type==='diamond')SFX.glass();
     }else{
-      popText('+'+pts+(c.type==='sneak'?' SPOTTED!':fast?' FAST!':''),c.type==='sneak'||fast?'#ffe14d':'#fff');
+      popText('+'+pts+(c.type==='sneak'?' '+I.ok:fast?' '+I.fast:''),c.type==='sneak'||fast?'#ffe14d':'#fff');
       if(good)SFX.pop(fz?7:5);else{SFX.whoosh();SFX.splat(.17)}
       buzz(15);
     }
-    if(streak===5||streak===10){jingle([784,1047,1319]);toast('x'+mult()+' multiplier!')}
-    else if(streak>=15&&streak%5===0){popText(streak+' IN A ROW!','#7af0ff',false,'streak');jingle([1047,1319,1568])}
+    if(streak===5||streak===10){jingle([784,1047,1319]);toast('×'+mult()+' '+I.fire)}
+    else if(streak>=15&&streak%5===0){popText(I.fire+' '+streak,'#7af0ff',false,'streak');jingle([1047,1319,1568])}
     if(!fz){fever=Math.min(1,fever+(t.rare?2:1)/(40+15*frenzies));if(fever>=1)startFrenzy()}
   }else if(frenzyT>0){
-    popText('Oops!','#ffd0c8');tone(200,0,.15,'square',.07,.6);
+    popText(I.no,'#ffd0c8');tone(200,0,.15,'square',.07,.6);
   }else{
     streak=0;if(!(cheat&&DEV.god))lives--;drawLives();fever=Math.max(0,fever-.4);
-    popText(timedOut?'Too slow!':(good?'Wasted!':c.type==='sneak'?'Sneaky rot!':'Yuck!'),'#ff9a8a');flash('#e24a3b');buzz([60,40,60]);
+    popText((timedOut?I.clock:I.no)+(cheat&&DEV.god?'':' −1 '+I.life),'#ff9a8a');flash('#e24a3b');buzz([60,40,60]);
     retrigger(deck,'shake');
     if(timedOut)SFX.thud();else if(good){SFX.whoosh();SFX.sad()}else{SFX.buzz();SFX.splat(0)}
   }
   track('score',score,true);
-  if(!bestBeat&&S.best>=10&&score>S.best){bestBeat=true;toast('NEW BEST!');flash('#ffe14d');bits('s',14,['#fff','#ffe14d'],220);jingle([523,659,784,1047,1319],.12)}
+  if(!bestBeat&&S.best>=10&&score>S.best){bestBeat=true;toast(I.cup+I.star+' '+fmt(score));flash('#ffe14d');bits('s',14,['#fff','#ffe14d'],220);jingle([523,659,784,1047,1319],.12)}
   setSub();
   if(lives<=0){if(!revived&&S.k>=REV&&!chal)offerRevive();else endGame();return}
   deal();
@@ -1517,15 +1557,15 @@ try{new ResizeObserver(fit).observe(stage)}catch(e){}
 addEventListener('resize',layout);if(self.visualViewport)visualViewport.addEventListener('resize',layout);addEventListener('pageshow',layout);addEventListener('orientationchange',()=>setTimeout(layout,250));
 function offerRevive(){
   playing=false;$('tbar').classList.remove('low');
-  $('revNote').innerHTML=`Keep your ${fmt(score)} points and carry on with 1 life. You have ${kf()} ${KI}`;
-  $('revYes').innerHTML=`REVIVE ${KI} ${REV}`;
+  $('revNote').innerHTML=`${I.cup} ${fmt(score)} · ${KI} ${kf()}`;
+  $('revYes').innerHTML=`+1 ${I.life} · ${KI} ${REV}`;
   $('revive').hidden=false;retrigger($('revBar'),'run');
   clearTimeout(revT);revT=setTimeout(()=>{$('revive').hidden=true;endGame()},5000);
 }
 $('revYes').onclick=()=>{
   clearTimeout(revT);$('revive').hidden=true;
   if(!cheat)S.k-=REV;save();revived=true;revN=n;lives=1;drawLives();
-  flash('#8fe060');popText('REVIVED!','#8fe060',true);jingle([392,523,659,784]);
+  flash('#8fe060');popText('+1 '+I.life,'#8fe060',true);jingle([392,523,659,784]);
   playing=true;last=performance.now();deal();
 };
 $('revNo').onclick=()=>{clearTimeout(revT);$('revive').hidden=true;endGame()};
@@ -1538,7 +1578,7 @@ function startGame(){
   show('game');fit();
   if(chal){ // same cob order for everyone today; the attempt is spent the moment it starts
     const td=dstr(new Date());let h=7;for(const ch of td)h=(h*31+ch.charCodeAt(0))%1000003;rng=srand(h);
-    S.ch={date:td,score:0,tier:0};save();toast(`Daily Challenge! Gold at ${fmt(CHT[2])} points`);
+    S.ch={date:td,score:0,tier:0};save();toast(`${I.target} ${CHT.map((t,i)=>MEDAL(i)+fmt(t)).join(' ')}`);
   }else rng=Math.random;
   playing=true;deal();coach();jingle([523,659,784],.1);
   cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(loop);
@@ -1564,23 +1604,23 @@ function endGame(){
   const fresh=checkSkins();save();
   const ratio=old>0?score/old:1,gr=isBest||old===0?'S':ratio>=.75?'A':ratio>=.5?'B':ratio>=.25?'C':'D';
   const rares=Object.values(caught).reduce((x,y)=>x+y,0);
-  $('endTitle').textContent=wasChal?(chTier?CHN[chTier-1]+' medal!':'Daily Challenge'):isBest&&score>0?'New best!':'Harvest over!';$('endTitle').classList.toggle('best',isBest&&score>0);
-  $('endNote').textContent=isBest?(old?'You beat '+fmt(old)+'!':'First score on the board!'):old-score<=Math.max(5,old*.15)?`So close! Only ${fmt(old-score+1)} more to beat your best.`:'Best: '+fmt(old);
+  $('endTitle').innerHTML=wasChal?I.cal+I.target+(chTier?' '+MEDAL(chTier-1):''):isBest&&score>0?I.cup+I.star:'';$('endTitle').hidden=!$('endTitle').innerHTML;$('endTitle').classList.toggle('best',isBest&&score>0);
+  $('endNote').innerHTML=isBest?I.cup+' '+(old?fmt(old)+' → '+fmt(score):fmt(score)):I.cup+' '+fmt(old)+(old-score<=Math.max(5,old*.15)?' (−'+fmt(old-score+1)+')':'');
   $('final').textContent='0';$('final').classList.remove('land');
   const g=$('grade');g.textContent=gr;g.classList.remove('in');g.style.setProperty('--g',{S:'#ffc21a',A:'#4fb53a',B:'#3a9ae8',C:'#f2892a',D:'#8a8f98'}[gr]);
   $('bestFill').style.transition='none';$('bestFill').style.transform='scaleX(0)';$('goalFill').style.transition='none';$('goalFill').style.transform='scaleX(0)';
   for(const id of ['tCobs','tStreak','tRare']){$(id).textContent='0';$(id).parentNode.classList.remove('in')}
-  $('endEarn').innerHTML=`+<span id="earnN">0</span> ${KI} <span style="color:#fff;font-size:18px">(${kf()} total)</span>`;
+  $('endEarn').innerHTML=`+<span id="earnN">0</span> ${KI} <span style="color:#fff;font-size:18px">(${kf()})</span>`;
   $('haul').innerHTML=ALLRARE.filter(k=>caught[k]).map(k=>`<span class="chip ol2" style="--a:${T[k].aura}">${T[k].name} ×${caught[k]}</span>`).join('')
-    +(rank?`<span class="chip ol2" style="--a:#f29a0c">#${rank} on the leaderboard</span>`:'')
-    +(wasChal?`<span class="chip ol2" style="--a:${chTier?CHC[chTier-1]:'#8a8f98'}">${chTier?'Challenge '+CHN[chTier-1]+' +'+CHR[chTier-1]:'Challenge: Bronze needs '+CHT[0]}</span>`:'')
-    +gameDone.map(d=>`<span class="chip ol2" style="--a:#4fb53a">Mission +${d.rw}</span>`).join('')
-    +newTiers.map(k=>`<span class="chip ol2" style="--a:${T[k].aura}">${T[k].name} corn can now appear!</span>`).join('')
-    +fresh.map(nm=>`<span class="chip ol2" style="--a:#e040b0">New cob: ${nm}!</span>`).join('');
+    +(rank?`<span class="chip ol2" style="--a:#f29a0c">${I.cup} #${rank}</span>`:'')
+    +(wasChal?`<span class="chip ol2" style="--a:${chTier?CHC[chTier-1]:'#8a8f98'}">${chTier?MEDAL(chTier-1)+' +'+CHR[chTier-1]+' '+KI:I.target+' '+MEDAL(0)+' '+CHT[0]}</span>`:'')
+    +gameDone.map(d=>`<span class="chip ol2" style="--a:#4fb53a">${I.target}${I.ok} +${d.rw}</span>`).join('')
+    +newTiers.map(k=>`<span class="chip ol2" style="--a:${T[k].aura}">${I.star} ${T[k].name}</span>`).join('')
+    +fresh.map(nm=>`<span class="chip ol2" style="--a:#e040b0">${I.pal} ${nm}</span>`).join('');
   const lock=ALLBG.filter(b=>!S.own.bg.includes(b.id)).sort((a,b)=>a.cost-b.cost)[0];
   $('goalBox').hidden=!lock;
   {const run=endRun+1,p=document.querySelector('#end .panel'),f=()=>{if(run!==endRun)return;p.style.zoom='';const a=p.clientHeight,b=p.scrollHeight;if(b>a+2)p.style.zoom=Math.max(.6,a/b*.97)};[0,60,400,1100,1800,2400].forEach(t=>setTimeout(f,t))}
-  if(lock)$('endGoal').innerHTML=S.k>=lock.cost?`You can unlock ${lock.name} now!`:`${fmt(lock.cost-S.k)} ${KI} to go for ${lock.name}`;
+  if(lock)$('endGoal').innerHTML=`${I.pal} ${lock.name} · ${S.k>=lock.cost?I.ok:fmt(Math.min(S.k,lock.cost))+' / '+fmt(lock.cost)+' '+KI}`;
   [392,330,262].forEach((fq,i)=>tone(fq,.2+i*.14,.25,'triangle',.1));
   const run=++endRun,later=(ms,fn)=>setTimeout(()=>{if(run===endRun&&!$('end').hidden)fn()},ms);
   const count=(el,to,ms,done)=>{const t0=performance.now();let lastTick=0;const step=now=>{if(run!==endRun)return;const p=Math.min(1,(now-t0)/ms),v=Math.round(to*(1-Math.pow(1-p,3)));el.textContent=fmt(v);
@@ -1626,8 +1666,8 @@ $('shopBtn').onclick=()=>{drawShop();open('shop')};
 $('misBtn').onclick=()=>{drawMissions();open('missions')};
 $('dayPill').onclick=()=>{
   const st=Math.max(1,S.day.streak),pos=(st-1)%7,hasSun=S.own.cob.includes('sunset');
-  $('calNote').innerHTML=`You're on day ${st}. Tomorrow: +${dayRw(st+1)} ${KI}`;
-  $('calGrid').innerHTML=DAYR.map((r,i)=>`<div class="cd ol2 ${i<pos?'got':i===pos?'now':''} ${i===6?'big':''}"><b>Day ${st-pos+i}</b>+${r} ${KI}${i===6&&!hasSun?'<br>+ Sunset cob':''}${i<pos?'<br>✓':i===pos?'<br>TODAY':''}</div>`).join('');
+  $('calH').innerHTML=I.cal+' '+st;
+  $('calGrid').innerHTML=DAYR.map((r,i)=>`<div class="cd ol2 ${i<pos?'got':i===pos?'now':''} ${i===6?'big':''}"><b>${st-pos+i}${i<pos?' '+I.ok:''}</b>+${r} ${KI}${i===6&&!hasSun?'<span class="cdc">+'+cob('good',77,true,'sunset')+'</span>':''}</div>`).join('');
   open('cal');
 };
 $('helpBtn').onclick=()=>open('help');
@@ -1680,8 +1720,13 @@ function fitLogo(){
 drawLogo();try{document.fonts.load("200px 'Titan One'").then(drawLogo)}catch(e){}
 
 applyTheme();daily();if(checkSkins().length)save();layout();drawHome();$('ver').textContent='v'+BUILD;
-$('demoGood').innerHTML=cob('good',7)+'<span class="ol2">Good: KEEP</span>';
-$('demoBad').innerHTML=cob('bad',11)+'<span class="ol2">Yuck: TOSS</span>';
+$('demoGood').innerHTML=cob('good',7)+`<span class="ol2">${I.ok}${I.R}</span>`;
+$('demoBad').innerHTML=cob('bad',11)+`<span class="ol2">${I.L}${I.no}</span>`;
+$('rules').innerHTML=[I.fire+'5 = ×2',I.fire+'10 = ×3',I.fast+' = +1',I.bolt+' = ×2',I.life+' × 3','1 = '+KI].map(x=>`<div>${x}</div>`).join('');
+$('homeTag').innerHTML=$('hint').innerHTML=SWIPE;$('frLab').innerHTML=I.bolt;$('helpOk').innerHTML=I.ok;$('tutBtn').innerHTML=I.play+' '+I.ok+I.no+I.star;
+$('shopH').innerHTML=I.pal;$('tabBg').innerHTML=I.swatch;$('tabWorld').innerHTML=I.world;$('tabCob').innerHTML=I.cob;$('tabHusk').innerHTML=I.leaf;
+$('misH').innerHTML=I.target;$('lbH').innerHTML=I.cup;$('nmIc').innerHTML=I.user;$('tl1').innerHTML=I.cob;$('tl2').innerHTML=I.fire;$('tl3').innerHTML=I.star;
+$('againBtn').innerHTML=I.play+'PLAY';$('endShop').innerHTML=I.pal;$('endHome').innerHTML=I.home;$('revH').innerHTML='+1 '+I.life;$('revNo').innerHTML=I.no;$('whoH').innerHTML=I.user;$('whoGo').innerHTML=I.ok;
 $('demoRare').innerHTML=RARE.map((k,i)=>`<div>${cob(k,21+i)}<span class="ol2">+${T[k].pts}</span></div>`).join('');
 try{TILE=`url("data:image/svg+xml,${encodeURIComponent(cob('good',3,true,'classic').replace('class="cob"','xmlns="http://www.w3.org/2000/svg"'))}")`}catch(e){}
 layout();
