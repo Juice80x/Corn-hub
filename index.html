@@ -542,7 +542,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=64;
+const BUILD=65;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1478,8 +1478,10 @@ function fbBackfill(){
 }
 setTimeout(fbBackfill,2500);
 function fbTop(){
-  return fbAuth().then(a=>fbJ(FBDOC+':runQuery',{structuredQuery:{from:[{collectionId:'scores'}],orderBy:[{field:{fieldPath:'s'},direction:'DESCENDING'}],limit:50}},a.it)
-    .then(r=>r.filter(x=>x.document).map(x=>{const f=x.document.fields||{},nv=k=>+((f[k]||{}).integerValue||0);return {nm:String((f.nm||{}).stringValue||'Player').slice(0,12),s:nv('s'),n:nv('n'),st:nv('st'),me:x.document.name.endsWith('/'+a.uid)}})));
+  return fbAuth().then(a=>fbJ(FBDOC+':runQuery',{structuredQuery:{from:[{collectionId:'scores'}],orderBy:[{field:{fieldPath:'s'},direction:'DESCENDING'}],limit:150}},a.it)
+    .then(r=>r.filter(x=>x.document).map(x=>{const f=x.document.fields||{},nv=k=>+((f[k]||{}).integerValue||0);return {nm:String((f.nm||{}).stringValue||'Player').slice(0,12),s:nv('s'),n:nv('n'),st:nv('st'),me:x.document.name.endsWith('/'+a.uid)}})))
+    // One row per name: the list is already highest-first, so keep the first of each name. A copy that is mine keeps the highlight.
+    .then(rows=>{const seen={},out=[];for(const r of rows){const k=r.nm.trim().toLowerCase(),h=seen[k];if(h){if(r.me)h.me=true}else out.push(seen[k]=r)}return out.slice(0,50)});
 }
 
 /* ---------- shop ---------- */
