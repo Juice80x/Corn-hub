@@ -196,13 +196,14 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 @keyframes throbS{50%{transform:scale(1.025)}}
 .panel>.go+.btnrow{margin-top:17px}
 #revYes.no,#revAd{animation:none}
-.adbox{width:min(330px,88%);background:#f4f6f8;border-radius:14px;padding:14px 16px 16px;color:#33414a;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.adbox{position:absolute;inset:0;display:grid;grid-template-rows:auto auto 1fr;color:#33414a;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.adtop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;min-height:44px}
 .adtag{display:inline-block;background:#ffc21a;color:#3a2a00;font-size:12px;font-weight:700;border-radius:5px;padding:2px 8px}
-.adbody{height:150px;margin-top:10px;border:2px dashed #9aa8b2;border-radius:10px;display:grid;place-content:center;gap:6px}
-.adbody b{font-size:22px}.adbody span{font-size:13px;color:#6a7882}
-.adbox .tbar{height:10px;background:#d4dbe0;border:0}#adBar{background:#7a4ae0;transform-origin:left;display:block;height:100%;border-radius:6px}
-.adcount{font-size:14px;color:#56646e}
-#adClose{font:inherit;font-weight:700;font-size:16px;color:#fff;background:#33414a;border:0;border-radius:10px;padding:10px 22px;margin-top:12px;min-height:44px}
+.adbody{margin:4px 14px 18px;border:2px dashed #9aa8b2;border-radius:14px;display:grid;place-content:center;gap:8px;padding:0 16px}
+.adbody b{font-size:28px}.adbody span{font-size:15px;color:#6a7882}
+.adbox .tbar{height:6px;margin:0;background:#d4dbe0;border:0;border-radius:0;box-shadow:none}#adBar{background:#7a4ae0;transform-origin:left;display:block;height:100%}
+.adcount{font-size:14px;font-weight:600;color:#fff;background:#33414a;border-radius:99px;padding:7px 14px;white-space:nowrap}.adcount:empty{display:none}
+#adClose{font:inherit;font-weight:700;font-size:18px;line-height:1;color:#fff;background:#33414a;border:0;border-radius:50%;width:44px;height:44px;padding:0}
 @keyframes drain{to{transform:scaleX(0)}}
 @keyframes toast{0%{transform:translateY(-40px) scale(.6);opacity:0}8%{transform:translateY(0) scale(1.08);opacity:1}14%{transform:scale(1)}86%{opacity:1}100%{transform:translateY(-20px);opacity:0}}
 
@@ -478,13 +479,11 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <p class="ol2" style="font-size:13px;opacity:.85">Mockup: no payment is taken</p>
     </div>
   </div>
-  <div class="over" id="adMock" hidden style="z-index:12;background:rgba(6,14,20,.94)">
+  <div class="over" id="adMock" hidden style="z-index:12;background:#f4f6f8;padding:0;display:block">
     <div class="adbox">
-      <div class="adtag">AD · mockup</div>
+      <div class="tbar"><i id="adBar"></i></div>
+      <div class="adtop"><div class="adtag">AD · mockup</div><div class="adcount" id="adCount"></div><button id="adClose" hidden aria-label="Close ad">✕</button></div>
       <div class="adbody"><b>Your ad here</b><span id="adKind"></span></div>
-      <div class="tbar" style="margin:14px 0 8px"><i id="adBar"></i></div>
-      <div class="adcount" id="adCount"></div>
-      <button id="adClose" hidden aria-label="Close ad">✕ Close</button>
     </div>
   </div>
   <div class="over" id="gate" hidden style="z-index:20;background:var(--hud)">
@@ -543,7 +542,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=68;
+const BUILD=69;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -671,6 +670,8 @@ delete S.plain;S.own.bg=S.own.bg.map(i=>i==='jungle'||i==='city'||i==='ufo'?'w_'
 // v43: Tropical Bay is the free starting colour (refunded if it was bought); no world is free any more
 if(OLD43){if(S.own.bg.includes('beach'))S.k+=1500;else S.own.bg.push('beach');S.own.bg=S.own.bg.filter(i=>i!=='w_field');if(S.bg==='w_field'||S.bg==='field')S.bg='beach'}
 S.d43=1;if(!S.own.bg.includes('beach'))S.own.bg.push('beach');
+// v69: mock No Ads purchases are withdrawn (with their 2,500 bonus) until real payments exist
+if(!S.d69){if(S.noAds){S.noAds=false;if(S.noAdsGift)S.k=Math.max(0,S.k-2500)}S.noAdsGift=0;S.d69=1}
 if(!ALLBG.some(b=>b.id===S.bg)||!S.own.bg.includes(S.bg))S.bg='beach';if(!SK.some(s=>s.id===S.cob)||!S.own.cob.includes(S.cob))S.cob='classic';
 if(S.tut===undefined||S.tut===false&&S.t.games>0&&!('tut' in (JSON.parse(localStorage.getItem('cornhub')||'{}'))))S.tut=S.t.games>0;
 if(!Array.isArray(S.top))S.top=[];
@@ -1309,7 +1310,8 @@ function drawMute(){
 function drawAds(){$('noAdsGiftP').innerHTML='+ '+fmt(NOADS_GIFT)+' '+KI+' thank-you bonus';$('adSlot').hidden=!!S.noAds;$('revNoAds').hidden=!!S.noAds}
 let noAdsFrom='';
 $('revNoAds').onclick=()=>{noAdsFrom='rev';clearTimeout(revT);$('revive').classList.add('wait');$('noAdsBuy').innerHTML='BUY · '+NOADS$;open('noAds')};
-$('noAdsBuy').onclick=()=>{S.noAds=true;if(!S.noAdsGift){S.noAdsGift=1;S.k+=NOADS_GIFT;toast('Thank you! +'+fmt(NOADS_GIFT)+' '+KI)}save();drawHome();$('noAds').hidden=true;drawAds();if(!$('shop').hidden)drawShop();toast(I.ok+' Ads removed');jingle([523,659,784,1047]);flash('#8fe060');if(noAdsFrom==='rev'&&!$('revive').hidden)doRevive(0)};
+$('noAdsBuy').onclick=()=>{if(!cheat){$('noAds').hidden=true;toast('Store opens at launch');tone(330,0,.12,'triangle');return} // nothing is for sale until real payments exist; Dev Mode can still try it
+  S.noAds=true;if(!S.noAdsGift){S.noAdsGift=1;S.k+=NOADS_GIFT;toast('Thank you! +'+fmt(NOADS_GIFT)+' '+KI)}save();drawHome();$('noAds').hidden=true;drawAds();if(!$('shop').hidden)drawShop();toast(I.ok+' Ads removed');jingle([523,659,784,1047]);flash('#8fe060');if(noAdsFrom==='rev'&&!$('revive').hidden)doRevive(0)};
 function drawHome(){
   drawAds();
   $('walletHome').innerHTML=KI+'<span>'+(cheat&&DEV.coins?'∞':S.k>=100000?kfmt(S.k):fmt(S.k))+'</span>'+(cheat?'<span style="color:#ffe14d">&nbsp;DEV</span>':'');
@@ -1800,7 +1802,7 @@ $('revAd').onclick=()=>{
   if(S.noAds)return doRevive(0); // ads removed: the free revive is instant
   clearTimeout(revT);$('revive').classList.add('wait');
   const run=endRun,t0=performance.now(),D=cheat||self.__corn?5000:15000;runAd=true;lastAd=t0+D;$('adKind').textContent='A rewarded video would play in this space';$('adClose').hidden=true;$('adMock').hidden=false;
-  const step=now=>{const p=Math.min(1,(now-t0)/D);$('adBar').style.transform=`scaleX(${p})`;$('adCount').textContent=p<1?`Reward in ${Math.ceil((D-(now-t0))/1000)}`:'Reward earned';
+  const step=now=>{const p=Math.min(1,(now-t0)/D);$('adBar').style.transform=`scaleX(${p})`;$('adCount').textContent=p<1?`Reward in ${Math.ceil((D-(now-t0))/1000)}`:'Reward earned ✓';
     if(p<1)adT=requestAnimationFrame(step);else setTimeout(()=>{$('adMock').hidden=true;if(run===endRun&&!$('revive').hidden)doRevive(0)},350)};
   adT=requestAnimationFrame(step);
 };
