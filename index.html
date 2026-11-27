@@ -186,7 +186,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 #revBar{animation:none}#revBar.run{animation:drain 5s linear forwards}
 #revive.wait #revBar.run{animation-play-state:paused}
 .revor{font-size:14px;line-height:1;margin:15px 0 8px;opacity:.9}
-.noadsrow{width:100%;height:40px;font-size:15px;margin:-2px 0 8px;background:linear-gradient(#5aa8f0,#2a6ad0)}
+.sech{grid-column:1/-1;font-size:15px;letter-spacing:.06em;color:#ffe14d;margin:2px 0 -4px;text-align:left;padding-left:4px}.sech:not(:first-child){margin-top:10px}
+.sw.pk{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:2px;aspect-ratio:auto;height:74px;background:rgba(255,255,255,.14)}.sw.pk .ki{width:24px;height:26px}.item.pack b{font-size:19px;white-space:nowrap}.item.wide{grid-column:1/-1}.pkn{font-size:14px;white-space:nowrap}.pkm{grid-column:1/-1;font-size:13px;opacity:.85}
 .linkbtn{font:inherit;font-size:14px;color:#fff;background:none;border:0;text-decoration:underline;margin-top:10px;padding:4px 10px;opacity:.9}
 #revAd{background:linear-gradient(#b48cff,#7a4ae0);font-size:min(24px,6vw);white-space:nowrap;margin-top:0}
 #revYes.no{filter:grayscale(.9);opacity:.55}
@@ -398,8 +399,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     <div class="panel full">
       <button class="x" data-close="shop" aria-label="Close">✕</button>
       <div><h2 class="ol" id="shopH" aria-label="Skins"></h2><div class="earn ol2" id="walletShop"></div></div>
-      <button class="tab ol2 noadsrow" id="noAdsBtn" aria-label="Remove ads"></button>
-      <div class="tabs"><button class="tab on ol2" id="tabBg" aria-label="Colours"></button><button class="tab ol2" id="tabWorld" aria-label="Worlds"></button><button class="tab ol2" id="tabCob" aria-label="Cobs"></button><button class="tab ol2" id="tabHusk" aria-label="Husks"></button></div>
+      <div class="tabs"><button class="tab on ol2" id="tabBg" aria-label="Backgrounds"></button><button class="tab ol2" id="tabCob" aria-label="Cobs"></button><button class="tab ol2" id="tabHusk" aria-label="Husks"></button><button class="tab ol2" id="tabStore" aria-label="Store"></button></div>
       <div class="grid" id="shopGrid"></div>
     </div>
   </div>
@@ -537,7 +537,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=59;
+const BUILD=60;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1246,11 +1246,10 @@ try{new ResizeObserver(fitHero).observe(document.querySelector('.hero'))}catch(e
 function drawMute(){
   $('muteBtn').innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 9h4l6-5v16l-6-5H3z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>${S.mute?'<path d="M16 9l6 6M22 9l-6 6" stroke="#ff8a7a" stroke-width="3" stroke-linecap="round"/>':'<path d="M16.5 8.5c2 2 2 5 0 7M19 6c3.500 3.500 3.500 8.500 0 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'}</svg>`;
 }
-function drawAds(){$('adSlot').hidden=!!S.noAds;$('noAdsBtn').hidden=!!S.noAds;$('noAdsBtn').innerHTML='REMOVE ADS · $2.99';$('revNoAds').hidden=!!S.noAds}
+function drawAds(){$('adSlot').hidden=!!S.noAds;$('revNoAds').hidden=!!S.noAds}
 let noAdsFrom='';
-$('noAdsBtn').onclick=()=>{noAdsFrom='shop';$('noAdsBuy').innerHTML='BUY · $2.99';open('noAds')};
-$('revNoAds').onclick=()=>{noAdsFrom='rev';clearTimeout(revT);$('revive').classList.add('wait');$('noAdsBuy').innerHTML='BUY · $2.99';open('noAds')};
-$('noAdsBuy').onclick=()=>{S.noAds=true;save();$('noAds').hidden=true;drawAds();toast(I.ok+' Ads removed');jingle([523,659,784,1047]);flash('#8fe060');if(noAdsFrom==='rev'&&!$('revive').hidden)doRevive(0)};
+$('revNoAds').onclick=()=>{noAdsFrom='rev';clearTimeout(revT);$('revive').classList.add('wait');$('noAdsBuy').innerHTML='BUY · '+NOADS$;open('noAds')};
+$('noAdsBuy').onclick=()=>{S.noAds=true;save();$('noAds').hidden=true;drawAds();if(!$('shop').hidden)drawShop();toast(I.ok+' Ads removed');jingle([523,659,784,1047]);flash('#8fe060');if(noAdsFrom==='rev'&&!$('revive').hidden)doRevive(0)};
 function drawHome(){
   drawAds();
   $('walletHome').innerHTML=KI+'<span>'+(cheat&&DEV.coins?'∞':S.k>=100000?kfmt(S.k):fmt(S.k))+'</span>'+(cheat?'<span style="color:#ffe14d">&nbsp;DEV</span>':'');
@@ -1394,33 +1393,50 @@ function checkSkins(){
 const CATS={bg:BG,world:WORLD,cob:SK,husk:HUSK},EQ={bg:'bg',world:'bg',cob:'cob',husk:'husk'};
 function drawShop(){
   $('walletShop').innerHTML=KI+' '+kf();
-  $('tabBg').classList.toggle('on',tab==='bg');$('tabWorld').classList.toggle('on',tab==='world');$('tabCob').classList.toggle('on',tab==='cob');$('tabHusk').classList.toggle('on',tab==='husk');
-  const list=CATS[tab].slice().sort((a,b)=>(a.req?1e9:a.cost||0)-(b.req?1e9:b.cost||0));
-  $('shopGrid').innerHTML=list.map((it,i)=>{
+  $('tabBg').classList.toggle('on',tab==='bg');$('tabStore').classList.toggle('on',tab==='store');$('tabCob').classList.toggle('on',tab==='cob');$('tabHusk').classList.toggle('on',tab==='husk');
+  if(tab==='store'){
+    $('shopGrid').innerHTML=PACKS.map((p,i)=>`<div class="item pack"><div class="sw pk">${KI.repeat(i+1)}</div><b class="ol2">${KI} ${fmt(p.n)}</b><button class="ibtn ol2 buy" data-pack="${i}">${p.$}</button></div>`).join('')
+      +`<div class="item pack wide ${S.noAds?'eq':''}"><b class="ol2">NO ADS</b><div class="ol2 pkn">No banner · Free revive, no ad</div>${S.noAds?`<button class="ibtn ol2 cur">${I.ok} OWNED</button>`:`<button class="ibtn ol2 buy" data-pack="ads">${NOADS$}</button>`}</div>`
+      +'<div class="ol2 pkm">Mockup: no payment is taken</div>';
+    fit1($('shop'));return}
+  const sorted=c=>CATS[c].slice().sort((a,b)=>(a.req?1e9:a.cost||0)-(b.req?1e9:b.cost||0)).map(it=>[c,it]);
+  const list=tab==='bg'?sorted('bg').concat([['h','WORLDS']],sorted('world')):sorted(tab);
+  $('shopGrid').innerHTML=(tab==='bg'?'<div class="ol2 sech">COLOURS</div>':'')+list.map(([tab,it],i)=>{
+    if(tab==='h')return `<div class="ol2 sech">${it}</div>`;
     const own=has(tab,it.id),eq=S[EQ[tab]]===it.id,p=it.req?Math.min(stat(it.req.k),it.req.n):0;
     const gr=it.c?`radial-gradient(circle,${it.c[0]},${it.c[1]} 30%,${it.c[2]} 65%,${it.c[3]})`:'',th=it.art?thumb(it.art):'';
     const pic=tab==='bg'||tab==='world'?`<div class="sw" ${it.art?`data-th="${it.art}" data-g="${gr}"`:''} style="--ray:${it.ray};background:${th?th+' center/cover,':''}${gr}">${it.art?'':'<i></i>'}</div>`
       :`<div class="sw" style="background:rgba(255,255,255,.18)">${tab==='cob'?cob('good',31+i,true,it.id):cob('good',51+i,true,null,null,it.id)}</div>`;
-    const act=own||!it.req?`<button class="ibtn ol2 ${eq?'cur':own?'':S.k>=it.cost?'buy':'no'}" data-id="${it.id}">${eq?I.ok+' ON':own?'USE':KI+' '+fmt(it.cost)}</button>`
+    const act=own||!it.req?`<button class="ibtn ol2 ${eq?'cur':own?'':S.k>=it.cost?'buy':'no'}" data-id="${it.id}" data-cat="${tab}">${eq?I.ok+' ON':own?'USE':KI+' '+fmt(it.cost)}</button>`
       :`<div class="ol2" style="font-size:15px" aria-label="${it.req.txt}">${({cobs:I.cob,best:I.cup,rare:I.star,day:I.cal,dex:I.book,frenzy:I.bolt})[it.req.k]||''} ${({cobs:'N cobs',best:'Score N',rare:'N rare cobs',day:'N day streak',dex:'N in Corndex',frenzy:'N Frenzies'})[it.req.k].replace('N',fmt(it.req.n))}</div><div class="prog"><i style="transform:scaleX(${p/it.req.n})"></i></div><div class="ol2" style="font-size:13px">${fmt(p)} / ${fmt(it.req.n)}</div>`;
     return `<div class="item ${eq?'eq':''}">${pic}<b class="ol2">${it.name}</b>${act}</div>`}).join('');
   fit1($('shop'));
 }
 $('shopGrid').onclick=e=>{
   const b=e.target.closest('button');if(!b)return;
-  const it=CATS[tab].find(x=>x.id===b.dataset.id);if(!it)return;
+  if(b.dataset.pack){buyPack(b.dataset.pack);return}
+  const tab=b.dataset.cat,it=tab&&CATS[tab].find(x=>x.id===b.dataset.id);if(!it)return;
   if(has(tab,it.id)){S[EQ[tab]]=it.id;tone(784,0,.1,'triangle')}
   else if(!it.req&&S.k>=it.cost){S.k-=it.cost;S.own[OWN[tab]].push(it.id);S[EQ[tab]]=it.id;applyTheme();flash('#fff');bits('s',16,['#fff','#ffe14d','#ff7ac8'],240,app);jingle([523,659,784,1047,1319]);toast('Unlocked '+it.name+'!')}
   else{retrigger(b,'shake');tone(160,0,.2,'sawtooth',.1,.6);toast(`Need ${fmt(it.cost-S.k)} more ${KI}`);return}
   applyTheme();save();drawShop();drawHome();
 };
-$('tabWorld').onclick=()=>{tab='world';drawShop()};
+$('tabStore').onclick=()=>{tab='store';drawShop()};
+// Mock store. Prices are placeholders: the real app must show the store's own localised price string.
+// Coin packs only pay out in Dev Mode (sandbox) so testers can't skip the economy.
+const PACKS=[{n:2500,$:'$1.49'},{n:10000,$:'$4.49'},{n:40000,$:'$14.99'},{n:150000,$:'$39.99'}],NOADS$='$4.49';
+function buyPack(k){
+  if(k==='ads'){noAdsFrom='shop';$('noAdsBuy').innerHTML='BUY · '+NOADS$;open('noAds');return}
+  const p=PACKS[k];if(!p)return;
+  if(!cheat){toast('Store opens at launch');tone(330,0,.12,'triangle');return}
+  S.k+=p.n;flash('#ffe14d');jingle([523,659,784,1047,1319]);toast('+'+fmt(p.n)+' '+KI);drawShop();drawHome();
+}
 $('tabBg').onclick=()=>{tab='bg';drawShop()};$('tabCob').onclick=()=>{tab='cob';drawShop()};$('tabHusk').onclick=()=>{tab='husk';drawShop()};
 
 /* ---------- game ---------- */
 let score=0,shown=0,lives=3,streak=0,topStreak=0,n=0,caught={},playing=false,cur=null,next=null,timeLeft=0,timeMax=0,last=0,raf=0,fever=0,frenzyT=0;
 const FRENZY=6,REV=250,MILE=4000;
-let revived=false,bestBeat=false,avg=25,mercy=false,revT=0,frenzies=0;
+let revCd=false,revived=false,bestBeat=false,avg=25,mercy=false,revT=0,frenzies=0;
 // Adaptive pacing: a little easier below the player's usual run length, steeper past it. Always beatable.
 const eff=()=>n+Math.max(0,n-avg)*.6;
 // timer pace counts from the last revive, so a paid revive starts back at the gentle opening speed
@@ -1646,16 +1662,21 @@ function offerRevive(){
 function doRevive(cost){
   clearTimeout(revT);$('revive').hidden=true;
   if(cost&&!cheat)S.k-=cost;save();revived=true;revN=n;lives=1;drawLives();
-  flash('#8fe060');popText('REVIVED!','#8fe060',true);jingle([392,523,659,784]);
-  playing=true;last=performance.now();deal();
+  flash('#8fe060');jingle([392,523,659,784]);
+  // 3-2-1 before play resumes so nobody dies the instant they come back
+  const run=endRun;let c=3;revCd=true;
+  const stepCd=()=>{if(run!==endRun){revCd=false;return}
+    if(c>0){popText(String(c),'#fff',true,'cd');tone(440,0,.09,'triangle');c--;setTimeout(stepCd,700)}
+    else{revCd=false;popText('GO!','#8fe060',true);tone(880,0,.14,'triangle');playing=true;last=performance.now();deal()}};
+  stepCd();
 }
 $('revYes').onclick=()=>{if(!(cheat||S.k>=REV)){retrigger($('revYes'),'shake');tone(160,0,.2,'sawtooth',.1,.6);toast(`Need ${fmt(REV-S.k)} more ${KI}`);return}doRevive(REV)};
-// Mock rewarded ad: a 5 second placeholder, then the free revive. Swap this for the real ad call later.
+// Mock rewarded ad: 15 s (5 s in Dev Mode), watched to the end, then the free revive. Real length is set by the ad network. Swap this for the real ad call later.
 let adT=0;
 $('revAd').onclick=()=>{
   if(S.noAds)return doRevive(0); // ads removed: the free revive is instant
   clearTimeout(revT);$('revive').classList.add('wait');
-  const run=endRun,t0=performance.now(),D=5000;$('adMock').hidden=false;
+  const run=endRun,t0=performance.now(),D=cheat||self.__corn?5000:15000;$('adMock').hidden=false;
   const step=now=>{const p=Math.min(1,(now-t0)/D);$('adBar').style.transform=`scaleX(${p})`;$('adCount').textContent=p<1?`Reward in ${Math.ceil((D-(now-t0))/1000)}`:'Reward earned';
     if(p<1)adT=requestAnimationFrame(step);else setTimeout(()=>{$('adMock').hidden=true;if(run===endRun&&!$('revive').hidden)doRevive(0)},350)};
   adT=requestAnimationFrame(step);
@@ -1816,7 +1837,7 @@ $('demoGood').innerHTML=cob('good',7)+`<span class="ol2">KEEP ${I.ok}${I.R}</spa
 $('demoBad').innerHTML=cob('bad',11)+`<span class="ol2">${I.L}${I.no} TOSS</span>`;
 $('rules').innerHTML=[I.fire+'5 = ×2',I.fire+'10 = ×3',I.fast+' fast = +1',I.bolt+' frenzy ×2','3 lives','1 pt = '+KI].map(x=>`<div>${x}</div>`).join('');
 $('hint').innerHTML=SWIPE;$('frLab').innerHTML=I.bolt;$('helpOk').innerHTML='GOT IT';$('tutBtn').innerHTML=I.play+' TUTORIAL';
-$('shopH').innerHTML=I.pal+' Skins';$('tabBg').innerHTML=I.swatch+'<em>COLOURS</em>';$('tabWorld').innerHTML=I.world+'<em>WORLDS</em>';$('tabCob').innerHTML=I.cob+'<em>COBS</em>';$('tabHusk').innerHTML=I.leaf+'<em>HUSKS</em>';
+$('shopH').innerHTML=I.pal+' Skins';$('tabBg').innerHTML=I.world+'<em>SCENES</em>';$('tabStore').innerHTML=KI+'<em>STORE</em>';$('tabCob').innerHTML=I.cob+'<em>COBS</em>';$('tabHusk').innerHTML=I.leaf+'<em>HUSKS</em>';
 $('misH').innerHTML=I.target+' Missions';$('lbH').innerHTML=I.cup+' Leaderboard';$('nmIc').innerHTML=I.user+' Name';$('tl1').innerHTML=I.cob+' cobs';$('tl2').innerHTML=I.fire+' streak';$('tl3').innerHTML=I.star+' rare';
 $('againBtn').innerHTML=I.play+'PLAY AGAIN';$('endShop').innerHTML=I.pal+' SKINS';$('endHome').innerHTML=I.home+' HOME';$('revH').innerHTML='Second chance?';$('revNo').innerHTML='NO THANKS';$('whoH').innerHTML=I.user+' Your name';$('whoGo').innerHTML="LET'S GO";
 $('demoRare').innerHTML=RARE.map((k,i)=>`<div>${cob(k,21+i)}<span class="ol2">+${T[k].pts}</span></div>`).join('');
