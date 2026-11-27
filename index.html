@@ -56,12 +56,11 @@ background:repeating-conic-gradient(from 0deg,rgba(var(--ray)) 0 9deg,transparen
 button.pill{padding:3px 8px}
 
 /* ---------- home ---------- */
-#home{grid-template-rows:auto auto 1fr auto;padding:calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + max(66px,min(86px,10vh)));text-align:center;z-index:1}
-.adslot{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom) + 8px);transform:translateX(-50%);width:min(320px,calc(100% - 24px));height:50px;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.9);border:2px dashed #7a8a94;border-radius:8px;color:#56646e;font-size:13px;white-space:nowrap;z-index:2}
-.adslot button{font:inherit;font-size:12px;color:#fff;background:#3a8ae0;border:0;border-radius:7px;padding:6px 9px 7px;margin-left:4px}
+#home{grid-template-rows:auto auto 1fr auto;padding:calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + clamp(50px,15.6vw,64px) + 22px);text-align:center;z-index:1}
+.adslot{position:absolute;left:0;right:0;bottom:0;height:calc(clamp(50px,15.6vw,64px) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:10px;background:#f1f3f5;border-top:3px solid var(--ol);color:#56646e;font-size:13px;white-space:nowrap;z-index:2}
 .adslot b{font-weight:400;background:#ffc21a;color:#3a2a00;border-radius:5px;padding:1px 7px 2px;font-size:12px}
 .adslot.ol2,.adslot *{text-shadow:none!important;-webkit-text-stroke:0!important}
-.app.wide .adslot{left:75%}
+
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .logo{position:relative;width:300px;max-width:100%;margin:6px auto 0;animation:wig 3s ease-in-out infinite}
 .logo svg{display:block;width:100%;height:auto}
@@ -187,6 +186,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 #revBar{animation:none}#revBar.run{animation:drain 5s linear forwards}
 #revive.wait #revBar.run{animation-play-state:paused}
 .revor{font-size:14px;margin:6px 0 4px;opacity:.9}
+.noadsrow{width:100%;height:40px;font-size:15px;margin:-2px 0 8px;background:linear-gradient(#5aa8f0,#2a6ad0)}
+.linkbtn{font:inherit;font-size:14px;color:#fff;background:none;border:0;text-decoration:underline;margin-top:10px;padding:4px 10px;opacity:.9}
 #revAd{background:linear-gradient(#b48cff,#7a4ae0);font-size:min(24px,6vw);white-space:nowrap;margin-top:0}
 #revYes.no{filter:grayscale(.9);opacity:.55}
 #revYes,#revAd,#noAdsBuy{display:block;width:100%;box-sizing:border-box;padding-left:6px;padding-right:6px;overflow:hidden}
@@ -347,7 +348,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     <div class="logo" aria-label="Corn Rush"><svg id="logoSvg" viewBox="0 0 600 350"></svg></div>
     <div class="ver" id="ver"></div>
     <div class="hero"><div id="heroCob"><canvas id="heroCv" width="700" height="950"></canvas></div></div>
-    <div class="adslot ol2" id="adSlot" aria-label="Ad placeholder"><b>AD</b><span>Banner mockup</span><button id="noAdsBtn">REMOVE ADS</button></div>
+    <div class="adslot ol2" id="adSlot" aria-label="Ad placeholder"><b>AD</b><span>Banner mockup · full width</span></div>
     <div>
       <button class="go ol" id="playBtn"><svg viewBox="0 0 24 24"><path d="M6 3.500v17l15-8.500z" fill="#fff" stroke="var(--ol)" stroke-width="3" stroke-linejoin="round"/></svg>PLAY</button>
       <div class="menu">
@@ -394,6 +395,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     <div class="panel full">
       <button class="x" data-close="shop" aria-label="Close">✕</button>
       <div><h2 class="ol" id="shopH" aria-label="Skins"></h2><div class="earn ol2" id="walletShop"></div></div>
+      <button class="tab ol2 noadsrow" id="noAdsBtn" aria-label="Remove ads"></button>
       <div class="tabs"><button class="tab on ol2" id="tabBg" aria-label="Colours"></button><button class="tab ol2" id="tabWorld" aria-label="Worlds"></button><button class="tab ol2" id="tabCob" aria-label="Cobs"></button><button class="tab ol2" id="tabHusk" aria-label="Husks"></button></div>
       <div class="grid" id="shopGrid"></div>
     </div>
@@ -454,6 +456,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <div class="ol2 revor">or</div>
       <button class="go ol2" id="revAd" aria-label="Watch an ad to revive for free"></button>
       <div class="btnrow" style="grid-template-columns:1fr"><button class="mbtn ol2" id="revNo" aria-label="No thanks"></button></div>
+      <button class="ol2 linkbtn" id="revNoAds">Remove ads</button>
     </div>
   </div>
 
@@ -531,7 +534,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=57;
+const BUILD=58;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1240,9 +1243,11 @@ try{new ResizeObserver(fitHero).observe(document.querySelector('.hero'))}catch(e
 function drawMute(){
   $('muteBtn').innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 9h4l6-5v16l-6-5H3z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>${S.mute?'<path d="M16 9l6 6M22 9l-6 6" stroke="#ff8a7a" stroke-width="3" stroke-linecap="round"/>':'<path d="M16.5 8.5c2 2 2 5 0 7M19 6c3.500 3.500 3.500 8.500 0 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'}</svg>`;
 }
-function drawAds(){$('adSlot').hidden=!!S.noAds}
-$('noAdsBtn').onclick=()=>{$('noAdsBuy').innerHTML='BUY · $2.99';open('noAds')};
-$('noAdsBuy').onclick=()=>{S.noAds=true;save();$('noAds').hidden=true;drawAds();toast(I.ok+' Ads removed');jingle([523,659,784,1047]);flash('#8fe060')};
+function drawAds(){$('adSlot').hidden=!!S.noAds;$('noAdsBtn').hidden=!!S.noAds;$('noAdsBtn').innerHTML='REMOVE ADS · $2.99';$('revNoAds').hidden=!!S.noAds}
+let noAdsFrom='';
+$('noAdsBtn').onclick=()=>{noAdsFrom='shop';$('noAdsBuy').innerHTML='BUY · $2.99';open('noAds')};
+$('revNoAds').onclick=()=>{noAdsFrom='rev';clearTimeout(revT);$('revive').classList.add('wait');$('noAdsBuy').innerHTML='BUY · $2.99';open('noAds')};
+$('noAdsBuy').onclick=()=>{S.noAds=true;save();$('noAds').hidden=true;drawAds();toast(I.ok+' Ads removed');jingle([523,659,784,1047]);flash('#8fe060');if(noAdsFrom==='rev'&&!$('revive').hidden)doRevive(0)};
 function drawHome(){
   drawAds();
   $('walletHome').innerHTML=KI+'<span>'+(cheat&&DEV.coins?'∞':S.k>=100000?kfmt(S.k):fmt(S.k))+'</span>'+(cheat?'<span style="color:#ffe14d">&nbsp;DEV</span>':'');
