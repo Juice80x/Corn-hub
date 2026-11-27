@@ -542,7 +542,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=65;
+const BUILD=66;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -867,7 +867,7 @@ const SFX={
 const jingle=(notes,v)=>notes.forEach((fq,i)=>tone(fq,i*.07,.22,'triangle',v||.11,0,1));
 // Layered game sounds: a note that climbs a pentatonic scale with the streak, a soft thump, a chord hit, a riser.
 const LADDER=[392,440,494,587,659,784,880,988,1175,1319,1568,1760,1976,2349,2637];
-SFX.step=n=>{const f=LADDER[Math.min(LADDER.length-1,Math.max(0,n-1))];tone(f,0,.16,'triangle',.085,0,1);tone(f*2,.005,.09,'sine',.03);tone(95,0,.11,'sine',.16,.5)};
+SFX.step=n=>{const f=LADDER[(Math.max(1,n)-1)%LADDER.length];tone(f,0,.16,'triangle',.085,0,1);tone(f*2,.005,.09,'sine',.03);tone(95,0,.11,'sine',.16,.5)};
 SFX.stab=m=>{(m>=3?[392,494,587,784,988]:[392,494,587,784]).forEach((f,i)=>{tone(f,i*.012,.42,'sawtooth',.035,0,1);tone(f,i*.012,.42,'triangle',.06)});tone(98,0,.4,'sine',.22,.7);noise(0,.25,6000,9000,1.5,.05,'highpass')};
 SFX.riser=()=>{noise(0,.55,500,7000,1.4,.16);tone(196,0,.55,'sawtooth',.05,4);[784,988,1175,1568,1976,2349].forEach((f,i)=>tone(f,.5+i*.045,.3,'triangle',.08,0,1));tone(65,.5,.5,'sine',.28,.6)};
 SFX.miss=()=>{tone(147,0,.32,'sawtooth',.06,.5,1);tone(110,.04,.3,'triangle',.08,.5)};
