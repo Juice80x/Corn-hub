@@ -56,7 +56,11 @@ background:repeating-conic-gradient(from 0deg,rgba(var(--ray)) 0 9deg,transparen
 button.pill{padding:3px 8px}
 
 /* ---------- home ---------- */
-#home{grid-template-rows:auto auto 1fr auto;padding:calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + min(86px,10vh));text-align:center;z-index:1}
+#home{grid-template-rows:auto auto 1fr auto;padding:calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + max(66px,min(86px,10vh)));text-align:center;z-index:1}
+.adslot{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom) + 8px);transform:translateX(-50%);width:min(320px,calc(100% - 24px));height:50px;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.9);border:2px dashed #7a8a94;border-radius:8px;color:#56646e;font-size:13px;white-space:nowrap;z-index:2}
+.adslot b{font-weight:400;background:#ffc21a;color:#3a2a00;border-radius:5px;padding:1px 7px 2px;font-size:12px}
+.adslot.ol2,.adslot *{text-shadow:none!important;-webkit-text-stroke:0!important}
+.app.wide .adslot{left:75%}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .logo{position:relative;width:300px;max-width:100%;margin:6px auto 0;animation:wig 3s ease-in-out infinite}
 .logo svg{display:block;width:100%;height:auto}
@@ -180,6 +184,17 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .toasts{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 168px);z-index:10;display:grid;justify-items:center;gap:6px;pointer-events:none}
 .toast{background:linear-gradient(#ffd84a,#f29a0c);border:4px solid var(--ol);border-radius:16px;padding:4px 16px 6px;font-size:19px;box-shadow:0 5px 0 var(--ol);animation:toast 2.6s ease-in-out forwards;max-width:92%}
 #revBar{animation:none}#revBar.run{animation:drain 5s linear forwards}
+#revive.wait #revBar.run{animation-play-state:paused}
+.revor{font-size:14px;margin:6px 0 4px;opacity:.9}
+#revAd{background:linear-gradient(#b48cff,#7a4ae0);font-size:min(24px,6vw);white-space:nowrap;margin-top:0}
+#revYes.no{filter:grayscale(.9);opacity:.55}
+#revYes,#revAd{display:block;width:100%;box-sizing:border-box;padding-left:6px;padding-right:6px;overflow:hidden}
+.adbox{width:min(330px,88%);background:#f4f6f8;border-radius:14px;padding:14px 16px 16px;color:#33414a;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.adtag{display:inline-block;background:#ffc21a;color:#3a2a00;font-size:12px;font-weight:700;border-radius:5px;padding:2px 8px}
+.adbody{height:150px;margin-top:10px;border:2px dashed #9aa8b2;border-radius:10px;display:grid;place-content:center;gap:6px}
+.adbody b{font-size:22px}.adbody span{font-size:13px;color:#6a7882}
+.adbox .tbar{height:10px;background:#d4dbe0;border:0}#adBar{background:#7a4ae0;transform-origin:left;display:block;height:100%;border-radius:6px}
+.adcount{font-size:14px;color:#56646e}
 @keyframes drain{to{transform:scaleX(0)}}
 @keyframes toast{0%{transform:translateY(-40px) scale(.6);opacity:0}8%{transform:translateY(0) scale(1.08);opacity:1}14%{transform:scale(1)}86%{opacity:1}100%{transform:translateY(-20px);opacity:0}}
 
@@ -331,6 +346,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     <div class="logo" aria-label="Corn Rush"><svg id="logoSvg" viewBox="0 0 600 350"></svg></div>
     <div class="ver" id="ver"></div>
     <div class="hero"><div id="heroCob"><canvas id="heroCv" width="700" height="950"></canvas></div></div>
+    <div class="adslot ol2" id="adSlot" aria-label="Ad placeholder"><b>AD</b><span>Banner mockup · 320 × 50</span></div>
     <div>
       <button class="go ol" id="playBtn"><svg viewBox="0 0 24 24"><path d="M6 3.500v17l15-8.500z" fill="#fff" stroke="var(--ol)" stroke-width="3" stroke-linejoin="round"/></svg>PLAY</button>
       <div class="menu">
@@ -434,10 +450,20 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <p class="ol2" id="revNote"></p><p class="ol2" id="revHave" style="margin-top:0"></p>
       <div class="tbar" style="margin:10px 4px 14px"><i id="revBar"></i></div>
       <button class="go ol2" id="revYes"></button>
+      <div class="ol2 revor">or</div>
+      <button class="go ol2" id="revAd" aria-label="Watch an ad to revive for free"></button>
       <div class="btnrow" style="grid-template-columns:1fr"><button class="mbtn ol2" id="revNo" aria-label="No thanks"></button></div>
     </div>
   </div>
 
+  <div class="over" id="adMock" hidden style="z-index:12;background:rgba(6,14,20,.94)">
+    <div class="adbox">
+      <div class="adtag">AD · mockup</div>
+      <div class="adbody"><b>Your ad here</b><span>A rewarded video would play in this space</span></div>
+      <div class="tbar" style="margin:14px 0 8px"><i id="adBar"></i></div>
+      <div class="adcount" id="adCount"></div>
+    </div>
+  </div>
   <div class="over" id="gate" hidden style="z-index:20;background:var(--hud)">
     <div class="panel">
       <h2 class="ol">Invite only</h2>
@@ -493,7 +519,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=55;
+const BUILD=56;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1216,7 +1242,7 @@ function drawHome(){
 function show(id){for(const s of document.querySelectorAll('.screen'))s.classList.toggle('on',s.id===id);updateMusic()}
 // One-line text: every label, title and note is kept on a single line. If it is too wide the letters are
 // tightened and then scaled down a little (never up). Only as a last resort does it wrap, split evenly.
-const FITSEL='h2,p.ol2,.item b,.item small,.item div.ol2,.item .pts,.mi .row,.mi>div.ol2,.bestbar div.ol2,.goal div.ol2,.lr small,.nm,.earn,.tile small,.cd b,.medal,.rules div,.demo span,.ibtn,.go,.mbtn,.tab em,#lbStats';
+const FITSEL='.revor,h2,p.ol2,.item b,.item small,.item div.ol2,.item .pts,.mi .row,.mi>div.ol2,.bestbar div.ol2,.goal div.ol2,.lr small,.nm,.earn,.tile small,.cd b,.medal,.rules div,.demo span,.ibtn,.go,.mbtn,.tab em,#lbStats';
 function fit1(root){
   if(!root||root.hidden)return;
   root.querySelectorAll(FITSEL).forEach(el=>{
@@ -1539,7 +1565,7 @@ function decide(keepIt,timedOut){
   track('score',score,true);
   if(!bestBeat&&S.best>=10&&score>S.best){bestBeat=true;toast(I.cup+' NEW BEST!');flash('#ffe14d');bits('s',14,['#fff','#ffe14d'],220);jingle([523,659,784,1047,1319],.12)}
   setSub();
-  if(lives<=0){if(!revived&&S.k>=REV&&!chal)offerRevive();else endGame();return}
+  if(lives<=0){if(!revived&&!chal)offerRevive();else endGame();return}
   deal();
 }
 let wasLow=false,endRun=0;
@@ -1585,16 +1611,28 @@ try{new ResizeObserver(fit).observe(stage)}catch(e){}
 addEventListener('resize',layout);if(self.visualViewport)visualViewport.addEventListener('resize',layout);addEventListener('pageshow',layout);addEventListener('orientationchange',()=>setTimeout(layout,250));
 function offerRevive(){
   playing=false;$('tbar').classList.remove('low');
+  const can=cheat||S.k>=REV;
   $('revNote').innerHTML=`Keep your ${fmt(score)} points and 1 life`;$('revHave').innerHTML=`You have ${KI} ${kf()}`;
-  $('revYes').innerHTML=`REVIVE ${KI} ${REV}`;
-  $('revive').hidden=false;fit1($('revive'));retrigger($('revBar'),'run');
+  $('revYes').innerHTML=`REVIVE ${KI} ${REV}`;$('revYes').classList.toggle('no',!can);
+  $('revAd').innerHTML=I.play+' WATCH AD · FREE';
+  $('revive').classList.remove('wait');$('revive').hidden=false;fit1($('revive'));retrigger($('revBar'),'run');
   clearTimeout(revT);revT=setTimeout(()=>{$('revive').hidden=true;endGame()},5000);
 }
-$('revYes').onclick=()=>{
+function doRevive(cost){
   clearTimeout(revT);$('revive').hidden=true;
-  if(!cheat)S.k-=REV;save();revived=true;revN=n;lives=1;drawLives();
+  if(cost&&!cheat)S.k-=cost;save();revived=true;revN=n;lives=1;drawLives();
   flash('#8fe060');popText('REVIVED!','#8fe060',true);jingle([392,523,659,784]);
   playing=true;last=performance.now();deal();
+}
+$('revYes').onclick=()=>{if(!(cheat||S.k>=REV)){retrigger($('revYes'),'shake');tone(160,0,.2,'sawtooth',.1,.6);toast(`Need ${fmt(REV-S.k)} more ${KI}`);return}doRevive(REV)};
+// Mock rewarded ad: a 5 second placeholder, then the free revive. Swap this for the real ad call later.
+let adT=0;
+$('revAd').onclick=()=>{
+  clearTimeout(revT);$('revive').classList.add('wait');
+  const run=endRun,t0=performance.now(),D=5000;$('adMock').hidden=false;
+  const step=now=>{const p=Math.min(1,(now-t0)/D);$('adBar').style.transform=`scaleX(${p})`;$('adCount').textContent=p<1?`Reward in ${Math.ceil((D-(now-t0))/1000)}`:'Reward earned';
+    if(p<1)adT=requestAnimationFrame(step);else setTimeout(()=>{$('adMock').hidden=true;if(run===endRun&&!$('revive').hidden)doRevive(0)},350)};
+  adT=requestAnimationFrame(step);
 };
 $('revNo').onclick=()=>{clearTimeout(revT);$('revive').hidden=true;endGame()};
 function startGame(){
