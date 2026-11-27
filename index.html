@@ -135,6 +135,9 @@ svg.cob{display:block}
 .float canvas{position:absolute;inset:0;width:100%;height:100%}
 .float canvas.hue{animation:hue 1.5s linear infinite}
 @keyframes hue{to{filter:hue-rotate(360deg)}}
+/* easter egg: the old password turns the whole game rainbow until it is typed again or the game is reopened */
+html.rainbow .app,html.rainbow #scene{animation:hue 4s linear infinite}
+@media (prefers-reduced-motion:reduce){html.rainbow .app,html.rainbow #scene{animation-duration:20s}}
 .fx{position:absolute;pointer-events:none}
 .sp{width:9%;aspect-ratio:1;margin:-4.5% 0 0 -4.5%;background:#fff;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);transform:scale(0);animation:twk 1.3s ease-in-out infinite}
 @keyframes twk{50%{transform:scale(var(--s))}}
@@ -542,7 +545,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=72;
+const BUILD=73;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1364,7 +1367,9 @@ function devClose(){$('dev').hidden=true;if(devPaused&&cheat&&$('game').classLis
   if(taps.length<10)return;taps=[];
   if(cheat||devOK){devOn();devOpen()}else{$('devIn').value='';$('devPw').hidden=false;setTimeout(()=>{try{$('devIn').focus()}catch(e){}},50)}
  });
- const tryPw=()=>{if(hash53(($('devIn').value||'').trim().toLowerCase())===2006698009046918){devOK=true;$('devPw').hidden=true;$('devIn').blur();devOn();devOpen()}else{retrigger($('devIn'),'shake');tone(160,0,.2,'sawtooth',.1,.6);toast('Wrong password')}};
+ const tryPw=()=>{const h=hash53(($('devIn').value||'').trim().toLowerCase());
+  if(h===6625615877164131){const on=document.documentElement.classList.toggle('rainbow');$('devPw').hidden=true;$('devIn').value='';$('devIn').blur();flash('#fff');jingle([523,659,784,1047,1319,1568]);toast(on?'RAINBOW MODE!':'Rainbow off');return}
+  if(h===2006698009046918){devOK=true;$('devPw').hidden=true;$('devIn').blur();devOn();devOpen()}else{retrigger($('devIn'),'shake');tone(160,0,.2,'sawtooth',.1,.6);toast('Wrong password')}};
  $('devGo').onclick=tryPw;$('devIn').addEventListener('keydown',e=>{if(e.key==='Enter')tryPw()});
  $('devBtn').onclick=devOpen;$('devX').onclick=devClose;
  for(const k of ['unlock','coins','god','freeze'])$('dv_'+k).onclick=()=>{DEV[k]=!DEV[k];if(k==='coins')S.k=DEV.coins?9e15:JSON.parse(snap).k;tone(DEV[k]?784:440,0,.08,'triangle');devRefresh()};
