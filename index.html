@@ -201,6 +201,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .adbody b{font-size:22px}.adbody span{font-size:13px;color:#6a7882}
 .adbox .tbar{height:10px;background:#d4dbe0;border:0}#adBar{background:#7a4ae0;transform-origin:left;display:block;height:100%;border-radius:6px}
 .adcount{font-size:14px;color:#56646e}
+#adClose{font:inherit;font-weight:700;font-size:16px;color:#fff;background:#33414a;border:0;border-radius:10px;padding:10px 22px;margin-top:12px;min-height:44px}
 @keyframes drain{to{transform:scaleX(0)}}
 @keyframes toast{0%{transform:translateY(-40px) scale(.6);opacity:0}8%{transform:translateY(0) scale(1.08);opacity:1}14%{transform:scale(1)}86%{opacity:1}100%{transform:translateY(-20px);opacity:0}}
 
@@ -469,6 +470,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <h2 class="ol">Remove ads</h2>
       <p class="ol2">No banner on the home screen</p>
       <p class="ol2" style="margin-top:0">Free revive with no ad to watch</p>
+      <p class="ol2" style="margin-top:0;color:#ffe14d" id="noAdsGiftP"></p>
       <button class="go ol2" id="noAdsBuy"></button>
       <p class="ol2" style="font-size:13px;opacity:.85">Mockup: no payment is taken</p>
     </div>
@@ -476,9 +478,10 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
   <div class="over" id="adMock" hidden style="z-index:12;background:rgba(6,14,20,.94)">
     <div class="adbox">
       <div class="adtag">AD · mockup</div>
-      <div class="adbody"><b>Your ad here</b><span>A rewarded video would play in this space</span></div>
+      <div class="adbody"><b>Your ad here</b><span id="adKind"></span></div>
       <div class="tbar" style="margin:14px 0 8px"><i id="adBar"></i></div>
       <div class="adcount" id="adCount"></div>
+      <button id="adClose" hidden aria-label="Close ad">✕ Close</button>
     </div>
   </div>
   <div class="over" id="gate" hidden style="z-index:20;background:var(--hud)">
@@ -537,7 +540,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=60;
+const BUILD=61;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1246,10 +1249,10 @@ try{new ResizeObserver(fitHero).observe(document.querySelector('.hero'))}catch(e
 function drawMute(){
   $('muteBtn').innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 9h4l6-5v16l-6-5H3z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>${S.mute?'<path d="M16 9l6 6M22 9l-6 6" stroke="#ff8a7a" stroke-width="3" stroke-linecap="round"/>':'<path d="M16.5 8.5c2 2 2 5 0 7M19 6c3.500 3.500 3.500 8.500 0 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'}</svg>`;
 }
-function drawAds(){$('adSlot').hidden=!!S.noAds;$('revNoAds').hidden=!!S.noAds}
+function drawAds(){$('noAdsGiftP').innerHTML='+ '+fmt(NOADS_GIFT)+' '+KI+' thank-you bonus';$('adSlot').hidden=!!S.noAds;$('revNoAds').hidden=!!S.noAds}
 let noAdsFrom='';
 $('revNoAds').onclick=()=>{noAdsFrom='rev';clearTimeout(revT);$('revive').classList.add('wait');$('noAdsBuy').innerHTML='BUY · '+NOADS$;open('noAds')};
-$('noAdsBuy').onclick=()=>{S.noAds=true;save();$('noAds').hidden=true;drawAds();if(!$('shop').hidden)drawShop();toast(I.ok+' Ads removed');jingle([523,659,784,1047]);flash('#8fe060');if(noAdsFrom==='rev'&&!$('revive').hidden)doRevive(0)};
+$('noAdsBuy').onclick=()=>{S.noAds=true;if(!S.noAdsGift){S.noAdsGift=1;S.k+=NOADS_GIFT;toast('Thank you! +'+fmt(NOADS_GIFT)+' '+KI)}save();drawHome();$('noAds').hidden=true;drawAds();if(!$('shop').hidden)drawShop();toast(I.ok+' Ads removed');jingle([523,659,784,1047]);flash('#8fe060');if(noAdsFrom==='rev'&&!$('revive').hidden)doRevive(0)};
 function drawHome(){
   drawAds();
   $('walletHome').innerHTML=KI+'<span>'+(cheat&&DEV.coins?'∞':S.k>=100000?kfmt(S.k):fmt(S.k))+'</span>'+(cheat?'<span style="color:#ffe14d">&nbsp;DEV</span>':'');
@@ -1396,7 +1399,7 @@ function drawShop(){
   $('tabBg').classList.toggle('on',tab==='bg');$('tabStore').classList.toggle('on',tab==='store');$('tabCob').classList.toggle('on',tab==='cob');$('tabHusk').classList.toggle('on',tab==='husk');
   if(tab==='store'){
     $('shopGrid').innerHTML=PACKS.map((p,i)=>`<div class="item pack"><div class="sw pk">${KI.repeat(i+1)}</div><b class="ol2">${KI} ${fmt(p.n)}</b><button class="ibtn ol2 buy" data-pack="${i}">${p.$}</button></div>`).join('')
-      +`<div class="item pack wide ${S.noAds?'eq':''}"><b class="ol2">NO ADS</b><div class="ol2 pkn">No banner · Free revive, no ad</div>${S.noAds?`<button class="ibtn ol2 cur">${I.ok} OWNED</button>`:`<button class="ibtn ol2 buy" data-pack="ads">${NOADS$}</button>`}</div>`
+      +`<div class="item pack wide ${S.noAds?'eq':''}"><b class="ol2">NO ADS</b><div class="ol2 pkn">No banner · Free revive, no ad</div>${S.noAds?'':`<div class="ol2 pkn" style="color:#ffe14d">+ ${fmt(NOADS_GIFT)} ${KI} thank-you bonus</div>`}${S.noAds?`<button class="ibtn ol2 cur">${I.ok} OWNED</button>`:`<button class="ibtn ol2 buy" data-pack="ads">${NOADS$}</button>`}</div>`
       +'<div class="ol2 pkm">Mockup: no payment is taken</div>';
     fit1($('shop'));return}
   const sorted=c=>CATS[c].slice().sort((a,b)=>(a.req?1e9:a.cost||0)-(b.req?1e9:b.cost||0)).map(it=>[c,it]);
@@ -1421,17 +1424,18 @@ $('shopGrid').onclick=e=>{
   else{retrigger(b,'shake');tone(160,0,.2,'sawtooth',.1,.6);toast(`Need ${fmt(it.cost-S.k)} more ${KI}`);return}
   applyTheme();save();drawShop();drawHome();
 };
-$('tabStore').onclick=()=>{tab='store';drawShop()};
+const toTab=t=>{tab=t;drawShop();$('shopGrid').scrollTop=0};
+$('tabStore').onclick=()=>toTab('store');
 // Mock store. Prices are placeholders: the real app must show the store's own localised price string.
 // Coin packs only pay out in Dev Mode (sandbox) so testers can't skip the economy.
-const PACKS=[{n:2500,$:'$1.49'},{n:10000,$:'$4.49'},{n:40000,$:'$14.99'},{n:150000,$:'$39.99'}],NOADS$='$4.49';
+const PACKS=[{n:2500,$:'$1.49'},{n:10000,$:'$4.49'},{n:40000,$:'$14.99'},{n:150000,$:'$39.99'}],NOADS$='$4.49',NOADS_GIFT=2500;
 function buyPack(k){
   if(k==='ads'){noAdsFrom='shop';$('noAdsBuy').innerHTML='BUY · '+NOADS$;open('noAds');return}
   const p=PACKS[k];if(!p)return;
   if(!cheat){toast('Store opens at launch');tone(330,0,.12,'triangle');return}
   S.k+=p.n;flash('#ffe14d');jingle([523,659,784,1047,1319]);toast('+'+fmt(p.n)+' '+KI);drawShop();drawHome();
 }
-$('tabBg').onclick=()=>{tab='bg';drawShop()};$('tabCob').onclick=()=>{tab='cob';drawShop()};$('tabHusk').onclick=()=>{tab='husk';drawShop()};
+$('tabBg').onclick=()=>toTab('bg');$('tabCob').onclick=()=>toTab('cob');$('tabHusk').onclick=()=>toTab('husk');
 
 /* ---------- game ---------- */
 let score=0,shown=0,lives=3,streak=0,topStreak=0,n=0,caught={},playing=false,cur=null,next=null,timeLeft=0,timeMax=0,last=0,raf=0,fever=0,frenzyT=0;
@@ -1672,18 +1676,31 @@ function doRevive(cost){
 }
 $('revYes').onclick=()=>{if(!(cheat||S.k>=REV)){retrigger($('revYes'),'shake');tone(160,0,.2,'sawtooth',.1,.6);toast(`Need ${fmt(REV-S.k)} more ${KI}`);return}doRevive(REV)};
 // Mock rewarded ad: 15 s (5 s in Dev Mode), watched to the end, then the free revive. Real length is set by the ad network. Swap this for the real ad call later.
-let adT=0;
+let adT=0,lastAd=performance.now(),runAd=false;
+/* Full-screen (interstitial) ad rules: only at game over, never in the first 3 runs, at least 90 s since any ad,
+   not after a run with a revive ad, never with No Ads. Mock only: the real network decides length and skip. */
+const AD_GAP=90000,AD_FREE_RUNS=3;
+function interDue(){return !S.noAds&&!cheat&&!runAd&&S.t.games>AD_FREE_RUNS&&performance.now()-lastAd>=(self.__adGap!=null?self.__adGap:AD_GAP)}
+function showInter(done){
+  lastAd=performance.now();const t0=lastAd,D=5000,run=endRun;
+  $('adKind').textContent='A full-screen ad would show here';$('adClose').hidden=true;$('adMock').hidden=false;
+  const fin=()=>{$('adMock').hidden=true;$('adClose').hidden=true;lastAd=performance.now();done()};
+  $('adClose').onclick=fin;
+  const step=now=>{if(run!==endRun){$('adMock').hidden=true;return}const p=Math.min(1,(now-t0)/D);$('adBar').style.transform=`scaleX(${p})`;
+    $('adCount').textContent=p<1?`Close in ${Math.ceil((D-(now-t0))/1000)}`:'';if(p<1)requestAnimationFrame(step);else $('adClose').hidden=false};
+  requestAnimationFrame(step);
+}
 $('revAd').onclick=()=>{
   if(S.noAds)return doRevive(0); // ads removed: the free revive is instant
   clearTimeout(revT);$('revive').classList.add('wait');
-  const run=endRun,t0=performance.now(),D=cheat||self.__corn?5000:15000;$('adMock').hidden=false;
+  const run=endRun,t0=performance.now(),D=cheat||self.__corn?5000:15000;runAd=true;lastAd=t0+D;$('adKind').textContent='A rewarded video would play in this space';$('adClose').hidden=true;$('adMock').hidden=false;
   const step=now=>{const p=Math.min(1,(now-t0)/D);$('adBar').style.transform=`scaleX(${p})`;$('adCount').textContent=p<1?`Reward in ${Math.ceil((D-(now-t0))/1000)}`:'Reward earned';
     if(p<1)adT=requestAnimationFrame(step);else setTimeout(()=>{$('adMock').hidden=true;if(run===endRun&&!$('revive').hidden)doRevive(0)},350)};
   adT=requestAnimationFrame(step);
 };
 $('revNo').onclick=()=>{clearTimeout(revT);$('revive').hidden=true;endGame()};
 function startGame(){
-  score=shown=0;lives=3;streak=topStreak=n=0;revN=0;endRun++;fever=frenzyT=0;caught={};gameDone=[];milestone=false;chal=chalNext;chalNext=false;tutOn=(DEV.tut||(!S.tut&&!cheat))&&!self.__corn&&!chal;DEV.tut=false;tutStep=tutMade=0;revived=bestBeat=false;clearTimeout(revT);
+  runAd=false;score=shown=0;lives=3;streak=topStreak=n=0;revN=0;endRun++;fever=frenzyT=0;caught={};gameDone=[];milestone=false;chal=chalNext;chalNext=false;tutOn=(DEV.tut||(!S.tut&&!cheat))&&!self.__corn&&!chal;DEV.tut=false;tutStep=tutMade=0;revived=bestBeat=false;clearTimeout(revT);
   const hs=S.hist||[];avg=hs.length?Math.min(60,Math.max(15,hs.reduce((a,b)=>a+b,0)/hs.length)):25;frenzies=0;mercy=hs.length>=2&&hs.slice(-2).every(x=>x<12);
   $('score').textContent=0;$('best').textContent=fmt(S.best);drawLives();setSub();
   deck.innerHTML='';next=null;cur=null;$('hint').style.opacity=1;app.classList.remove('frenzy');
@@ -1739,7 +1756,7 @@ function endGame(){
   const count=(el,to,ms,done)=>{const t0=performance.now();let lastTick=0;const step=now=>{if(run!==endRun)return;const p=Math.min(1,(now-t0)/ms),v=Math.round(to*(1-Math.pow(1-p,3)));el.textContent=fmt(v);
       if(now-lastTick>70&&p<1){lastTick=now;tone(500+p*700,0,.04,'square',.03)}
       if(p<1)requestAnimationFrame(step);else if(done)done()};requestAnimationFrame(step)};
-  setTimeout(()=>{
+  const reveal=()=>{
     if(run!==endRun)return;$('end').hidden=false;fit1($('end'));
     count($('final'),score,score>0?900:1,()=>{retrigger($('final'),'land');tone(880,0,.18,'triangle',.12)});
     later(950,()=>{$('bestFill').style.transition='';$('bestFill').style.transform=`scaleX(${Math.min(1,score/Math.max(old,score,1))})`});
@@ -1747,7 +1764,8 @@ function endGame(){
     later(1550,()=>{g.classList.add('in');tone(gr==='S'?1047:gr==='D'?220:660,0,.25,gr==='D'?'sawtooth':'triangle',.14);
       if(isBest||fresh.length||gr==='S'){bits('s',16,['#fff','#ffe14d','#ff7ac8'],240,app);jingle([523,659,784,1047,1319])}});
     later(1750,()=>{count($('earnN'),earned,600);if(lock){$('goalFill').style.transition='';$('goalFill').style.transform=`scaleX(${Math.min(1,S.k/lock.cost)})`}});
-  },500);
+  };
+  setTimeout(()=>{if(run!==endRun)return;if(interDue())showInter(reveal);else reveal()},500);
 }
 function goHome(){for(const id of ['end','shop','missions','help','board','dex'])$(id).hidden=true;show('home');drawHome()}
 
