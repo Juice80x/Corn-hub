@@ -135,9 +135,6 @@ svg.cob{display:block}
 .float canvas{position:absolute;inset:0;width:100%;height:100%}
 .float canvas.hue{animation:hue 1.5s linear infinite}
 @keyframes hue{to{filter:hue-rotate(360deg)}}
-/* easter egg: the old password turns the whole game rainbow until it is typed again or the game is reopened */
-html.rainbow .app,html.rainbow #scene{animation:hue 4s linear infinite}
-@media (prefers-reduced-motion:reduce){html.rainbow .app,html.rainbow #scene{animation-duration:20s}}
 .fx{position:absolute;pointer-events:none}
 .sp{width:9%;aspect-ratio:1;margin:-4.5% 0 0 -4.5%;background:#fff;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);transform:scale(0);animation:twk 1.3s ease-in-out infinite}
 @keyframes twk{50%{transform:scale(var(--s))}}
@@ -545,7 +542,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=73;
+const BUILD=74;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -696,7 +693,7 @@ const CHT=[150,400,800],CHR=[100,250,600],CHN=['Bronze','Silver','Gold'],CHC=['#
 const dstr=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 
 /* ---------- comic corn ---------- */
-let uid=0;
+let uid=0,banana=false; // banana: easter egg, every cob is drawn as a half-peeled banana
 const f=v=>v.toFixed(1);
 function leaf(b,c,t,w,c1,c2,ol){
   const dx=t[0]-b[0],dy=t[1]-b[1],L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L;
@@ -718,14 +715,27 @@ function cob(type,seed,still,skinId,layers,huskId){
   const id='c'+(uid++),ol=t.ol,bad=type==='bad';
   const r=v=>{seed=(seed*9301+49297)%233280;return seed/233280*v};
   const hk=HUSK.find(h=>h.id===(huskId||S.husk));
-  const hus=t.hus||(plain&&hk&&hk.c)||(r(1)<.5?['#8ad653','#4f9e2e']:['#9ade5c','#5aa834']);
+  const hus=banana?(bad?['#8a6a2a','#5a3d1a']:['#ffe45a','#e2aa1c']):t.hus||(plain&&hk&&hk.c)||(r(1)<.5?['#8ad653','#4f9e2e']:['#9ade5c','#5aa834']);
   // Bumpy silhouette: one outward bump per outer kernel instead of a smooth edge
   const vy=[];for(let y=41.3;y<=258;y+=19.5)vy.push(y);
   const side=sg=>vy.map((y,i)=>{const p=`${f(110+sg*(Wd(y)-1.5))} ${f(y)}`;if(!i)return p;const m=y-9.75;return `Q${f(110+sg*(Wd(m)+7))} ${f(m)} ${p}`});
   const lf=side(-1),rt=side(1),up=rt.map((q,i)=>{if(i===rt.length-1)return '';const y=vy[i],m=y+9.75;return `Q${f(110+Wd(m)+7)} ${f(m)} ${f(110+Wd(y)-1.5)} ${f(y)}`}).reverse().join('');
-  const body=`M${lf.join('')}Q110 276 ${f(110+Wd(vy[vy.length-1])-1.5)} ${f(vy[vy.length-1])}${up}Q150 11 127 18Q110 5 93 18Q70 11 ${lf[0]}z`;
-  let k='';
-  for(let row=0;row<13;row++){
+  let body=`M${lf.join('')}Q110 276 ${f(110+Wd(vy[vy.length-1])-1.5)} ${f(vy[vy.length-1])}${up}Q150 11 127 18Q110 5 93 18Q70 11 ${lf[0]}z`;
+  let k='',bfill='';
+  if(banana){
+    // Gently curved, tapering banana in place of the cob. Cream flesh for good ones, brown mush for rotten, special colours for rares.
+    const N=26,cx=y=>110+15*Math.sin(Math.PI*(y-22)/250)-7,hw=y=>{const q=(y-22)/250;return 43*Math.pow(Math.sin(Math.PI*Math.min(1,.09+.8*q)),.55)};
+    const ys=[...Array(N+1)].map((_,i)=>22+250*i/N);
+    body='M'+ys.map(y=>`${f(cx(y)-hw(y))} ${f(y)}`).join('L')+'L'+ys.slice().reverse().map(y=>`${f(cx(y)+hw(y))} ${f(y)}`).join('L')+`Q${f(cx(22)+10)} 6 ${f(cx(22))} 8Q${f(cx(22)-10)} 6 ${f(cx(22)-hw(22))} 22z`;
+    const line=(o,a,b,w,c,op)=>`<path d="M${ys.filter(y=>y>=a&&y<=b).map(y=>`${f(cx(y)+hw(y)*o)} ${f(y)}`).join('L')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" opacity="${op}"/>`;
+    const special=!plain&&!bad&&(t.g||t.gs||type==='rainbow'||type==='galaxy'||type==='unicorn');
+    bfill=bad?'#6b4a2a':special?`url(#${id}k)`:`url(#${id}b)`;
+    if(bad){for(let i=0;i<9;i++)k+=`<ellipse cx="${f(78+r(64))}" cy="${f(40+r(210))}" rx="${f(6+r(10))}" ry="${f(5+r(8))}" fill="${r(1)<.5?'#3a2414':'#4a3018'}" opacity=".85"/>`;k+=line(-.3,50,250,2.5,'#2a180c',.5)+line(.35,60,240,2.5,'#2a180c',.4)}
+    else{k+=line(-.34,48,252,2.6,special?'#fff':'#d9b85a',special?.35:.75)+line(.3,56,246,2.6,special?'#fff':'#d9b85a',special?.3:.6)+line(-.62,40,170,7,'#fff',.55);
+      if(sneak)for(let i=0;i<3;i++)k+=`<ellipse cx="${f(84+r(52))}" cy="${f(70+r(150))}" rx="${f(5+r(5))}" ry="${f(4+r(4))}" fill="#7a5a2a" opacity=".8"/>`}
+    k+=`<path d="M${f(cx(22)-9)} 20Q${f(cx(22))} 2 ${f(cx(22)+9)} 20z" fill="${bad?'#2a180c':'#7a5a2a'}"/>`;
+  }
+  for(let row=0;row<13&&!banana;row++){
     for(let i=0;i<5;i++){
       const th=(-62+i*31)*Math.PI/180,c=Math.cos(th);
       const yy=30+row*19.5+(i%2?9.75:0)+3*(1-c),w=Wd(yy);
@@ -790,16 +800,16 @@ function cob(type,seed,still,skinId,layers,huskId){
   const j=()=>r(10)-5,dr=bad?14:0,wx=x=>110+(x-110)*1.2;
   const pair=(b,c,tp,w)=>{const a=j(),e=j();return leaf(b,[wx(c[0]),c[1]],[wx(tp[0])+a,tp[1]+e+dr],w,hus[0],hus[1],ol)+leaf([220-b[0],b[1]],[220-wx(c[0]),c[1]],[220-wx(tp[0])-a,tp[1]+e+dr],-w,hus[0],hus[1],ol)};
   const drop=(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="4.2" ry="5.6" fill="#e2f7ff" stroke="${ol}" stroke-width="1.6" opacity=".92"/><ellipse cx="${x-1.3}" cy="${y-1.6}" rx="1.2" ry="1.8" fill="#fff"/>`;
-  const defs=`<defs>${grad}
+  const defs=`<defs>${grad}${banana?`<linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="#fff8d8"/><stop offset=".55" stop-color="#ffeeb0"/><stop offset="1" stop-color="#f0d078"/></linearGradient>`:''}
   <linearGradient id="${id}s" x1="0" x2="1"><stop offset="0" stop-color="${t.shade}" stop-opacity=".62"/><stop offset=".3" stop-color="${t.shade}" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset=".7" stop-color="#fff" stop-opacity=".2"/><stop offset=".84" stop-color="${t.shade}" stop-opacity="0"/><stop offset="1" stop-color="${t.shade}" stop-opacity=".68"/></linearGradient>
   <clipPath id="${id}c"><path d="${body}"/></clipPath></defs>`;
   const rot=f(r(8)-4);
   const wing=sg=>`<g transform="translate(110 0) scale(${sg} 1)"><path d="M40 150C80 90 120 70 150 76C140 96 150 104 136 116C146 124 134 136 122 138C128 150 110 158 96 154C100 166 70 172 40 168z" fill="#ffffff" stroke="${ol}" stroke-width="5" stroke-linejoin="round"/><path d="M60 150C90 112 116 96 136 92M62 160C88 138 104 130 120 128" fill="none" stroke="#c8d4e8" stroke-width="3" stroke-linecap="round"/></g>`;
   const U=`<ellipse cx="110" cy="304" rx="80" ry="11" fill="rgba(0,0,0,.22)"/>${type==='angel'?wing(1)+wing(-1):''}${pair([106,266],[12,214],[20,112],-22)}${pair([106,266],[38,190],[52,62],-26)}`;
-  const B=`<path d="${body}" fill="${t.base}"/>
+  const B=`<path d="${body}" fill="${banana?bfill:t.base}"/>
   <g clip-path="url(#${id}c)">${k}${bad?extra:''}<rect x="44" y="0" width="132" height="280" fill="url(#${id}s)"/>${bad?'':extra}</g>
   <path d="${body}" fill="none" stroke="${ol}" stroke-width="5.500" stroke-linejoin="round"/>`;
-  const O=`${type==='royal'||type==='unicorn'||type==='angel'?'':silk}${heart}${worm}
+  const O=`${banana||type==='royal'||type==='unicorn'||type==='angel'?'':silk}${heart}${worm}
   ${pair([108,270],[52,240],[64,138],-15)}${pair([106,272],[14,176],[6,238],20)}${pair([108,274],[78,236],[76,176],-13)}
   ${leaf([110,276],[102,248],[114+j(),212+j()],10,hus[0],hus[1],ol)}
   <path d="M97 262h26l-3 34c-1 7-19 7-20 0z" fill="${hus[1]}" stroke="${ol}" stroke-width="4" stroke-linejoin="round"/>
@@ -1368,7 +1378,7 @@ function devClose(){$('dev').hidden=true;if(devPaused&&cheat&&$('game').classLis
   if(cheat||devOK){devOn();devOpen()}else{$('devIn').value='';$('devPw').hidden=false;setTimeout(()=>{try{$('devIn').focus()}catch(e){}},50)}
  });
  const tryPw=()=>{const h=hash53(($('devIn').value||'').trim().toLowerCase());
-  if(h===6625615877164131){const on=document.documentElement.classList.toggle('rainbow');$('devPw').hidden=true;$('devIn').value='';$('devIn').blur();flash('#fff');jingle([523,659,784,1047,1319,1568]);toast(on?'RAINBOW MODE!':'Rainbow off');return}
+  if(h===6625615877164131){banana=!banana;$('devPw').hidden=true;$('devIn').value='';$('devIn').blur();flash('#ffe14d');jingle([523,659,784,1047,1319,1568]);toast(banana?'BANANA MODE!':'Back to corn');heroKey='';drawHome();drawDemos();return}
   if(h===2006698009046918){devOK=true;$('devPw').hidden=true;$('devIn').blur();devOn();devOpen()}else{retrigger($('devIn'),'shake');tone(160,0,.2,'sawtooth',.1,.6);toast('Wrong password')}};
  $('devGo').onclick=tryPw;$('devIn').addEventListener('keydown',e=>{if(e.key==='Enter')tryPw()});
  $('devBtn').onclick=devOpen;$('devX').onclick=devClose;
@@ -1965,14 +1975,17 @@ function fitLogo(){
 drawLogo();try{document.fonts.load("200px 'Titan One'").then(drawLogo)}catch(e){}
 
 applyTheme();daily();if(checkSkins().length)save();layout();drawHome();$('ver').textContent='v'+BUILD;
-$('demoGood').innerHTML=cob('good',7)+`<span class="ol2">KEEP ${I.ok}${I.R}</span>`;
-$('demoBad').innerHTML=cob('bad',11)+`<span class="ol2">${I.L}${I.no} TOSS</span>`;
+function drawDemos(){
+  $('demoGood').innerHTML=cob('good',7)+`<span class="ol2">KEEP ${I.ok}${I.R}</span>`;
+  $('demoBad').innerHTML=cob('bad',11)+`<span class="ol2">${I.L}${I.no} TOSS</span>`;
+  $('demoRare').innerHTML=RARE.map((k,i)=>`<div>${cob(k,21+i)}<span class="ol2">+${T[k].pts}</span></div>`).join('');
+}
+drawDemos();
 $('rules').innerHTML=[I.fire+'5 = ×2',I.fire+'10 = ×3',I.fast+' fast = +1',I.bolt+' frenzy ×2','3 lives','1 pt = '+KI].map(x=>`<div>${x}</div>`).join('');
 $('hint').innerHTML=SWIPE;$('frLab').innerHTML=I.bolt;$('helpOk').innerHTML='GOT IT';$('tutBtn').innerHTML=I.play+' TUTORIAL';
 $('shopH').innerHTML=I.pal+' Skins';$('tabBg').innerHTML=I.world+'<em>SCENES</em>';$('tabStore').innerHTML=KI+'<em>STORE</em>';$('tabCob').innerHTML=I.cob+'<em>COBS</em>';$('tabHusk').innerHTML=I.leaf+'<em>HUSKS</em>';
 $('misH').innerHTML=I.target+' Missions';$('lbH').innerHTML=I.cup+' Leaderboard';$('nmIc').innerHTML=I.user+' Name';$('tl1').innerHTML=I.cob+' cobs';$('tl2').innerHTML=I.fire+' streak';$('tl3').innerHTML=I.star+' rare';
 $('againBtn').innerHTML=I.play+'PLAY AGAIN';$('endShop').innerHTML=I.pal+' SKINS';$('endHome').innerHTML=I.home+' HOME';$('revH').innerHTML='Second chance?';$('revNo').innerHTML='NO THANKS';$('whoH').innerHTML=I.user+' Your name';$('whoGo').innerHTML="LET'S GO";
-$('demoRare').innerHTML=RARE.map((k,i)=>`<div>${cob(k,21+i)}<span class="ol2">+${T[k].pts}</span></div>`).join('');
 try{TILE=`url("data:image/svg+xml,${encodeURIComponent(cob('good',3,true,'classic').replace('class="cob"','xmlns="http://www.w3.org/2000/svg"'))}")`}catch(e){}
 layout();
 for(let i=0;i<10;i++){const m=document.createElement('i');m.className='mote';const s=4+Math.random()*7;
