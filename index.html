@@ -58,6 +58,7 @@ button.pill{padding:3px 8px}
 /* ---------- home ---------- */
 #home{grid-template-rows:auto auto 1fr auto;padding:calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + max(66px,min(86px,10vh)));text-align:center;z-index:1}
 .adslot{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom) + 8px);transform:translateX(-50%);width:min(320px,calc(100% - 24px));height:50px;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.9);border:2px dashed #7a8a94;border-radius:8px;color:#56646e;font-size:13px;white-space:nowrap;z-index:2}
+.adslot button{font:inherit;font-size:12px;color:#fff;background:#3a8ae0;border:0;border-radius:7px;padding:6px 9px 7px;margin-left:4px}
 .adslot b{font-weight:400;background:#ffc21a;color:#3a2a00;border-radius:5px;padding:1px 7px 2px;font-size:12px}
 .adslot.ol2,.adslot *{text-shadow:none!important;-webkit-text-stroke:0!important}
 .app.wide .adslot{left:75%}
@@ -81,7 +82,7 @@ button.pill{padding:3px 8px}
 #home .go::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-30%;width:22%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);transform:skewX(-20deg);animation:shine 2.8s ease-in-out infinite}
 @keyframes shine{0%,55%{left:-30%}100%{left:130%}}
 .mbtn svg{width:20px;height:20px;vertical-align:-4px;margin-right:5px}
-.menu{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.menu{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:26px}
 .menu .mbtn{height:66px;display:grid;place-items:center;align-content:center;gap:1px;padding:0}.menu .mbtn svg{width:30px;height:30px;margin:0}.menu .mbtn em{font-style:normal;font-size:min(11px,2.9vw);line-height:1;letter-spacing:.2px}
 .ic{width:1.2em;height:1.2em;vertical-align:-.26em;display:inline-block;flex:none}
 .tag,.hint{display:flex;justify-content:center;gap:1.6em}.tag span,.hint span{display:inline-flex;align-items:center;gap:.1em}
@@ -188,7 +189,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .revor{font-size:14px;margin:6px 0 4px;opacity:.9}
 #revAd{background:linear-gradient(#b48cff,#7a4ae0);font-size:min(24px,6vw);white-space:nowrap;margin-top:0}
 #revYes.no{filter:grayscale(.9);opacity:.55}
-#revYes,#revAd{display:block;width:100%;box-sizing:border-box;padding-left:6px;padding-right:6px;overflow:hidden}
+#revYes,#revAd,#noAdsBuy{display:block;width:100%;box-sizing:border-box;padding-left:6px;padding-right:6px;overflow:hidden}
 .adbox{width:min(330px,88%);background:#f4f6f8;border-radius:14px;padding:14px 16px 16px;color:#33414a;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 .adtag{display:inline-block;background:#ffc21a;color:#3a2a00;font-size:12px;font-weight:700;border-radius:5px;padding:2px 8px}
 .adbody{height:150px;margin-top:10px;border:2px dashed #9aa8b2;border-radius:10px;display:grid;place-content:center;gap:6px}
@@ -346,7 +347,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     <div class="logo" aria-label="Corn Rush"><svg id="logoSvg" viewBox="0 0 600 350"></svg></div>
     <div class="ver" id="ver"></div>
     <div class="hero"><div id="heroCob"><canvas id="heroCv" width="700" height="950"></canvas></div></div>
-    <div class="adslot ol2" id="adSlot" aria-label="Ad placeholder"><b>AD</b><span>Banner mockup · 320 × 50</span></div>
+    <div class="adslot ol2" id="adSlot" aria-label="Ad placeholder"><b>AD</b><span>Banner mockup</span><button id="noAdsBtn">REMOVE ADS</button></div>
     <div>
       <button class="go ol" id="playBtn"><svg viewBox="0 0 24 24"><path d="M6 3.500v17l15-8.500z" fill="#fff" stroke="var(--ol)" stroke-width="3" stroke-linejoin="round"/></svg>PLAY</button>
       <div class="menu">
@@ -456,6 +457,16 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     </div>
   </div>
 
+  <div class="over" id="noAds" hidden>
+    <div class="panel">
+      <button class="x" data-close="noAds" aria-label="Close">✕</button>
+      <h2 class="ol">Remove ads</h2>
+      <p class="ol2">No banner on the home screen</p>
+      <p class="ol2" style="margin-top:0">Free revive with no ad to watch</p>
+      <button class="go ol2" id="noAdsBuy"></button>
+      <p class="ol2" style="font-size:13px;opacity:.85">Mockup: no payment is taken</p>
+    </div>
+  </div>
   <div class="over" id="adMock" hidden style="z-index:12;background:rgba(6,14,20,.94)">
     <div class="adbox">
       <div class="adtag">AD · mockup</div>
@@ -498,6 +509,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
         <div class="dvr ol2"><span>Unlimited kernels</span><button class="tab ol2" id="dv_coins"></button></div>
         <div class="dvr ol2"><span>God mode (no lives lost)</span><button class="tab ol2" id="dv_god"></button></div>
         <div class="dvr ol2"><span>Freeze timer</span><button class="tab ol2" id="dv_freeze"></button></div>
+        <div class="dvr ol2"><span>Ads removed (mock buy)</span><button class="tab ol2" id="dv_ads"></button></div>
         <div class="dvr ol2"><span>Next cobs</span><select id="devForce"></select></div>
       </div>
       <div class="dvb"><button class="tab ol2" id="dvFrenzy">FRENZY NOW</button><button class="tab ol2" id="dvScore">+1,000 PTS</button><button class="tab ol2" id="dvTut">TUTORIAL</button></div>
@@ -519,7 +531,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=56;
+const BUILD=57;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1228,7 +1240,11 @@ try{new ResizeObserver(fitHero).observe(document.querySelector('.hero'))}catch(e
 function drawMute(){
   $('muteBtn').innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 9h4l6-5v16l-6-5H3z" fill="#fff" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/>${S.mute?'<path d="M16 9l6 6M22 9l-6 6" stroke="#ff8a7a" stroke-width="3" stroke-linecap="round"/>':'<path d="M16.5 8.5c2 2 2 5 0 7M19 6c3.500 3.500 3.500 8.500 0 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'}</svg>`;
 }
+function drawAds(){$('adSlot').hidden=!!S.noAds}
+$('noAdsBtn').onclick=()=>{$('noAdsBuy').innerHTML='BUY · $2.99';open('noAds')};
+$('noAdsBuy').onclick=()=>{S.noAds=true;save();$('noAds').hidden=true;drawAds();toast(I.ok+' Ads removed');jingle([523,659,784,1047]);flash('#8fe060')};
 function drawHome(){
+  drawAds();
   $('walletHome').innerHTML=KI+'<span>'+(cheat&&DEV.coins?'∞':S.k>=100000?kfmt(S.k):fmt(S.k))+'</span>'+(cheat?'<span style="color:#ffe14d">&nbsp;DEV</span>':'');
   $('dayPill').innerHTML=I.cal+' '+S.day.streak;
   drawMute();
@@ -1268,7 +1284,7 @@ function devOff(){if(!cheat)return;cheat=false;S=JSON.parse(snap);heroKey='';dev
 function devRefresh(){
   $('devBtn').hidden=!cheat;
   for(const k of ['unlock','coins','god','freeze']){const b=$('dv_'+k);b.classList.toggle('on',!!DEV[k]);b.textContent=DEV[k]?'ON':'OFF'}
-  $('devForce').value=DEV.force;
+  $('devForce').value=DEV.force;{const b=$('dv_ads');b.classList.toggle('on',!!S.noAds);b.textContent=S.noAds?'ON':'OFF'}
   applyTheme();drawHome();if(!$('shop').hidden)drawShop();if(!$('dex').hidden)drawDex();
 }
 function devOpen(){devPaused=playing;playing=false;devRefresh();$('dev').hidden=false;tone(660,0,.08,'triangle',.08)}
@@ -1285,6 +1301,7 @@ function devClose(){$('dev').hidden=true;if(devPaused&&cheat&&$('game').classLis
  for(const k of ['unlock','coins','god','freeze'])$('dv_'+k).onclick=()=>{DEV[k]=!DEV[k];if(k==='coins')S.k=DEV.coins?9e15:JSON.parse(snap).k;tone(DEV[k]?784:440,0,.08,'triangle');devRefresh()};
  $('devForce').innerHTML='<option value="">Normal mix</option>'+['good','bad','sneak','life'].concat(ALLRARE).map(k=>`<option value="${k}">${T[k]&&T[k].name?T[k].name[0]+T[k].name.slice(1).toLowerCase():({good:'Good cob',bad:'Bad cob',sneak:'Sneaky rot',life:'Extra life'})[k]||k}</option>`).join('');
  $('devForce').onchange=e=>{DEV.force=e.target.value};
+ $('dv_ads').onclick=()=>{S.noAds=!S.noAds;try{const o=JSON.parse(snap);o.noAds=S.noAds;snap=JSON.stringify(o);localStorage.setItem('cornhub',snap)}catch(e){}tone(S.noAds?784:440,0,.08,'triangle');devRefresh()};
  const inGame=()=>devPaused&&$('game').classList.contains('on');
  $('dvFrenzy').onclick=()=>{if(!inGame())return toast('Start a run first');devClose();startFrenzy()};
  $('dvScore').onclick=()=>{if(!inGame())return toast('Start a run first');score+=1000;toast('+1,000 points')};
@@ -1614,7 +1631,7 @@ function offerRevive(){
   const can=cheat||S.k>=REV;
   $('revNote').innerHTML=`Keep your ${fmt(score)} points and 1 life`;$('revHave').innerHTML=`You have ${KI} ${kf()}`;
   $('revYes').innerHTML=`REVIVE ${KI} ${REV}`;$('revYes').classList.toggle('no',!can);
-  $('revAd').innerHTML=I.play+' WATCH AD · FREE';
+  $('revAd').innerHTML=S.noAds?'FREE REVIVE':I.play+' WATCH AD · FREE';
   $('revive').classList.remove('wait');$('revive').hidden=false;fit1($('revive'));retrigger($('revBar'),'run');
   clearTimeout(revT);revT=setTimeout(()=>{$('revive').hidden=true;endGame()},5000);
 }
@@ -1628,6 +1645,7 @@ $('revYes').onclick=()=>{if(!(cheat||S.k>=REV)){retrigger($('revYes'),'shake');t
 // Mock rewarded ad: a 5 second placeholder, then the free revive. Swap this for the real ad call later.
 let adT=0;
 $('revAd').onclick=()=>{
+  if(S.noAds)return doRevive(0); // ads removed: the free revive is instant
   clearTimeout(revT);$('revive').classList.add('wait');
   const run=endRun,t0=performance.now(),D=5000;$('adMock').hidden=false;
   const step=now=>{const p=Math.min(1,(now-t0)/D);$('adBar').style.transform=`scaleX(${p})`;$('adCount').textContent=p<1?`Reward in ${Math.ceil((D-(now-t0))/1000)}`:'Reward earned';
