@@ -318,7 +318,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .qm{font-size:54px;line-height:1;opacity:.55}
 .item small{font-size:13px;line-height:1.2;display:block}
 .item .pts{color:#ffe14d;font-size:15px}
-.pill.xp{color:#ffe14d;padding:3px 8px 3px 5px;margin-left:auto;margin-right:6px}.pill.xp .ic{width:20px;height:20px}
+/* colour bonus tag: sits at the right end of the Frenzy meter row, clear of the score and the streak text */
+.xp{display:flex;align-items:center;gap:3px;color:#ffe14d;font-size:15px;line-height:1;background:rgba(0,0,0,.28);border:2.5px solid var(--ol);border-radius:9px;padding:1px 7px 1px 4px;margin:-3px 0}.xp[hidden]{display:none}.xp .ic{width:16px;height:16px}
 .sw{position:relative}.xb{position:absolute;right:4px;top:4px;background:#ffc21a;color:#3a2a00;border:2.5px solid var(--ol);border-radius:9px;font-size:14px;line-height:1;padding:3px 6px;text-shadow:none}
 .endp h2{font-size:34px;margin:2px 10px 0}
 .endp h2.best{color:#fff;animation:throb .7s ease-in-out infinite}
@@ -374,13 +375,12 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
     <header class="hud">
       <div class="row">
         <div class="pill ol2"><svg viewBox="0 0 24 24"><path d="M5 4h14v4a7 7 0 0 1-14 0zM9 15h6v3H9zM7 18h10v3H7z" fill="#ffc21a" stroke="var(--ol)" stroke-width="2" stroke-linejoin="round"/><path d="M5 6H2c0 4 2 5 4 5M19 6h3c0 4-2 5-4 5" fill="none" stroke="var(--ol)" stroke-width="2"/></svg><span id="best">0</span></div>
-        <div class="pill ol2 xp" id="xPill" hidden></div>
         <div class="pill lives" id="lives"></div>
       </div>
       <div class="score ol" id="scoreWrap"><span id="score">0</span></div>
       <div class="sub ol2" id="sub"></div>
       <div class="tbar" id="tbar"><i id="tfill"></i></div>
-      <div class="frow ol2"><span id="frLab" aria-label="Frenzy"></span><div class="tbar"><i id="ffill"></i></div></div>
+      <div class="frow ol2"><span id="frLab" aria-label="Frenzy"></span><div class="tbar"><i id="ffill"></i></div><div class="xp ol2" id="xPill" hidden></div></div>
     </header>
     <main class="stage" id="stage"><div class="deck" id="deck"></div><div class="hint ol2" id="hint" aria-label="Swipe right to keep, left to toss"></div>
       <div class="coach" id="coach" hidden><div class="ctext ol2" id="coachText"></div><div class="carrow" id="coachArrow"><svg viewBox="0 0 120 44"><path d="M6 22h78M66 6l22 16-22 16" fill="none" stroke="var(--ol)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22h78M66 6l22 16-22 16" fill="none" stroke="#ffe14d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></main>
@@ -553,7 +553,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=76;
+const BUILD=77;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
