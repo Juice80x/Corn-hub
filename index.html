@@ -30,7 +30,7 @@ button{font:inherit;color:#fff;cursor:pointer}
 .ol{text-shadow:3.0px 0.0px 0 var(--ol),2.77px 1.15px 0 var(--ol),2.12px 2.12px 0 var(--ol),1.15px 2.77px 0 var(--ol),0.0px 3.0px 0 var(--ol),-1.15px 2.77px 0 var(--ol),-2.12px 2.12px 0 var(--ol),-2.77px 1.15px 0 var(--ol),-3.0px 0.0px 0 var(--ol),-2.77px -1.15px 0 var(--ol),-2.12px -2.12px 0 var(--ol),-1.15px -2.77px 0 var(--ol),-0.0px -3.0px 0 var(--ol),1.15px -2.77px 0 var(--ol),2.12px -2.12px 0 var(--ol),2.77px -1.15px 0 var(--ol)}
 .ol2{text-shadow:2.0px 0.0px 0 var(--ol),1.85px 0.77px 0 var(--ol),1.41px 1.41px 0 var(--ol),0.77px 1.85px 0 var(--ol),0.0px 2.0px 0 var(--ol),-0.77px 1.85px 0 var(--ol),-1.41px 1.41px 0 var(--ol),-1.85px 0.77px 0 var(--ol),-2.0px 0.0px 0 var(--ol),-1.85px -0.77px 0 var(--ol),-1.41px -1.41px 0 var(--ol),-0.77px -1.85px 0 var(--ol),-0.0px -2.0px 0 var(--ol),0.77px -1.85px 0 var(--ol),1.41px -1.41px 0 var(--ol),1.85px -0.77px 0 var(--ol)}
 .app{--b1:#e4f3c4;--b2:#b8dc8a;--b3:#86bf5c;--b4:#5f9c43;--ray:255,255,255,.13;--hud2:#2c6a2e;--hud:#1f4d22;--ol:#173a19;--mote:#fff8c8;
-position:fixed;left:50%;top:0;width:100%;max-width:520px;height:100%;overflow:hidden;transform-origin:top center;transform:translateX(-50%) scale(var(--s,1));
+position:fixed;left:50%;top:0;width:100%;max-width:520px;height:100%;overflow:hidden;overflow:clip;transform-origin:top center;transform:translateX(-50%) scale(var(--s,1));
 background:transparent}
 #scene{position:fixed;left:0;top:0;pointer-events:none}
 .app.framed{box-shadow:0 0 0 6px rgba(255,255,255,.85),0 0 40px rgba(0,0,0,.3)}
@@ -48,7 +48,8 @@ background:repeating-conic-gradient(from 0deg,rgba(var(--ray)) 0 9deg,transparen
 .flash{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:8}
 .flash.go{animation:flash .55s ease-out}
 @keyframes flash{from{opacity:.75}to{opacity:0}}
-.screen{position:absolute;inset:0;display:none}
+.screen{position:absolute;inset:0;display:none;overflow:hidden;overflow:clip}
+@supports (overflow:clip){.sw,#playBtn{overflow:clip!important}}
 .screen.on{display:grid}
 .pill{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.28);border:3px solid var(--ol);border-radius:14px;padding:3px 10px 3px 6px;font-size:18px;min-height:36px}
 .pill svg{width:22px;height:26px}
@@ -542,7 +543,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=67;
+const BUILD=68;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1752,6 +1753,12 @@ function fit(){
   deck.style.width=w+'px';deck.style.height=(w*320/220)+'px';
 }
 try{new ResizeObserver(fit).observe(stage)}catch(e){}
+// Nothing in the fixed game frame may scroll unless it is a real list (oversized decorations used to leave it scrollable on iOS). Snap back if it does.
+const noScroll=el=>{if(el.scrollTop)el.scrollTop=0;if(el.scrollLeft)el.scrollLeft=0};
+document.addEventListener('scroll',e=>{const t=e.target;
+  if(t===document||t===document.documentElement||t===document.body){const a=document.activeElement;if(!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))&&(scrollX||scrollY))scrollTo(0,0)}
+  else if(t.nodeType===1){const cs=getComputedStyle(t);if(!/auto|scroll/.test(cs.overflowY+cs.overflowX))noScroll(t)}},true);
+addEventListener('pointerup',()=>{noScroll(app);for(const x of document.querySelectorAll('.screen.on'))noScroll(x)},true);
 addEventListener('resize',layout);if(self.visualViewport)visualViewport.addEventListener('resize',layout);addEventListener('pageshow',layout);addEventListener('orientationchange',()=>setTimeout(layout,250));
 function offerRevive(){
   playing=false;$('tbar').classList.remove('low');
