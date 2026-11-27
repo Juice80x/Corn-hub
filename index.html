@@ -27,8 +27,8 @@
 html,body{height:100%;min-height:100vh;margin:0;overscroll-behavior:none}
 body{font:400 16px/1.3 'Titan One','Arial Black',system-ui,sans-serif;color:#fff;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;background:#f3c33a;background-size:150px 204px}
 button{font:inherit;color:#fff;cursor:pointer}
-.ol{text-shadow:0 4px 0 var(--ol),3px 3px 0 var(--ol),-3px 3px 0 var(--ol),3px -2px 0 var(--ol),-3px -2px 0 var(--ol),0 -3px 0 var(--ol),3px 0 0 var(--ol),-3px 0 0 var(--ol)}
-.ol2{text-shadow:0 2px 0 var(--ol),2px 2px 0 var(--ol),-2px 2px 0 var(--ol),2px -1px 0 var(--ol),-2px -1px 0 var(--ol),0 -2px 0 var(--ol)}
+.ol{text-shadow:3.0px 0.0px 0 var(--ol),2.77px 1.15px 0 var(--ol),2.12px 2.12px 0 var(--ol),1.15px 2.77px 0 var(--ol),0.0px 3.0px 0 var(--ol),-1.15px 2.77px 0 var(--ol),-2.12px 2.12px 0 var(--ol),-2.77px 1.15px 0 var(--ol),-3.0px 0.0px 0 var(--ol),-2.77px -1.15px 0 var(--ol),-2.12px -2.12px 0 var(--ol),-1.15px -2.77px 0 var(--ol),-0.0px -3.0px 0 var(--ol),1.15px -2.77px 0 var(--ol),2.12px -2.12px 0 var(--ol),2.77px -1.15px 0 var(--ol)}
+.ol2{text-shadow:2.0px 0.0px 0 var(--ol),1.85px 0.77px 0 var(--ol),1.41px 1.41px 0 var(--ol),0.77px 1.85px 0 var(--ol),0.0px 2.0px 0 var(--ol),-0.77px 1.85px 0 var(--ol),-1.41px 1.41px 0 var(--ol),-1.85px 0.77px 0 var(--ol),-2.0px 0.0px 0 var(--ol),-1.85px -0.77px 0 var(--ol),-1.41px -1.41px 0 var(--ol),-0.77px -1.85px 0 var(--ol),-0.0px -2.0px 0 var(--ol),0.77px -1.85px 0 var(--ol),1.41px -1.41px 0 var(--ol),1.85px -0.77px 0 var(--ol)}
 .app{--b1:#e4f3c4;--b2:#b8dc8a;--b3:#86bf5c;--b4:#5f9c43;--ray:255,255,255,.13;--hud2:#2c6a2e;--hud:#1f4d22;--ol:#173a19;--mote:#fff8c8;
 position:fixed;left:50%;top:0;width:100%;max-width:520px;height:100%;overflow:hidden;transform-origin:top center;transform:translateX(-50%) scale(var(--s,1));
 background:transparent}
@@ -74,7 +74,7 @@ button.pill{padding:3px 8px}
 .bestbadge{display:inline-flex;align-items:center;gap:8px;font-size:22px;padding:2px 16px 4px 10px;border:4px solid var(--ol);border-radius:16px;background:linear-gradient(#ffe46b,#f2a60c);box-shadow:0 5px 0 var(--ol),inset 0 4px 0 rgba(255,255,255,.45);transform:rotate(-2deg);animation:throb 1.6s ease-in-out infinite}
 .bestbadge svg{width:26px;height:26px}
 .tag{font-size:min(15px,3.9vw);white-space:nowrap;color:#ffe9a0;background:rgba(0,0,0,.3);border:3px solid var(--ol);border-radius:13px;padding:2px 12px 4px}
-.go{font-size:34px;background:linear-gradient(#ffd84a,#f29a0c);border:4px solid var(--ol);border-radius:22px;box-shadow:0 7px 0 var(--ol),inset 0 6px 0 rgba(255,255,255,.35);padding:12px 40px 14px;animation:throb 1.1s ease-in-out infinite}
+.go{font-size:34px;background:linear-gradient(#ffd84a,#f29a0c);border:4px solid var(--ol);border-radius:22px;box-shadow:0 7px 0 var(--ol),inset 0 6px 0 rgba(255,255,255,.35);padding:13px 40px;animation:throb 1.1s ease-in-out infinite}
 .go:active{transform:translateY(5px);box-shadow:0 1px 0 var(--ol);animation:none}
 #home .go{position:relative;overflow:hidden;width:100%;font-size:40px;padding:14px;display:flex;align-items:center;justify-content:center;gap:12px}
 #home .go svg{width:34px;height:34px;filter:none}
@@ -90,7 +90,7 @@ button.pill{padding:3px 8px}
 .rules{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:8px 0}
 .rules div{background:rgba(0,0,0,.22);border:3px solid var(--ol);border-radius:13px;padding:4px 2px 5px;font-size:min(16px,4.3vw);white-space:nowrap;overflow:hidden}
 #againBtn{font-size:min(28px,7.4vw);white-space:nowrap}
-#calH{font-size:min(26px,6.2vw);white-space:nowrap;padding-right:34px}#revH{font-size:min(30px,7.6vw);white-space:nowrap}#revYes{font-size:min(30px,7.2vw);white-space:nowrap}
+#calH{font-size:min(26px,6.2vw);white-space:nowrap}#revH{font-size:min(30px,7.6vw);white-space:nowrap}#revYes{font-size:min(30px,7.2vw);white-space:nowrap}
 .mi .row{font-size:min(17px,4.5vw)}.medal{font-size:min(12px,3.2vw)}.medal b{font-size:min(14px,3.6vw);white-space:nowrap}
 .tab .ic{width:22px;height:22px;display:block;margin:0 auto 1px}.tab em{font-style:normal;display:block;font-size:min(10.5px,2.7vw);line-height:1}.dvr .tab .ic,.dvb .tab .ic,#chalGo .ic{display:inline-block;margin:0;vertical-align:middle}.stamp .ic{display:block}
 .tbtn .ic{width:46px;height:46px}
@@ -185,12 +185,15 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .toast{background:linear-gradient(#ffd84a,#f29a0c);border:4px solid var(--ol);border-radius:16px;padding:4px 16px 6px;font-size:19px;box-shadow:0 5px 0 var(--ol);animation:toast 2.6s ease-in-out forwards;max-width:92%}
 #revBar{animation:none}#revBar.run{animation:drain 5s linear forwards}
 #revive.wait #revBar.run{animation-play-state:paused}
-.revor{font-size:14px;margin:6px 0 4px;opacity:.9}
+.revor{font-size:14px;line-height:1;margin:15px 0 8px;opacity:.9}
 .noadsrow{width:100%;height:40px;font-size:15px;margin:-2px 0 8px;background:linear-gradient(#5aa8f0,#2a6ad0)}
 .linkbtn{font:inherit;font-size:14px;color:#fff;background:none;border:0;text-decoration:underline;margin-top:10px;padding:4px 10px;opacity:.9}
 #revAd{background:linear-gradient(#b48cff,#7a4ae0);font-size:min(24px,6vw);white-space:nowrap;margin-top:0}
 #revYes.no{filter:grayscale(.9);opacity:.55}
-#revYes,#revAd,#noAdsBuy{display:block;width:100%;box-sizing:border-box;padding-left:6px;padding-right:6px;overflow:hidden}
+.panel>.go{display:block;width:100%;box-sizing:border-box;padding-left:6px;padding-right:6px;overflow:hidden;white-space:nowrap;animation-name:throbS}
+@keyframes throbS{50%{transform:scale(1.025)}}
+.panel>.go+.btnrow{margin-top:17px}
+#revYes.no,#revAd{animation:none}
 .adbox{width:min(330px,88%);background:#f4f6f8;border-radius:14px;padding:14px 16px 16px;color:#33414a;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 .adtag{display:inline-block;background:#ffc21a;color:#3a2a00;font-size:12px;font-weight:700;border-radius:5px;padding:2px 8px}
 .adbody{height:150px;margin-top:10px;border:2px dashed #9aa8b2;border-radius:10px;display:grid;place-content:center;gap:6px}
@@ -269,7 +272,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .sw svg{position:relative;height:92px;width:auto}
 .sw.lock svg{filter:brightness(.25) saturate(0)}
 .item b{font-weight:400;font-size:17px}
-.ibtn{min-height:44px;font-size:17px;border:3px solid var(--ol);border-radius:12px;background:linear-gradient(#8fe060,#3f9e2c);box-shadow:0 4px 0 var(--ol);padding:2px 4px 4px}
+.ibtn{min-height:44px;font-size:min(17px,4.5vw);white-space:nowrap;border:3px solid var(--ol);border-radius:12px;background:linear-gradient(#8fe060,#3f9e2c);box-shadow:0 4px 0 var(--ol);padding:3px 4px}
 .ibtn.buy{background:linear-gradient(#ffd84a,#f29a0c)}
 .ibtn.no{background:rgba(0,0,0,.35);box-shadow:none}
 .ibtn.cur{background:none;border-color:transparent;box-shadow:none;color:#ffe14d}
@@ -534,7 +537,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=58;
+const BUILD=59;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
