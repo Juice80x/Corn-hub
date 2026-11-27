@@ -265,6 +265,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 .dvb{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .dvb .tab{font-size:min(12px,3.1vw);height:42px}
 #devBtn{position:absolute;left:6px;top:46%;z-index:5;font:inherit;font-size:13px;color:#fff;padding:5px 9px 6px;border:3px solid var(--ol);border-radius:12px;background:linear-gradient(#ff7ac8,#c23a96);box-shadow:0 3px 0 var(--ol)}
+.tabs.two{grid-template-columns:1fr 1fr;margin:8px 0 2px}.tabs.two .tab{height:40px;font-size:14px}
 .tab.on{background:linear-gradient(#ffd84a,#f29a0c);box-shadow:0 4px 0 var(--ol)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:auto;align-content:start;padding:2px 2px 8px}
 .item{background:rgba(0,0,0,.25);border:4px solid var(--ol);border-radius:18px;padding:8px 8px 10px;display:grid;gap:6px}
@@ -428,7 +429,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
       <button class="x" data-close="board" aria-label="Close">✕</button>
       <div><h2 class="ol" id="lbH" aria-label="Leaderboard"></h2>
         <label class="nm ol2"><span id="nmIc"></span> <input id="nameIn" maxlength="12" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Player"></label></div>
-      <p class="ol2" id="lbStats" style="font-size:15px"></p>
+      <div><p class="ol2" id="lbStats" style="font-size:15px"></p>
+        <div class="tabs two"><button class="tab ol2" id="lbWorld">WORLD</button><button class="tab ol2" id="lbLocal">THIS PHONE</button></div></div>
       <div class="lb" id="lbList"></div>
     </div>
   </div>
@@ -540,7 +542,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:3px}
 
 <script>
 {
-const BUILD=61;
+const BUILD=62;
 const $=id=>document.getElementById(id);
 const app=$('app'),deck=$('deck'),stage=$('stage');
 const KI='<svg class="ki" viewBox="0 0 20 22"><path d="M10 2c5 0 8 4 8 9s-3 9-8 9-8-4-8-9 3-9 8-9z" fill="#ffcf2e" stroke="var(--ol)" stroke-width="2.5"/><ellipse cx="7.5" cy="8" rx="2.5" ry="3.5" fill="#fff" opacity=".7"/></svg>';
@@ -1379,11 +1381,52 @@ let lastEntry=null;
 function drawBoard(){
   $('nameIn').value=S.name||'';
   $('lbStats').innerHTML=`${fmt(S.t.games)} games · ${I.cob} ${fmt(S.t.cobs)} cobs · ${I.star} ${fmt(S.t.rare)} rare`;
+  $('lbWorld').classList.toggle('on',lbTab==='world');$('lbLocal').classList.toggle('on',lbTab==='local');
+  if(lbTab==='world'){
+    const row=(e,i)=>`<div class="lr ${e.me?'me':''}"><div class="rk ol2">${i+1}</div><div class="who ol2">${esc(e.nm||'Player')}<small>${e.n} cobs · ${I.fire}${e.st}</small></div><div class="sc ol">${fmt(e.s)}</div></div>`;
+    $('lbList').innerHTML=world.rows?(world.rows.length?world.rows.map(row).join(''):'<p class="ol2">No scores yet. Be the first!</p>')
+      :world.err?'<p class="ol2">Can\'t reach the world board</p>':'<p class="ol2">Loading…</p>';
+    fit1($('board'));
+    if(!world.busy&&Date.now()-world.at>60000){world.busy=true;fbTop().then(r=>{world={rows:r,at:Date.now(),err:false,busy:false}},()=>{world={rows:world.rows,at:Date.now()-45000,err:true,busy:false}}).then(()=>{if(!$('board').hidden)drawBoard()})}
+    return}
   $('lbList').innerHTML=S.top.length?S.top.map((e,i)=>`<div class="lr ${e===lastEntry?'me':''}"><div class="rk ol2">${i+1}</div><div class="who ol2">${esc(e.nm||'Player')}<small>${e.n?e.n+' cobs · '+I.fire+e.st+(e.d?' · '+esc(e.d):''):'earlier best'}</small></div><div class="sc ol">${fmt(+e.s||0)}</div></div>`).join('')
     :'<p class="ol2">No scores yet. Play a run!</p>';
   fit1($('board'));
 }
 $('nameIn').oninput=e=>{S.name=e.target.value.slice(0,12);save()};
+$('nameIn').onchange=()=>{if(S.fb&&S.fb.s){S.fb.nm='';fbSubmit(S.fb.s,S.fb.n,S.fb.st)}};
+$('lbWorld').onclick=()=>{lbTab='world';drawBoard();$('lbList').scrollTop=0};$('lbLocal').onclick=()=>{lbTab='local';drawBoard();$('lbList').scrollTop=0};
+
+/* ---------- world leaderboard: Firebase over plain REST (no SDK). One document per player, best score only. ----------
+   Anonymous sign-in gives each install a hidden id. Everything here fails quietly: the game never waits on the network. */
+const FB={key:'AIzaSyDbTvl_b_ilqERV6Bwv1eQVGOz54q2KD3M',pid:'corn-rush-9ae03'};
+const FBDOC=`https://firestore.googleapis.com/v1/projects/${FB.pid}/databases/(default)/documents`;
+let lbTab='world',world={rows:null,at:0,err:false,busy:false},fbA=null;
+try{fbA=JSON.parse(localStorage.getItem('cornfb'))}catch(e){}
+const fbJ=(url,body,tok,method)=>fetch(url,{method:method||'POST',headers:Object.assign({'Content-Type':'application/json'},tok?{Authorization:'Bearer '+tok}:{}),body:JSON.stringify(body)}).then(r=>r.ok?r.json():Promise.reject(r.status));
+function fbAuth(){
+  if(fbA&&fbA.it&&fbA.exp>Date.now()+60000)return Promise.resolve(fbA);
+  const keep=a=>{fbA=a;try{localStorage.setItem('cornfb',JSON.stringify(a))}catch(e){}return a};
+  if(fbA&&fbA.rt)return fbJ('https://securetoken.googleapis.com/v1/token?key='+FB.key,{grant_type:'refresh_token',refresh_token:fbA.rt}).then(r=>keep({uid:r.user_id,rt:r.refresh_token,it:r.id_token,exp:Date.now()+r.expires_in*1000}));
+  return fbJ('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+FB.key,{returnSecureToken:true}).then(r=>keep({uid:r.localId,rt:r.refreshToken,it:r.idToken,exp:Date.now()+r.expiresIn*1000}));
+}
+function fbSubmit(sc,cobs,st){
+  if(cheat||!(sc>0))return;const nm=(S.name||'Player').trim().slice(0,12)||'Player';
+  if(S.fb&&S.fb.s>=sc&&S.fb.nm===nm)return; // nothing new to send
+  const best=S.fb&&S.fb.s>sc?S.fb:{s:sc,n:cobs,st};
+  fbAuth().then(a=>fbJ(`${FBDOC}/scores/${a.uid}`,{fields:{nm:{stringValue:nm},s:{integerValue:String(best.s)},n:{integerValue:String(best.n)},st:{integerValue:String(best.st)},t:{integerValue:String(Date.now())}}},a.it,'PATCH'))
+    .then(()=>{S.fb={nm,s:best.s,n:best.n,st:best.st};save();world.at=0}).catch(()=>{});
+}
+// Scores made before the world board existed: send this player's saved best once, next time they open the game.
+function fbBackfill(){
+  if(cheat)return;const key=(S.name||'Player').trim().toLowerCase(),mine=S.top.find(e=>(e.nm||'Player').trim().toLowerCase()===key);
+  if(mine&&mine.n>0&&mine.s>((S.fb&&S.fb.s)||0))fbSubmit(mine.s,mine.n,mine.st||0);
+}
+setTimeout(fbBackfill,2500);
+function fbTop(){
+  return fbAuth().then(a=>fbJ(FBDOC+':runQuery',{structuredQuery:{from:[{collectionId:'scores'}],orderBy:[{field:{fieldPath:'s'},direction:'DESCENDING'}],limit:50}},a.it)
+    .then(r=>r.filter(x=>x.document).map(x=>{const f=x.document.fields||{},nv=k=>+((f[k]||{}).integerValue||0);return {nm:String((f.nm||{}).stringValue||'Player').slice(0,12),s:nv('s'),n:nv('n'),st:nv('st'),me:x.document.name.endsWith('/'+a.uid)}})));
+}
 
 /* ---------- shop ---------- */
 let tab='bg';
@@ -1731,6 +1774,7 @@ function endGame(){
       S.top=S.top.filter(e=>e!==mine);S.top.push(lastEntry);S.top.sort((x,y)=>y.s-x.s);S.top=S.top.slice(0,20);rank=S.top.indexOf(lastEntry)+1;
     }
   }
+  if(!cheat&&score>((S.fb&&S.fb.s)||0))fbSubmit(score,n,topStreak);
   const fresh=checkSkins();save();
   const ratio=old>0?score/old:1,gr=isBest||old===0?'S':ratio>=.75?'A':ratio>=.5?'B':ratio>=.25?'C':'D';
   const rares=Object.values(caught).reduce((x,y)=>x+y,0);
